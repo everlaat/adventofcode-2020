@@ -17,25 +17,32 @@ exampleInput =
 """
 
 
+simplifiedInput : String
+simplifiedInput =
+    """
+    2
+    2
+    3
+    3
+    4
+    4
+"""
+
+
 suite : Test
 suite =
     Test.describe "AdventOfCode 2020 Day 1"
-        [ Test.test "D1P1 example input" <|
+        [ Test.test "D1P1 simplified input" <|
             \_ ->
-                D01.part1 exampleInput
+                D01.part1 6 simplifiedInput
+                    -- 2 + 4 will be found before 3 + 3
+                    |> Expect.equal (Just 8)
+        , Test.test "D1P1 example input" <|
+            \_ ->
+                D01.part1 2020 exampleInput
                     |> Expect.equal (Just 514579)
-
-        -- , Test.test "D1P1 puzzle input" <|
-        --     \_ ->
-        --         D01.part1 puzzleInput
-        --             |> Expect.equal (Just _)
         , Test.test "D1P2 example input" <|
             \_ ->
-                D01.part2 exampleInput
+                D01.part2 2020 exampleInput
                     |> Expect.equal (Just 241861950)
-
-        -- , Test.test "D1P2 puzzle input" <|
-        --     \_ ->
-        --         D01.part2 puzzleInput
-        --             |> Expect.equal (Just _)
         ]

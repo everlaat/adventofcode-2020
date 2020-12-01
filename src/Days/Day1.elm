@@ -1,32 +1,30 @@
 module Days.Day1 exposing (part1, part2)
 
 
-part1 : String -> Maybe Int
-part1 =
+part1 : Int -> String -> Maybe Int
+part1 target =
     inputToList
-        >> fold2
-            (\a b r_ ->
-                if r_ == Nothing && a + b == 2020 then
+        >> filterFold2
+            (\a b ->
+                if a + b == target then
                     Just (a * b)
 
                 else
-                    r_
+                    Nothing
             )
-            Nothing
 
 
-part2 : String -> Maybe Int
-part2 =
+part2 : Int -> String -> Maybe Int
+part2 target =
     inputToList
-        >> fold3
-            (\a b c r_ ->
-                if r_ == Nothing && a + b + c == 2020 then
+        >> filterFold3
+            (\a b c ->
+                if a + b + c == target then
                     Just (a * b * c)
 
                 else
-                    r_
+                    Nothing
             )
-            Nothing
 
 
 
@@ -39,48 +37,61 @@ inputToList =
         >> List.filterMap (String.toInt << String.trim)
 
 
-fold2 : (a -> a -> Maybe b -> Maybe b) -> Maybe b -> List a -> Maybe b
-fold2 f x list =
+filterFold2 : (a -> a -> Maybe b) -> List a -> Maybe b
+filterFold2 f list =
     List.foldl
         (\a x_ ->
-            List.foldl
-                (\b x__ ->
-                    if x__ == Nothing then
-                        f a b x_
+            case x_ of
+                Nothing ->
+                    List.foldl
+                        (\b x__ ->
+                            case x__ of
+                                Nothing ->
+                                    f a b
 
-                    else
-                        x__
-                )
-                x_
-                list
+                                Just _ ->
+                                    x__
+                        )
+                        x_
+                        list
+
+                Just _ ->
+                    x_
         )
-        x
+        Nothing
         list
 
 
-fold3 : (a -> a -> a -> Maybe b -> Maybe b) -> Maybe b -> List a -> Maybe b
-fold3 f x list =
+filterFold3 : (a -> a -> a -> Maybe b) -> List a -> Maybe b
+filterFold3 f list =
     List.foldl
         (\a x_ ->
-            List.foldl
-                (\b x__ ->
-                    if x__ == Nothing then
-                        List.foldl
-                            (\c x___ ->
-                                if x___ == Nothing then
-                                    f a b c x_
+            case x_ of
+                Nothing ->
+                    List.foldl
+                        (\b x__ ->
+                            case x__ of
+                                Nothing ->
+                                    List.foldl
+                                        (\c x___ ->
+                                            case x___ of
+                                                Nothing ->
+                                                    f a b c
 
-                                else
-                                    x___
-                            )
-                            x__
-                            list
+                                                Just _ ->
+                                                    x___
+                                        )
+                                        x__
+                                        list
 
-                    else
-                        x__
-                )
-                x_
-                list
+                                Just _ ->
+                                    x__
+                        )
+                        x_
+                        list
+
+                Just _ ->
+                    x_
         )
-        x
+        Nothing
         list
