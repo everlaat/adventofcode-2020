@@ -6,11 +6,6 @@ part1 =
     findTargetAndMultiplyResult listMakePairs uncurry
 
 
-uncurry : (Int -> Int -> Int) -> ( Int, Int ) -> Int
-uncurry f ( a, b ) =
-    f a b
-
-
 part2 : Int -> String -> Maybe Int
 part2 =
     findTargetAndMultiplyResult listMakeTrios uncurry3
@@ -25,9 +20,10 @@ findTargetAndMultiplyResult fa fb target =
         >> Maybe.map (fb (*))
 
 
-uncurry3 : (Int -> Int -> Int) -> ( Int, Int, Int ) -> Int
-uncurry3 f ( a, b, c ) =
-    f (f a b) c
+inputToList : String -> List Int
+inputToList =
+    String.split "\n"
+        >> List.filterMap (String.toInt << String.trim)
 
 
 listMakePairs : List a -> List ( a, a )
@@ -54,7 +50,11 @@ listMakeTrios xs =
                 ++ listMakeTrios xs_
 
 
-inputToList : String -> List Int
-inputToList =
-    String.split "\n"
-        >> List.filterMap (String.toInt << String.trim)
+uncurry : (Int -> Int -> Int) -> ( Int, Int ) -> Int
+uncurry f ( a, b ) =
+    f a b
+
+
+uncurry3 : (Int -> Int -> Int) -> ( Int, Int, Int ) -> Int
+uncurry3 f ( a, b, c ) =
+    f (f a b) c
