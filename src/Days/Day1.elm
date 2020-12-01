@@ -2,96 +2,59 @@ module Days.Day1 exposing (part1, part2)
 
 
 part1 : Int -> String -> Maybe Int
-part1 target =
-    inputToList
-        >> filterFold2
-            (\a b ->
-                if a + b == target then
-                    Just (a * b)
+part1 =
+    findTargetAndMultiplyResult listMakePairs uncurry
 
-                else
-                    Nothing
-            )
+
+uncurry : (Int -> Int -> Int) -> ( Int, Int ) -> Int
+uncurry f ( a, b ) =
+    f a b
 
 
 part2 : Int -> String -> Maybe Int
-part2 target =
+part2 =
+    findTargetAndMultiplyResult listMakeTrios uncurry3
+
+
+findTargetAndMultiplyResult : (List Int -> List b) -> ((Int -> Int -> Int) -> b -> Int) -> Int -> String -> Maybe Int
+findTargetAndMultiplyResult fa fb target =
     inputToList
-        >> filterFold3
-            (\a b c ->
-                if a + b + c == target then
-                    Just (a * b * c)
+        >> fa
+        >> List.filter (fb (+) >> (==) target)
+        >> List.head
+        >> Maybe.map (fb (*))
 
-                else
-                    Nothing
+
+uncurry3 : (Int -> Int -> Int) -> ( Int, Int, Int ) -> Int
+uncurry3 f ( a, b, c ) =
+    f (f a b) c
+
+
+listMakePairs : List a -> List ( a, a )
+listMakePairs xs =
+    case xs of
+        [] ->
+            []
+
+        x :: xs_ ->
+            List.map (Tuple.pair x) xs_
+                ++ listMakePairs xs_
+
+
+listMakeTrios : List a -> List ( a, a, a )
+listMakeTrios xs =
+    case xs of
+        [] ->
+            []
+
+        x :: xs_ ->
+            (listMakePairs xs_
+                |> List.map (\( a, b ) -> ( a, b, x ))
             )
-
-
-
---
+                ++ listMakeTrios xs_
 
 
 inputToList : String -> List Int
 inputToList =
     String.split "\n"
         >> List.filterMap (String.toInt << String.trim)
-
-
-filterFold2 : (a -> a -> Maybe b) -> List a -> Maybe b
-filterFold2 f list =
-    List.foldl
-        (\a x_ ->
-            case x_ of
-                Nothing ->
-                    List.foldl
-                        (\b x__ ->
-                            case x__ of
-                                Nothing ->
-                                    f a b
-
-                                Just _ ->
-                                    x__
-                        )
-                        x_
-                        list
-
-                Just _ ->
-                    x_
-        )
-        Nothing
-        list
-
-
-filterFold3 : (a -> a -> a -> Maybe b) -> List a -> Maybe b
-filterFold3 f list =
-    List.foldl
-        (\a x_ ->
-            case x_ of
-                Nothing ->
-                    List.foldl
-                        (\b x__ ->
-                            case x__ of
-                                Nothing ->
-                                    List.foldl
-                                        (\c x___ ->
-                                            case x___ of
-                                                Nothing ->
-                                                    f a b c
-
-                                                Just _ ->
-                                                    x___
-                                        )
-                                        x__
-                                        list
-
-                                Just _ ->
-                                    x__
-                        )
-                        x_
-                        list
-
-                Just _ ->
-                    x_
-        )
-        Nothing
-        list
