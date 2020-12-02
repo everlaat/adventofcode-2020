@@ -533,11 +533,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.af.K === region.aq.K)
+	if (region.ah.K === region.au.K)
 	{
-		return 'on line ' + region.af.K;
+		return 'on line ' + region.ah.K;
 	}
-	return 'on lines ' + region.af.K + ' through ' + region.aq.K;
+	return 'on lines ' + region.ah.K + ' through ' + region.au.K;
 }
 
 
@@ -1871,9 +1871,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.ay,
-		impl.bM,
-		impl.bG,
+		impl.aC,
+		impl.bO,
+		impl.bI,
 		function() { return function() {} }
 	);
 });
@@ -2719,8 +2719,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		y: func(record.y),
-		ag: record.ag,
-		ad: record.ad
+		ai: record.ai,
+		af: record.af
 	}
 });
 
@@ -2989,10 +2989,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.y;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ag;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ai;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.ad) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.af) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3942,11 +3942,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.ay,
-		impl.bM,
-		impl.bG,
+		impl.aC,
+		impl.bO,
+		impl.bI,
 		function(sendToApp, initialModel) {
-			var view = impl.bN;
+			var view = impl.bP;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3978,12 +3978,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.ay,
-		impl.bM,
-		impl.bG,
+		impl.aC,
+		impl.bO,
+		impl.bI,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.ae && impl.ae(sendToApp)
-			var view = impl.bN;
+			var divertHrefToApp = impl.ag && impl.ag(sendToApp)
+			var view = impl.bP;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3991,12 +3991,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.a0);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.a2);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.bJ) && (_VirtualDom_doc.title = title = doc.bJ);
+				(title !== doc.bL) && (_VirtualDom_doc.title = title = doc.bL);
 			});
 		}
 	);
@@ -4052,12 +4052,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.bt;
-	var onUrlRequest = impl.bu;
+	var onUrlChange = impl.bv;
+	var onUrlRequest = impl.bw;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		ae: function(sendToApp)
+		ag: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4073,9 +4073,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.aK === next.aK
-							&& curr.ax === next.ax
-							&& curr.aH.a === next.aH.a
+							&& curr.aO === next.aO
+							&& curr.aB === next.aB
+							&& curr.aL.a === next.aL.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4083,13 +4083,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		ay: function(flags)
+		aC: function(flags)
 		{
-			return A3(impl.ay, flags, _Browser_getUrl(), key);
+			return A3(impl.aC, flags, _Browser_getUrl(), key);
 		},
-		bN: impl.bN,
-		bM: impl.bM,
-		bG: impl.bG
+		bP: impl.bP,
+		bO: impl.bO,
+		bI: impl.bI
 	});
 }
 
@@ -4155,17 +4155,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { be: 'hidden', a2: 'visibilitychange' }
+		? { bg: 'hidden', a4: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { be: 'mozHidden', a2: 'mozvisibilitychange' }
+		? { bg: 'mozHidden', a4: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { be: 'msHidden', a2: 'msvisibilitychange' }
+		? { bg: 'msHidden', a4: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { be: 'webkitHidden', a2: 'webkitvisibilitychange' }
-		: { be: 'hidden', a2: 'visibilitychange' };
+		? { bg: 'webkitHidden', a4: 'webkitvisibilitychange' }
+		: { bg: 'hidden', a4: 'visibilitychange' };
 }
 
 
@@ -4246,12 +4246,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		aQ: _Browser_getScene(),
-		aW: {
-			aY: _Browser_window.pageXOffset,
-			aZ: _Browser_window.pageYOffset,
-			aX: _Browser_doc.documentElement.clientWidth,
-			aw: _Browser_doc.documentElement.clientHeight
+		aU: _Browser_getScene(),
+		a_: {
+			al: _Browser_window.pageXOffset,
+			am: _Browser_window.pageYOffset,
+			a$: _Browser_doc.documentElement.clientWidth,
+			aA: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4261,8 +4261,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		aX: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		aw: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		a$: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		aA: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4285,15 +4285,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			aQ: {
-				aX: node.scrollWidth,
-				aw: node.scrollHeight
+			aU: {
+				a$: node.scrollWidth,
+				aA: node.scrollHeight
 			},
-			aW: {
-				aY: node.scrollLeft,
-				aZ: node.scrollTop,
-				aX: node.clientWidth,
-				aw: node.clientHeight
+			a_: {
+				al: node.scrollLeft,
+				am: node.scrollTop,
+				a$: node.clientWidth,
+				aA: node.clientHeight
 			}
 		};
 	});
@@ -4323,18 +4323,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			aQ: _Browser_getScene(),
-			aW: {
-				aY: x,
-				aZ: y,
-				aX: _Browser_doc.documentElement.clientWidth,
-				aw: _Browser_doc.documentElement.clientHeight
+			aU: _Browser_getScene(),
+			a_: {
+				al: x,
+				am: y,
+				a$: _Browser_doc.documentElement.clientWidth,
+				aA: _Browser_doc.documentElement.clientHeight
 			},
-			a6: {
-				aY: x + rect.left,
-				aZ: y + rect.top,
-				aX: rect.width,
-				aw: rect.height
+			a8: {
+				al: x + rect.left,
+				am: y + rect.top,
+				a$: rect.width,
+				aA: rect.height
 			}
 		};
 	});
@@ -4854,7 +4854,7 @@ var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Components$Layout$Init$init = function (_v0) {
 	return _Utils_Tuple3(
-		{bg: '', bD: _List_Nil, bE: $elm$core$Maybe$Nothing},
+		{bi: '', bF: _List_Nil, bG: $elm$core$Maybe$Nothing},
 		_List_Nil,
 		$elm$core$Platform$Cmd$none);
 };
@@ -5107,7 +5107,7 @@ var $elm$core$Basics$identity = function (x) {
 var $author$project$Com$Solver$Solver = $elm$core$Basics$identity;
 var $author$project$Com$Solver$make = F4(
 	function (year, day, part, func) {
-		return {W: day, at: func, ac: part, aj: year};
+		return {X: day, ax: func, ad: part, an: year};
 	});
 var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
@@ -5157,11 +5157,12 @@ var $elm$core$List$filterMap = F2(
 			_List_Nil,
 			xs);
 	});
+var $elm$core$String$lines = _String_lines;
 var $elm$core$String$toInt = _String_toInt;
 var $elm$core$String$trim = _String_trim;
 var $author$project$Solvers$Y2020$Day1$inputToList = A2(
 	$elm$core$Basics$composeR,
-	$elm$core$String$split('\n'),
+	$elm$core$String$lines,
 	$elm$core$List$filterMap(
 		A2($elm$core$Basics$composeL, $elm$core$String$toInt, $elm$core$String$trim)));
 var $elm$core$Maybe$map = F2(
@@ -5220,6 +5221,35 @@ var $author$project$Solvers$Y2020$Day1$uncurry = F2(
 		return A2(f, a, b);
 	});
 var $author$project$Solvers$Y2020$Day1$part1 = A2($author$project$Solvers$Y2020$Day1$findTargetThroughAdditionAndMultiplyResult, $author$project$Solvers$Y2020$Day1$listMakePairs, $author$project$Solvers$Y2020$Day1$uncurry);
+var $author$project$Solvers$Y2020$Day1$listMakeTrios = function (xs) {
+	if (!xs.b) {
+		return _List_Nil;
+	} else {
+		var x = xs.a;
+		var xs_ = xs.b;
+		return _Utils_ap(
+			A2(
+				$elm$core$List$map,
+				function (_v1) {
+					var a = _v1.a;
+					var b = _v1.b;
+					return _Utils_Tuple3(a, b, x);
+				},
+				$author$project$Solvers$Y2020$Day1$listMakePairs(xs_)),
+			$author$project$Solvers$Y2020$Day1$listMakeTrios(xs_));
+	}
+};
+var $author$project$Solvers$Y2020$Day1$uncurry3 = F2(
+	function (f, _v0) {
+		var a = _v0.a;
+		var b = _v0.b;
+		var c = _v0.c;
+		return A2(
+			f,
+			A2(f, a, b),
+			c);
+	});
+var $author$project$Solvers$Y2020$Day1$part2 = A2($author$project$Solvers$Y2020$Day1$findTargetThroughAdditionAndMultiplyResult, $author$project$Solvers$Y2020$Day1$listMakeTrios, $author$project$Solvers$Y2020$Day1$uncurry3);
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
 		if (!maybe.$) {
@@ -5255,12 +5285,162 @@ var $author$project$Solvers$Y2020$Day1$solvers = _List_fromArray(
 		1,
 		2,
 		$author$project$Solvers$Y2020$Day1$partToSolver(
-			$author$project$Solvers$Y2020$Day1$part1(2020)))
+			$author$project$Solvers$Y2020$Day1$part2(2020)))
+	]);
+var $elm$core$String$cons = _String_cons;
+var $elm$core$String$fromChar = function (_char) {
+	return A2($elm$core$String$cons, _char, '');
+};
+var $elm$core$Basics$ge = _Utils_ge;
+var $elm$core$String$indexes = _String_indexes;
+var $author$project$Solvers$Y2020$Day2$inputToList = A2(
+	$elm$core$Basics$composeR,
+	$elm$core$String$lines,
+	$elm$core$List$map($elm$core$String$trim));
+var $author$project$Solvers$Y2020$Day2$Password = F4(
+	function (x, y, _char, password) {
+		return {W: _char, ae: password, al: x, am: y};
+	});
+var $elm$core$String$replace = F3(
+	function (before, after, string) {
+		return A2(
+			$elm$core$String$join,
+			after,
+			A2($elm$core$String$split, before, string));
+	});
+var $author$project$Solvers$Y2020$Day2$listToPasswords = $elm$core$List$filterMap(
+	function (a) {
+		var _v0 = A2($elm$core$String$split, ' ', a);
+		if (((_v0.b && _v0.b.b) && _v0.b.b.b) && (!_v0.b.b.b.b)) {
+			var range = _v0.a;
+			var _v1 = _v0.b;
+			var letter = _v1.a;
+			var _v2 = _v1.b;
+			var password = _v2.a;
+			var _v3 = _Utils_Tuple2(
+				A2(
+					$elm$core$List$filterMap,
+					$elm$core$String$toInt,
+					A2($elm$core$String$split, '-', range)),
+				$elm$core$String$uncons(
+					A3($elm$core$String$replace, ':', '', letter)));
+			if (((_v3.a.b && _v3.a.b.b) && (!_v3.a.b.b.b)) && (!_v3.b.$)) {
+				var _v4 = _v3.a;
+				var x = _v4.a;
+				var _v5 = _v4.b;
+				var y = _v5.a;
+				var _v6 = _v3.b.a;
+				var _char = _v6.a;
+				return $elm$core$Maybe$Just(
+					A4($author$project$Solvers$Y2020$Day2$Password, x, y, _char, password));
+			} else {
+				return $elm$core$Maybe$Nothing;
+			}
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $author$project$Solvers$Y2020$Day2$part1 = A2(
+	$elm$core$Basics$composeR,
+	$author$project$Solvers$Y2020$Day2$inputToList,
+	A2(
+		$elm$core$Basics$composeR,
+		$author$project$Solvers$Y2020$Day2$listToPasswords,
+		A2(
+			$elm$core$Basics$composeR,
+			$elm$core$List$filter(
+				function (_v0) {
+					var x = _v0.al;
+					var y = _v0.am;
+					var _char = _v0.W;
+					var password = _v0.ae;
+					var amount = $elm$core$List$length(
+						A2(
+							$elm$core$String$indexes,
+							$elm$core$String$fromChar(_char),
+							password));
+					return (_Utils_cmp(amount, x) > -1) && (_Utils_cmp(amount, y) < 1);
+				}),
+			A2($elm$core$Basics$composeR, $elm$core$List$length, $elm$core$String$fromInt))));
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $elm$core$List$member = F2(
+	function (x, xs) {
+		return A2(
+			$elm$core$List$any,
+			function (a) {
+				return _Utils_eq(a, x);
+			},
+			xs);
+	});
+var $elm$core$Basics$not = _Basics_not;
+var $author$project$Solvers$Y2020$Day2$part2 = A2(
+	$elm$core$Basics$composeR,
+	$author$project$Solvers$Y2020$Day2$inputToList,
+	A2(
+		$elm$core$Basics$composeR,
+		$author$project$Solvers$Y2020$Day2$listToPasswords,
+		A2(
+			$elm$core$Basics$composeR,
+			$elm$core$List$filter(
+				function (_v0) {
+					var x = _v0.al;
+					var y = _v0.am;
+					var _char = _v0.W;
+					var password = _v0.ae;
+					var indexes = A2(
+						$elm$core$List$map,
+						$elm$core$Basics$add(1),
+						A2(
+							$elm$core$String$indexes,
+							$elm$core$String$fromChar(_char),
+							password));
+					var b = A2($elm$core$List$member, y, indexes);
+					var a = A2($elm$core$List$member, x, indexes);
+					return (a && (!b)) || ((!a) && b);
+				}),
+			A2($elm$core$Basics$composeR, $elm$core$List$length, $elm$core$String$fromInt))));
+var $author$project$Solvers$Y2020$Day2$partToSolver = function (f) {
+	return A2($elm$core$Basics$composeR, f, $elm$core$Result$Ok);
+};
+var $author$project$Solvers$Y2020$Day2$solvers = _List_fromArray(
+	[
+		A4(
+		$author$project$Com$Solver$make,
+		2020,
+		2,
+		1,
+		$author$project$Solvers$Y2020$Day2$partToSolver($author$project$Solvers$Y2020$Day2$part1)),
+		A4(
+		$author$project$Com$Solver$make,
+		2020,
+		2,
+		2,
+		$author$project$Solvers$Y2020$Day2$partToSolver($author$project$Solvers$Y2020$Day2$part2))
 	]);
 var $author$project$Com$Solver$toId = function (_v0) {
-	var year = _v0.aj;
-	var day = _v0.W;
-	var part = _v0.ac;
+	var year = _v0.an;
+	var day = _v0.X;
+	var part = _v0.ad;
 	return A2(
 		$elm$core$String$join,
 		'',
@@ -5281,7 +5461,7 @@ var $author$project$Solvers$Y2020$solvers = $elm$core$Dict$fromList(
 		},
 		$elm$core$List$concat(
 			_List_fromArray(
-				[$author$project$Solvers$Y2020$Day1$solvers]))));
+				[$author$project$Solvers$Y2020$Day1$solvers, $author$project$Solvers$Y2020$Day2$solvers]))));
 var $author$project$Components$Layout$Update$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -5290,7 +5470,7 @@ var $author$project$Components$Layout$Update$update = F2(
 				return _Utils_Tuple3(
 					_Utils_update(
 						model,
-						{bg: input}),
+						{bi: input}),
 					_List_Nil,
 					$elm$core$Platform$Cmd$none);
 			case 1:
@@ -5299,12 +5479,12 @@ var $author$project$Components$Layout$Update$update = F2(
 					_Utils_update(
 						model,
 						{
-							bE: A2($elm$core$Dict$get, solverId, $author$project$Solvers$Y2020$solvers)
+							bG: A2($elm$core$Dict$get, solverId, $author$project$Solvers$Y2020$solvers)
 						}),
 					_List_Nil,
 					$elm$core$Platform$Cmd$none);
 			case 2:
-				var _v1 = model.bE;
+				var _v1 = model.bG;
 				if (_v1.$ === 1) {
 					return _Utils_Tuple3(model, _List_Nil, $elm$core$Platform$Cmd$none);
 				} else {
@@ -5312,10 +5492,10 @@ var $author$project$Components$Layout$Update$update = F2(
 					return _Utils_Tuple3(
 						_Utils_update(
 							model,
-							{bg: ''}),
+							{bi: ''}),
 						_List_fromArray(
 							[
-								A2($author$project$Components$Layout$Msg$Solve, solver, model.bg)
+								A2($author$project$Components$Layout$Msg$Solve, solver, model.bi)
 							]),
 						$elm$core$Platform$Cmd$none);
 				}
@@ -5325,7 +5505,7 @@ var $author$project$Components$Layout$Update$update = F2(
 					_Utils_update(
 						model,
 						{
-							bD: A2($elm$core$List$cons, pid, model.bD)
+							bF: A2($elm$core$List$cons, pid, model.bF)
 						}),
 					_List_Nil,
 					$elm$core$Platform$Cmd$none);
@@ -5435,9 +5615,9 @@ var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('
 var $elm$html$Html$option = _VirtualDom_node('option');
 var $elm$html$Html$Attributes$selected = $elm$html$Html$Attributes$boolProperty('selected');
 var $author$project$Com$Solver$toLabel = function (_v0) {
-	var year = _v0.aj;
-	var day = _v0.W;
-	var part = _v0.ac;
+	var year = _v0.an;
+	var day = _v0.X;
+	var part = _v0.ad;
 	return A2(
 		$elm$core$String$join,
 		'',
@@ -5523,7 +5703,7 @@ var $author$project$Components$Layout$View$viewForm = F2(
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$name('input'),
-									$elm$html$Html$Attributes$value(model.bg),
+									$elm$html$Html$Attributes$value(model.bi),
 									$elm$html$Html$Events$onInput(
 									A2($elm$core$Basics$composeR, $author$project$Components$Layout$Msg$OnInput, toSelf))
 								]),
@@ -5570,7 +5750,7 @@ var $author$project$Components$Layout$View$viewForm = F2(
 										[
 											$elm$html$Html$Attributes$name('solver')
 										]),
-									$author$project$Components$Layout$View$viewSolverOptions(model.bE)),
+									$author$project$Components$Layout$View$viewSolverOptions(model.bG)),
 									A2(
 									$elm$html$Html$span,
 									_List_Nil,
@@ -5585,7 +5765,7 @@ var $author$project$Components$Layout$View$viewForm = F2(
 					_List_fromArray(
 						[
 							$elm$html$Html$Attributes$disabled(
-							_Utils_eq(model.bE, $elm$core$Maybe$Nothing)),
+							_Utils_eq(model.bG, $elm$core$Maybe$Nothing)),
 							$elm$html$Html$Events$onClick(
 							toSelf($author$project$Components$Layout$Msg$OnSolve))
 						]),
@@ -5603,7 +5783,7 @@ var $author$project$Components$Layout$View$viewSolutions = F2(
 				[
 					$elm$html$Html$Attributes$class('Layout_Solutions')
 				]),
-			A2($elm$core$List$filterMap, renderPid, model.bD));
+			A2($elm$core$List$filterMap, renderPid, model.bF));
 	});
 var $author$project$Components$Layout$View$view = F3(
 	function (toSelf, model, renderPid) {
@@ -5619,7 +5799,7 @@ var $author$project$Components$Layout$View$view = F3(
 					A2($author$project$Components$Layout$View$viewSolutions, model, renderPid)
 				]));
 	});
-var $author$project$Components$Layout$Main$component = {ay: $author$project$Components$Layout$Init$init, bG: $author$project$Components$Layout$Subscriptions$subscriptions, bM: $author$project$Components$Layout$Update$update, bN: $author$project$Components$Layout$View$view};
+var $author$project$Components$Layout$Main$component = {aC: $author$project$Components$Layout$Init$init, bI: $author$project$Components$Layout$Subscriptions$subscriptions, bO: $author$project$Components$Layout$Update$update, bP: $author$project$Components$Layout$View$view};
 var $author$project$Actors$Layout$fromAppMsg = function (appMsg) {
 	if (!appMsg.$) {
 		var msgIn = appMsg.a;
@@ -5672,9 +5852,9 @@ var $tricycle$elm_actor_framework$Framework$Internal$Message$toSelf = F2(
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Actor$wrapToTuple = F3(
 	function (_v0, pid, _v1) {
-		var toAppModel = _v0.bK;
-		var toAppMsg = _v0.bL;
-		var onMsgOut = _v0.bs;
+		var toAppModel = _v0.bM;
+		var toAppMsg = _v0.bN;
+		var onMsgOut = _v0.bu;
 		var model = _v1.a;
 		var msgsOut = _v1.b;
 		var cmd = _v1.c;
@@ -5700,7 +5880,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Actor$wrapToTuple = F3(
 							$elm$core$List$map,
 							function (msgOut) {
 								return onMsgOut(
-									{bi: msgOut, bC: pid});
+									{bk: msgOut, bE: pid});
 							},
 							msgsOut)))));
 	});
@@ -5718,7 +5898,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentInit = F
 var $elm$core$Platform$Sub$map = _Platform_map;
 var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentSubscriptions = F4(
 	function (_v0, subs, componentModel, pid) {
-		var toAppMsg = _v0.bL;
+		var toAppMsg = _v0.bN;
 		return _Utils_eq(
 			subs(componentModel),
 			$elm$core$Platform$Sub$none) ? $elm$core$Platform$Sub$none : A2(
@@ -5732,7 +5912,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentUpdate =
 	function (_arguments, update, componentModel, msg, pid) {
 		if (!msg.$) {
 			var appMsg = msg.a;
-			var _v1 = _arguments.bd(appMsg);
+			var _v1 = _arguments.bf(appMsg);
 			if (!_v1.$) {
 				var componentMsgIn = _v1.a;
 				return A3(
@@ -5742,18 +5922,18 @@ var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentUpdate =
 					A2(update, componentMsgIn, componentModel));
 			} else {
 				return _Utils_Tuple2(
-					_arguments.bK(componentModel),
+					_arguments.bM(componentModel),
 					$tricycle$elm_actor_framework$Framework$Internal$Message$noOperation);
 			}
 		} else {
 			return _Utils_Tuple2(
-				_arguments.bK(componentModel),
+				_arguments.bM(componentModel),
 				$tricycle$elm_actor_framework$Framework$Internal$Message$noOperation);
 		}
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentView = F4(
 	function (_v0, view, componentModel, pid) {
-		var toAppMsg = _v0.bL;
+		var toAppMsg = _v0.bN;
 		return A2(
 			view,
 			A2($tricycle$elm_actor_framework$Framework$Internal$Message$toSelf, toAppMsg, pid),
@@ -5761,19 +5941,19 @@ var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentView = F
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponent = F2(
 	function (_arguments, component) {
-		var view = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentView, _arguments, component.bN);
-		var update = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentUpdate, _arguments, component.bM);
-		var subscriptions = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentSubscriptions, _arguments, component.bG);
-		var processMethods = {bG: subscriptions, bM: update, bN: view};
-		var init = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentInit, _arguments, component.ay);
+		var view = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentView, _arguments, component.bP);
+		var update = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentUpdate, _arguments, component.bO);
+		var subscriptions = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentSubscriptions, _arguments, component.bI);
+		var processMethods = {bI: subscriptions, bO: update, bP: view};
+		var init = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentInit, _arguments, component.aC);
 		var apply = function (componentModel) {
 			return {
-				bG: subscriptions(componentModel),
-				bM: update(componentModel),
-				bN: view(componentModel)
+				bI: subscriptions(componentModel),
+				bO: update(componentModel),
+				bP: view(componentModel)
 			};
 		};
-		return {al: apply, ay: init, bz: processMethods};
+		return {ap: apply, aC: init, bB: processMethods};
 	});
 var $tricycle$elm_actor_framework$Framework$Actor$fromComponent = $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponent;
 var $author$project$Components$Layout$Msg$OnSpawnedSolver = function (a) {
@@ -5800,8 +5980,8 @@ var $tricycle$elm_actor_framework$Framework$Internal$Message$spawn = F3(
 	});
 var $tricycle$elm_actor_framework$Framework$Message$spawn = $tricycle$elm_actor_framework$Framework$Internal$Message$spawn;
 var $author$project$Actors$Layout$onMsgOut = function (_v0) {
-	var self = _v0.bC;
-	var msgOut = _v0.bi;
+	var self = _v0.bE;
+	var msgOut = _v0.bk;
 	var solver = msgOut.a;
 	var input = msgOut.b;
 	return A3(
@@ -5827,14 +6007,14 @@ var $author$project$Actors$Layout$onMsgOut = function (_v0) {
 };
 var $author$project$Actors$Layout$actor = A2(
 	$tricycle$elm_actor_framework$Framework$Actor$fromComponent,
-	{bd: $author$project$Actors$Layout$fromAppMsg, bs: $author$project$Actors$Layout$onMsgOut, bK: $author$project$Model$Layout, bL: $author$project$Msg$Layout},
+	{bf: $author$project$Actors$Layout$fromAppMsg, bu: $author$project$Actors$Layout$onMsgOut, bM: $author$project$Model$Layout, bN: $author$project$Msg$Layout},
 	$author$project$Components$Layout$Main$component);
 var $author$project$Model$Solver = function (a) {
 	return {$: 1, a: a};
 };
 var $author$project$Components$Solver$Init$init = function (_v0) {
 	return _Utils_Tuple3(
-		{bg: '', bx: $elm$core$Maybe$Nothing, bE: $elm$core$Maybe$Nothing},
+		{bi: '', bz: $elm$core$Maybe$Nothing, bG: $elm$core$Maybe$Nothing},
 		_List_Nil,
 		$elm$core$Platform$Cmd$none);
 };
@@ -5842,7 +6022,7 @@ var $author$project$Components$Solver$Subscriptions$subscriptions = function (mo
 	return $elm$core$Platform$Sub$none;
 };
 var $author$project$Com$Solver$solve = function (_v0) {
-	var func = _v0.at;
+	var func = _v0.ax;
 	return func;
 };
 var $author$project$Components$Solver$Update$update = F2(
@@ -5851,10 +6031,10 @@ var $author$project$Components$Solver$Update$update = F2(
 		var input = msg.b;
 		return _Utils_Tuple3(
 			{
-				bg: input,
-				bx: $elm$core$Maybe$Just(
+				bi: input,
+				bz: $elm$core$Maybe$Just(
 					A2($author$project$Com$Solver$solve, solver, input)),
-				bE: $elm$core$Maybe$Just(solver)
+				bG: $elm$core$Maybe$Just(solver)
 			},
 			_List_Nil,
 			$elm$core$Platform$Cmd$none);
@@ -5937,16 +6117,16 @@ var $author$project$Components$Solver$View$viewResult = F3(
 	});
 var $author$project$Components$Solver$View$view = F3(
 	function (_v0, model, _v1) {
-		var _v2 = _Utils_Tuple2(model.bx, model.bE);
+		var _v2 = _Utils_Tuple2(model.bz, model.bG);
 		if ((!_v2.a.$) && (!_v2.b.$)) {
 			var result = _v2.a.a;
 			var solver = _v2.b.a;
-			return A3($author$project$Components$Solver$View$viewResult, solver, model.bg, result);
+			return A3($author$project$Components$Solver$View$viewResult, solver, model.bi, result);
 		} else {
 			return $elm$html$Html$text('');
 		}
 	});
-var $author$project$Components$Solver$Main$component = {ay: $author$project$Components$Solver$Init$init, bG: $author$project$Components$Solver$Subscriptions$subscriptions, bM: $author$project$Components$Solver$Update$update, bN: $author$project$Components$Solver$View$view};
+var $author$project$Components$Solver$Main$component = {aC: $author$project$Components$Solver$Init$init, bI: $author$project$Components$Solver$Subscriptions$subscriptions, bO: $author$project$Components$Solver$Update$update, bP: $author$project$Components$Solver$View$view};
 var $author$project$Actors$Solver$fromAppMsg = function (appMsg) {
 	if (appMsg.$ === 1) {
 		var msgIn = appMsg.a;
@@ -5957,21 +6137,21 @@ var $author$project$Actors$Solver$fromAppMsg = function (appMsg) {
 };
 var $tricycle$elm_actor_framework$Framework$Message$noOperation = $tricycle$elm_actor_framework$Framework$Internal$Message$noOperation;
 var $author$project$Actors$Solver$onMsgOut = function (_v0) {
-	var self = _v0.bC;
-	var msgOut = _v0.bi;
+	var self = _v0.bE;
+	var msgOut = _v0.bk;
 	return $tricycle$elm_actor_framework$Framework$Message$noOperation;
 };
 var $author$project$Actors$Solver$actor = A2(
 	$tricycle$elm_actor_framework$Framework$Actor$fromComponent,
-	{bd: $author$project$Actors$Solver$fromAppMsg, bs: $author$project$Actors$Solver$onMsgOut, bK: $author$project$Model$Solver, bL: $author$project$Msg$Solver},
+	{bf: $author$project$Actors$Solver$fromAppMsg, bu: $author$project$Actors$Solver$onMsgOut, bM: $author$project$Model$Solver, bN: $author$project$Msg$Solver},
 	$author$project$Components$Solver$Main$component);
 var $author$project$Bootstrap$apply = function (model) {
 	if (!model.$) {
 		var m = model.a;
-		return $author$project$Actors$Layout$actor.al(m);
+		return $author$project$Actors$Layout$actor.ap(m);
 	} else {
 		var m = model.a;
-		return $author$project$Actors$Solver$actor.al(m);
+		return $author$project$Actors$Solver$actor.ap(m);
 	}
 };
 var $elm$browser$Browser$External = function (a) {
@@ -5985,7 +6165,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {as: fragment, ax: host, aF: path, aH: port_, aK: protocol, aL: query};
+		return {aw: fragment, aB: host, aJ: path, aL: port_, aO: protocol, aP: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5998,7 +6178,6 @@ var $elm$core$String$dropLeft = F2(
 			$elm$core$String$length(string),
 			string);
 	});
-var $elm$core$String$indexes = _String_indexes;
 var $elm$core$String$isEmpty = function (string) {
 	return string === '';
 };
@@ -6209,7 +6388,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Pid$toInt = function (pid) 
 	if (pid.$ === 1) {
 		return 1;
 	} else {
-		var id = pid.a.Y;
+		var id = pid.a.Z;
 		return id;
 	}
 };
@@ -6260,7 +6439,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Render$element = F2(
 				A2(
 					$elm$core$Basics$composeL,
 					function ($) {
-						return $.bN;
+						return $.bP;
 					},
 					apply),
 				frameworkModel),
@@ -6273,8 +6452,8 @@ var $tricycle$elm_actor_framework$Framework$Internal$Render$application = F3(
 	function (apply, view, frameworkModel) {
 		return function (body) {
 			return {
-				a0: body,
-				bJ: $tricycle$elm_actor_framework$Framework$Internal$Model$getDocumentTitle(frameworkModel)
+				a2: body,
+				bL: $tricycle$elm_actor_framework$Framework$Internal$Model$getDocumentTitle(frameworkModel)
 			};
 		}(
 			view(
@@ -6355,7 +6534,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Subscriptions$getSubscripti
 			F3(
 				function (pid, appModel, listOfSubs) {
 					var process = apply(appModel);
-					var processSubscriptions = process.bG(pid);
+					var processSubscriptions = process.bI(pid);
 					return _Utils_eq(processSubscriptions, $elm$core$Platform$Sub$none) ? listOfSubs : A2($elm$core$List$cons, processSubscriptions, listOfSubs);
 				}),
 			_List_Nil),
@@ -6397,28 +6576,6 @@ var $tricycle$elm_actor_framework$Framework$Internal$Message$filterAppMsgs = fun
 	}
 	return _List_Nil;
 };
-var $elm$core$List$any = F2(
-	function (isOkay, list) {
-		any:
-		while (true) {
-			if (!list.b) {
-				return false;
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				if (isOkay(x)) {
-					return true;
-				} else {
-					var $temp$isOkay = isOkay,
-						$temp$list = xs;
-					isOkay = $temp$isOkay;
-					list = $temp$list;
-					continue any;
-				}
-			}
-		}
-	});
-var $elm$core$Basics$not = _Basics_not;
 var $elm$core$List$all = F2(
 	function (isOkay, list) {
 		return !A2(
@@ -7143,7 +7300,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Pid$toSpawnedBy = function 
 	if (pid.$ === 1) {
 		return pid;
 	} else {
-		var spawnedBy = pid.a.bF;
+		var spawnedBy = pid.a.bH;
 		return spawnedBy;
 	}
 };
@@ -7209,18 +7366,18 @@ var $tricycle$elm_actor_framework$Framework$Internal$Pid$Pid = function (a) {
 	return {$: 0, a: a};
 };
 var $tricycle$elm_actor_framework$Framework$Internal$Pid$new = function (_v0) {
-	var previousPid = _v0.by;
-	var spawnedBy = _v0.bF;
+	var previousPid = _v0.bA;
+	var spawnedBy = _v0.bH;
 	return $tricycle$elm_actor_framework$Framework$Internal$Pid$Pid(
 		{
-			Y: 1 + $tricycle$elm_actor_framework$Framework$Internal$Pid$toInt(previousPid),
-			bF: spawnedBy
+			Z: 1 + $tricycle$elm_actor_framework$Framework$Internal$Pid$toInt(previousPid),
+			bH: spawnedBy
 		});
 };
 var $tricycle$elm_actor_framework$Framework$Internal$Model$spawnInstance = F5(
 	function (factory, spawnedBy, actorName, flags, model) {
 		var newPid = $tricycle$elm_actor_framework$Framework$Internal$Pid$new(
-			{by: model.S, bF: spawnedBy});
+			{bA: model.S, bH: spawnedBy});
 		var _v0 = A2(
 			factory,
 			actorName,
@@ -7272,8 +7429,8 @@ var $tricycle$elm_actor_framework$Framework$Internal$Update$update = F4(
 	function (args, maybePid, msg, model) {
 		update:
 		while (true) {
-			var factory = args.bb;
-			var apply = args.al;
+			var factory = args.bd;
+			var apply = args.ap;
 			switch (msg.$) {
 				case 0:
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -7346,7 +7503,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Update$update = F4(
 												function (appMsg, _v6) {
 													var model_ = _v6.a;
 													var msgs_ = _v6.b;
-													var instanceUpdate = apply(model_).bM;
+													var instanceUpdate = apply(model_).bO;
 													return A2(
 														$elm$core$Tuple$mapSecond,
 														$tricycle$elm_actor_framework$Framework$Internal$Helper$List$postpend(msgs_),
@@ -7441,34 +7598,34 @@ var $tricycle$elm_actor_framework$Framework$Internal$Update$update = F4(
 		}
 	});
 var $tricycle$elm_actor_framework$Framework$Browser$toProgramRecord = function (args) {
-	var view = $tricycle$elm_actor_framework$Framework$Internal$Render$application(args.al);
+	var view = $tricycle$elm_actor_framework$Framework$Internal$Render$application(args.ap);
 	var update = A2($tricycle$elm_actor_framework$Framework$Internal$Update$update, args, $elm$core$Maybe$Nothing);
-	var subscriptions = $tricycle$elm_actor_framework$Framework$Internal$Subscriptions$getSubscriptions(args.al);
+	var subscriptions = $tricycle$elm_actor_framework$Framework$Internal$Subscriptions$getSubscriptions(args.ap);
 	var init = function (msg) {
 		return A2(update, msg, $tricycle$elm_actor_framework$Framework$Internal$Model$empty);
 	};
-	return {ay: init, bG: subscriptions, bM: update, bN: view};
+	return {aC: init, bI: subscriptions, bO: update, bP: view};
 };
 var $tricycle$elm_actor_framework$Framework$Browser$document = function (_v0) {
-	var factory = _v0.bb;
-	var apply = _v0.al;
-	var init = _v0.ay;
-	var view = _v0.bN;
+	var factory = _v0.bd;
+	var apply = _v0.ap;
+	var init = _v0.aC;
+	var view = _v0.bP;
 	var record = $tricycle$elm_actor_framework$Framework$Browser$toProgramRecord(
-		{al: apply, bb: factory});
+		{ap: apply, bd: factory});
 	return $elm$browser$Browser$document(
 		{
-			ay: A2($elm$core$Basics$composeR, init, record.ay),
-			bG: record.bG,
-			bM: record.bM,
-			bN: record.bN(view)
+			aC: A2($elm$core$Basics$composeR, init, record.aC),
+			bI: record.bI,
+			bO: record.bO,
+			bP: record.bP(view)
 		});
 };
 var $author$project$Bootstrap$factory = function (actorName) {
 	if (!actorName) {
-		return $author$project$Actors$Layout$actor.ay;
+		return $author$project$Actors$Layout$actor.aC;
 	} else {
-		return $author$project$Actors$Solver$actor.ay;
+		return $author$project$Actors$Solver$actor.aC;
 	}
 };
 var $author$project$Actors$Layout = 0;
@@ -7547,7 +7704,7 @@ var $author$project$Main$view = function (output) {
 		]);
 };
 var $author$project$Main$main = $tricycle$elm_actor_framework$Framework$Browser$document(
-	{al: $author$project$Bootstrap$apply, bb: $author$project$Bootstrap$factory, ay: $author$project$Main$init, bN: $author$project$Main$view});
+	{ap: $author$project$Bootstrap$apply, bd: $author$project$Bootstrap$factory, aC: $author$project$Main$init, bP: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
 
