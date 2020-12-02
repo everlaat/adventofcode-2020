@@ -533,11 +533,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.ah.K === region.au.K)
+	if (region.ak.O === region.az.O)
 	{
-		return 'on line ' + region.ah.K;
+		return 'on line ' + region.ak.O;
 	}
-	return 'on lines ' + region.ah.K + ' through ' + region.au.K;
+	return 'on lines ' + region.ak.O + ' through ' + region.az.O;
 }
 
 
@@ -1871,9 +1871,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aC,
-		impl.bO,
-		impl.bI,
+		impl.aK,
+		impl.b5,
+		impl.b$,
 		function() { return function() {} }
 	);
 });
@@ -2374,6 +2374,136 @@ function _Platform_mergeExportsDebug(moduleName, obj, exports)
 
 
 
+// STRINGS
+
+
+var _Parser_isSubString = F5(function(smallString, offset, row, col, bigString)
+{
+	var smallLength = smallString.length;
+	var isGood = offset + smallLength <= bigString.length;
+
+	for (var i = 0; isGood && i < smallLength; )
+	{
+		var code = bigString.charCodeAt(offset);
+		isGood =
+			smallString[i++] === bigString[offset++]
+			&& (
+				code === 0x000A /* \n */
+					? ( row++, col=1 )
+					: ( col++, (code & 0xF800) === 0xD800 ? smallString[i++] === bigString[offset++] : 1 )
+			)
+	}
+
+	return _Utils_Tuple3(isGood ? offset : -1, row, col);
+});
+
+
+
+// CHARS
+
+
+var _Parser_isSubChar = F3(function(predicate, offset, string)
+{
+	return (
+		string.length <= offset
+			? -1
+			:
+		(string.charCodeAt(offset) & 0xF800) === 0xD800
+			? (predicate(_Utils_chr(string.substr(offset, 2))) ? offset + 2 : -1)
+			:
+		(predicate(_Utils_chr(string[offset]))
+			? ((string[offset] === '\n') ? -2 : (offset + 1))
+			: -1
+		)
+	);
+});
+
+
+var _Parser_isAsciiCode = F3(function(code, offset, string)
+{
+	return string.charCodeAt(offset) === code;
+});
+
+
+
+// NUMBERS
+
+
+var _Parser_chompBase10 = F2(function(offset, string)
+{
+	for (; offset < string.length; offset++)
+	{
+		var code = string.charCodeAt(offset);
+		if (code < 0x30 || 0x39 < code)
+		{
+			return offset;
+		}
+	}
+	return offset;
+});
+
+
+var _Parser_consumeBase = F3(function(base, offset, string)
+{
+	for (var total = 0; offset < string.length; offset++)
+	{
+		var digit = string.charCodeAt(offset) - 0x30;
+		if (digit < 0 || base <= digit) break;
+		total = base * total + digit;
+	}
+	return _Utils_Tuple2(offset, total);
+});
+
+
+var _Parser_consumeBase16 = F2(function(offset, string)
+{
+	for (var total = 0; offset < string.length; offset++)
+	{
+		var code = string.charCodeAt(offset);
+		if (0x30 <= code && code <= 0x39)
+		{
+			total = 16 * total + code - 0x30;
+		}
+		else if (0x41 <= code && code <= 0x46)
+		{
+			total = 16 * total + code - 55;
+		}
+		else if (0x61 <= code && code <= 0x66)
+		{
+			total = 16 * total + code - 87;
+		}
+		else
+		{
+			break;
+		}
+	}
+	return _Utils_Tuple2(offset, total);
+});
+
+
+
+// FIND STRING
+
+
+var _Parser_findSubString = F5(function(smallString, offset, row, col, bigString)
+{
+	var newOffset = bigString.indexOf(smallString, offset);
+	var target = newOffset < 0 ? bigString.length : newOffset + smallString.length;
+
+	while (offset < target)
+	{
+		var code = bigString.charCodeAt(offset++);
+		code === 0x000A /* \n */
+			? ( col=1, row++ )
+			: ( col++, (code & 0xF800) === 0xD800 && offset++ )
+	}
+
+	return _Utils_Tuple3(newOffset, row, col);
+});
+
+
+
+
 // HELPERS
 
 
@@ -2718,9 +2848,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		y: func(record.y),
-		ai: record.ai,
-		af: record.af
+		C: func(record.C),
+		al: record.al,
+		ai: record.ai
 	}
 });
 
@@ -2988,11 +3118,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.y;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ai;
+		var message = !tag ? value : tag < 3 ? value.a : value.C;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.al;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.af) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.ai) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3942,11 +4072,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aC,
-		impl.bO,
-		impl.bI,
+		impl.aK,
+		impl.b5,
+		impl.b$,
 		function(sendToApp, initialModel) {
-			var view = impl.bP;
+			var view = impl.b6;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3978,12 +4108,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aC,
-		impl.bO,
-		impl.bI,
+		impl.aK,
+		impl.b5,
+		impl.b$,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.ag && impl.ag(sendToApp)
-			var view = impl.bP;
+			var divertHrefToApp = impl.aj && impl.aj(sendToApp)
+			var view = impl.b6;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3991,12 +4121,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.a2);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.bj);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.bL) && (_VirtualDom_doc.title = title = doc.bL);
+				(title !== doc.b2) && (_VirtualDom_doc.title = title = doc.b2);
 			});
 		}
 	);
@@ -4052,12 +4182,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.bv;
-	var onUrlRequest = impl.bw;
+	var onUrlChange = impl.bO;
+	var onUrlRequest = impl.bP;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		ag: function(sendToApp)
+		aj: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4073,9 +4203,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.aO === next.aO
-							&& curr.aB === next.aB
-							&& curr.aL.a === next.aL.a
+							&& curr.a_ === next.a_
+							&& curr.aJ === next.aJ
+							&& curr.aW.a === next.aW.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4083,13 +4213,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aC: function(flags)
+		aK: function(flags)
 		{
-			return A3(impl.aC, flags, _Browser_getUrl(), key);
+			return A3(impl.aK, flags, _Browser_getUrl(), key);
 		},
-		bP: impl.bP,
-		bO: impl.bO,
-		bI: impl.bI
+		b6: impl.b6,
+		b5: impl.b5,
+		b$: impl.b$
 	});
 }
 
@@ -4155,17 +4285,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { bg: 'hidden', a4: 'visibilitychange' }
+		? { by: 'hidden', bl: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { bg: 'mozHidden', a4: 'mozvisibilitychange' }
+		? { by: 'mozHidden', bl: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { bg: 'msHidden', a4: 'msvisibilitychange' }
+		? { by: 'msHidden', bl: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { bg: 'webkitHidden', a4: 'webkitvisibilitychange' }
-		: { bg: 'hidden', a4: 'visibilitychange' };
+		? { by: 'webkitHidden', bl: 'webkitvisibilitychange' }
+		: { by: 'hidden', bl: 'visibilitychange' };
 }
 
 
@@ -4246,12 +4376,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		aU: _Browser_getScene(),
-		a_: {
-			al: _Browser_window.pageXOffset,
-			am: _Browser_window.pageYOffset,
-			a$: _Browser_doc.documentElement.clientWidth,
-			aA: _Browser_doc.documentElement.clientHeight
+		a6: _Browser_getScene(),
+		bf: {
+			ao: _Browser_window.pageXOffset,
+			ap: _Browser_window.pageYOffset,
+			bg: _Browser_doc.documentElement.clientWidth,
+			aH: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4261,8 +4391,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		a$: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		aA: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		bg: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		aH: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4285,15 +4415,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			aU: {
-				a$: node.scrollWidth,
-				aA: node.scrollHeight
+			a6: {
+				bg: node.scrollWidth,
+				aH: node.scrollHeight
 			},
-			a_: {
-				al: node.scrollLeft,
-				am: node.scrollTop,
-				a$: node.clientWidth,
-				aA: node.clientHeight
+			bf: {
+				ao: node.scrollLeft,
+				ap: node.scrollTop,
+				bg: node.clientWidth,
+				aH: node.clientHeight
 			}
 		};
 	});
@@ -4323,18 +4453,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			aU: _Browser_getScene(),
-			a_: {
-				al: x,
-				am: y,
-				a$: _Browser_doc.documentElement.clientWidth,
-				aA: _Browser_doc.documentElement.clientHeight
+			a6: _Browser_getScene(),
+			bf: {
+				ao: x,
+				ap: y,
+				bg: _Browser_doc.documentElement.clientWidth,
+				aH: _Browser_doc.documentElement.clientHeight
 			},
-			a8: {
-				al: x + rect.left,
-				am: y + rect.top,
-				a$: rect.width,
-				aA: rect.height
+			bq: {
+				ao: x + rect.left,
+				ap: y + rect.top,
+				bg: rect.width,
+				aH: rect.height
 			}
 		};
 	});
@@ -4781,25 +4911,25 @@ var $elm$core$Array$treeFromBuilder = F2(
 	});
 var $elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
-		if (!builder.b) {
+		if (!builder.f) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.d),
+				$elm$core$Elm$JsArray$length(builder.h),
 				$elm$core$Array$shiftStep,
 				$elm$core$Elm$JsArray$empty,
-				builder.d);
+				builder.h);
 		} else {
-			var treeLen = builder.b * $elm$core$Array$branchFactor;
+			var treeLen = builder.f * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.e) : builder.e;
-			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.b);
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.i) : builder.i;
+			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.f);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.d) + treeLen,
+				$elm$core$Elm$JsArray$length(builder.h) + treeLen,
 				A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
 				tree,
-				builder.d);
+				builder.h);
 		}
 	});
 var $elm$core$Basics$idiv = _Basics_idiv;
@@ -4812,7 +4942,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{e: nodeList, b: (len / $elm$core$Array$branchFactor) | 0, d: tail});
+					{i: nodeList, f: (len / $elm$core$Array$branchFactor) | 0, h: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -4854,7 +4984,7 @@ var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Components$Layout$Init$init = function (_v0) {
 	return _Utils_Tuple3(
-		{bi: '', bF: _List_Nil, bG: $elm$core$Maybe$Nothing},
+		{bA: '', bY: _List_Nil, bZ: $elm$core$Maybe$Nothing},
 		_List_Nil,
 		$elm$core$Platform$Cmd$none);
 };
@@ -5107,7 +5237,7 @@ var $elm$core$Basics$identity = function (x) {
 var $author$project$Com$Solver$Solver = $elm$core$Basics$identity;
 var $author$project$Com$Solver$make = F4(
 	function (year, day, part, func) {
-		return {X: day, ax: func, ad: part, an: year};
+		return {aa: day, aE: func, ag: part, aq: year};
 	});
 var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
@@ -5293,75 +5423,22 @@ var $elm$core$String$fromChar = function (_char) {
 };
 var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$String$indexes = _String_indexes;
-var $author$project$Solvers$Y2020$Day2$inputToList = A2(
-	$elm$core$Basics$composeR,
-	$elm$core$String$lines,
-	$elm$core$List$map($elm$core$String$trim));
-var $author$project$Solvers$Y2020$Day2$Password = F4(
-	function (x, y, _char, password) {
-		return {W: _char, ae: password, al: x, am: y};
-	});
-var $elm$core$String$replace = F3(
-	function (before, after, string) {
-		return A2(
-			$elm$core$String$join,
-			after,
-			A2($elm$core$String$split, before, string));
-	});
-var $author$project$Solvers$Y2020$Day2$listToPasswords = $elm$core$List$filterMap(
-	function (a) {
-		var _v0 = A2($elm$core$String$split, ' ', a);
-		if (((_v0.b && _v0.b.b) && _v0.b.b.b) && (!_v0.b.b.b.b)) {
-			var range = _v0.a;
-			var _v1 = _v0.b;
-			var letter = _v1.a;
-			var _v2 = _v1.b;
-			var password = _v2.a;
-			var _v3 = _Utils_Tuple2(
-				A2(
-					$elm$core$List$filterMap,
-					$elm$core$String$toInt,
-					A2($elm$core$String$split, '-', range)),
-				$elm$core$String$uncons(
-					A3($elm$core$String$replace, ':', '', letter)));
-			if (((_v3.a.b && _v3.a.b.b) && (!_v3.a.b.b.b)) && (!_v3.b.$)) {
-				var _v4 = _v3.a;
-				var x = _v4.a;
-				var _v5 = _v4.b;
-				var y = _v5.a;
-				var _v6 = _v3.b.a;
-				var _char = _v6.a;
-				return $elm$core$Maybe$Just(
-					A4($author$project$Solvers$Y2020$Day2$Password, x, y, _char, password));
-			} else {
-				return $elm$core$Maybe$Nothing;
-			}
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
 var $author$project$Solvers$Y2020$Day2$part1 = A2(
 	$elm$core$Basics$composeR,
-	$author$project$Solvers$Y2020$Day2$inputToList,
-	A2(
-		$elm$core$Basics$composeR,
-		$author$project$Solvers$Y2020$Day2$listToPasswords,
-		A2(
-			$elm$core$Basics$composeR,
-			$elm$core$List$filter(
-				function (_v0) {
-					var x = _v0.al;
-					var y = _v0.am;
-					var _char = _v0.W;
-					var password = _v0.ae;
-					var amount = $elm$core$List$length(
-						A2(
-							$elm$core$String$indexes,
-							$elm$core$String$fromChar(_char),
-							password));
-					return (_Utils_cmp(amount, x) > -1) && (_Utils_cmp(amount, y) < 1);
-				}),
-			A2($elm$core$Basics$composeR, $elm$core$List$length, $elm$core$String$fromInt))));
+	$elm$core$List$filter(
+		function (_v0) {
+			var x = _v0.ao;
+			var y = _v0.ap;
+			var _char = _v0._;
+			var password = _v0.ah;
+			var amount = $elm$core$List$length(
+				A2(
+					$elm$core$String$indexes,
+					$elm$core$String$fromChar(_char),
+					password));
+			return (_Utils_cmp(amount, x) > -1) && (_Utils_cmp(amount, y) < 1);
+		}),
+	A2($elm$core$Basics$composeR, $elm$core$List$length, $elm$core$String$fromInt));
 var $elm$core$List$any = F2(
 	function (isOkay, list) {
 		any:
@@ -5395,32 +5472,763 @@ var $elm$core$List$member = F2(
 var $elm$core$Basics$not = _Basics_not;
 var $author$project$Solvers$Y2020$Day2$part2 = A2(
 	$elm$core$Basics$composeR,
-	$author$project$Solvers$Y2020$Day2$inputToList,
+	$elm$core$List$filter(
+		function (_v0) {
+			var x = _v0.ao;
+			var y = _v0.ap;
+			var _char = _v0._;
+			var password = _v0.ah;
+			var indexes = A2(
+				$elm$core$List$map,
+				$elm$core$Basics$add(1),
+				A2(
+					$elm$core$String$indexes,
+					$elm$core$String$fromChar(_char),
+					password));
+			var b = A2($elm$core$List$member, y, indexes);
+			var a = A2($elm$core$List$member, x, indexes);
+			return (a && (!b)) || ((!a) && b);
+		}),
+	A2($elm$core$Basics$composeR, $elm$core$List$length, $elm$core$String$fromInt));
+var $elm$parser$Parser$deadEndsToString = function (deadEnds) {
+	return 'TODO deadEndsToString';
+};
+var $elm$core$Result$map = F2(
+	function (func, ra) {
+		if (!ra.$) {
+			var a = ra.a;
+			return $elm$core$Result$Ok(
+				func(a));
+		} else {
+			var e = ra.a;
+			return $elm$core$Result$Err(e);
+		}
+	});
+var $elm$core$Result$mapError = F2(
+	function (f, result) {
+		if (!result.$) {
+			var v = result.a;
+			return $elm$core$Result$Ok(v);
+		} else {
+			var e = result.a;
+			return $elm$core$Result$Err(
+				f(e));
+		}
+	});
+var $elm$parser$Parser$Done = function (a) {
+	return {$: 1, a: a};
+};
+var $elm$parser$Parser$Loop = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$core$Basics$always = F2(
+	function (a, _v0) {
+		return a;
+	});
+var $elm$parser$Parser$Advanced$Bad = F2(
+	function (a, b) {
+		return {$: 1, a: a, b: b};
+	});
+var $elm$parser$Parser$Advanced$Good = F3(
+	function (a, b, c) {
+		return {$: 0, a: a, b: b, c: c};
+	});
+var $elm$parser$Parser$Advanced$Parser = $elm$core$Basics$identity;
+var $elm$parser$Parser$Advanced$map2 = F3(
+	function (func, _v0, _v1) {
+		var parseA = _v0;
+		var parseB = _v1;
+		return function (s0) {
+			var _v2 = parseA(s0);
+			if (_v2.$ === 1) {
+				var p = _v2.a;
+				var x = _v2.b;
+				return A2($elm$parser$Parser$Advanced$Bad, p, x);
+			} else {
+				var p1 = _v2.a;
+				var a = _v2.b;
+				var s1 = _v2.c;
+				var _v3 = parseB(s1);
+				if (_v3.$ === 1) {
+					var p2 = _v3.a;
+					var x = _v3.b;
+					return A2($elm$parser$Parser$Advanced$Bad, p1 || p2, x);
+				} else {
+					var p2 = _v3.a;
+					var b = _v3.b;
+					var s2 = _v3.c;
+					return A3(
+						$elm$parser$Parser$Advanced$Good,
+						p1 || p2,
+						A2(func, a, b),
+						s2);
+				}
+			}
+		};
+	});
+var $elm$parser$Parser$Advanced$ignorer = F2(
+	function (keepParser, ignoreParser) {
+		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$always, keepParser, ignoreParser);
+	});
+var $elm$parser$Parser$ignorer = $elm$parser$Parser$Advanced$ignorer;
+var $elm$parser$Parser$Advanced$keeper = F2(
+	function (parseFunc, parseArg) {
+		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$apL, parseFunc, parseArg);
+	});
+var $elm$parser$Parser$keeper = $elm$parser$Parser$Advanced$keeper;
+var $elm$parser$Parser$Advanced$loopHelp = F4(
+	function (p, state, callback, s0) {
+		loopHelp:
+		while (true) {
+			var _v0 = callback(state);
+			var parse = _v0;
+			var _v1 = parse(s0);
+			if (!_v1.$) {
+				var p1 = _v1.a;
+				var step = _v1.b;
+				var s1 = _v1.c;
+				if (!step.$) {
+					var newState = step.a;
+					var $temp$p = p || p1,
+						$temp$state = newState,
+						$temp$callback = callback,
+						$temp$s0 = s1;
+					p = $temp$p;
+					state = $temp$state;
+					callback = $temp$callback;
+					s0 = $temp$s0;
+					continue loopHelp;
+				} else {
+					var result = step.a;
+					return A3($elm$parser$Parser$Advanced$Good, p || p1, result, s1);
+				}
+			} else {
+				var p1 = _v1.a;
+				var x = _v1.b;
+				return A2($elm$parser$Parser$Advanced$Bad, p || p1, x);
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$loop = F2(
+	function (state, callback) {
+		return function (s) {
+			return A4($elm$parser$Parser$Advanced$loopHelp, false, state, callback, s);
+		};
+	});
+var $elm$parser$Parser$Advanced$map = F2(
+	function (func, _v0) {
+		var parse = _v0;
+		return function (s0) {
+			var _v1 = parse(s0);
+			if (!_v1.$) {
+				var p = _v1.a;
+				var a = _v1.b;
+				var s1 = _v1.c;
+				return A3(
+					$elm$parser$Parser$Advanced$Good,
+					p,
+					func(a),
+					s1);
+			} else {
+				var p = _v1.a;
+				var x = _v1.b;
+				return A2($elm$parser$Parser$Advanced$Bad, p, x);
+			}
+		};
+	});
+var $elm$parser$Parser$map = $elm$parser$Parser$Advanced$map;
+var $elm$parser$Parser$Advanced$Done = function (a) {
+	return {$: 1, a: a};
+};
+var $elm$parser$Parser$Advanced$Loop = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$parser$Parser$toAdvancedStep = function (step) {
+	if (!step.$) {
+		var s = step.a;
+		return $elm$parser$Parser$Advanced$Loop(s);
+	} else {
+		var a = step.a;
+		return $elm$parser$Parser$Advanced$Done(a);
+	}
+};
+var $elm$parser$Parser$loop = F2(
+	function (state, callback) {
+		return A2(
+			$elm$parser$Parser$Advanced$loop,
+			state,
+			function (s) {
+				return A2(
+					$elm$parser$Parser$map,
+					$elm$parser$Parser$toAdvancedStep,
+					callback(s));
+			});
+	});
+var $elm$parser$Parser$Advanced$Empty = {$: 0};
+var $elm$parser$Parser$Advanced$Append = F2(
+	function (a, b) {
+		return {$: 2, a: a, b: b};
+	});
+var $elm$parser$Parser$Advanced$oneOfHelp = F3(
+	function (s0, bag, parsers) {
+		oneOfHelp:
+		while (true) {
+			if (!parsers.b) {
+				return A2($elm$parser$Parser$Advanced$Bad, false, bag);
+			} else {
+				var parse = parsers.a;
+				var remainingParsers = parsers.b;
+				var _v1 = parse(s0);
+				if (!_v1.$) {
+					var step = _v1;
+					return step;
+				} else {
+					var step = _v1;
+					var p = step.a;
+					var x = step.b;
+					if (p) {
+						return step;
+					} else {
+						var $temp$s0 = s0,
+							$temp$bag = A2($elm$parser$Parser$Advanced$Append, bag, x),
+							$temp$parsers = remainingParsers;
+						s0 = $temp$s0;
+						bag = $temp$bag;
+						parsers = $temp$parsers;
+						continue oneOfHelp;
+					}
+				}
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$oneOf = function (parsers) {
+	return function (s) {
+		return A3($elm$parser$Parser$Advanced$oneOfHelp, s, $elm$parser$Parser$Advanced$Empty, parsers);
+	};
+};
+var $elm$parser$Parser$oneOf = $elm$parser$Parser$Advanced$oneOf;
+var $author$project$Solvers$Y2020$Day2$Password = F4(
+	function (x, y, _char, password) {
+		return {_: _char, ah: password, ao: x, ap: y};
+	});
+var $elm$parser$Parser$ExpectingInt = {$: 1};
+var $elm$parser$Parser$Advanced$consumeBase = _Parser_consumeBase;
+var $elm$parser$Parser$Advanced$consumeBase16 = _Parser_consumeBase16;
+var $elm$parser$Parser$Advanced$bumpOffset = F2(
+	function (newOffset, s) {
+		return {ax: s.ax + (newOffset - s.b), c: s.c, d: s.d, b: newOffset, a3: s.a3, a: s.a};
+	});
+var $elm$parser$Parser$Advanced$chompBase10 = _Parser_chompBase10;
+var $elm$parser$Parser$Advanced$isAsciiCode = _Parser_isAsciiCode;
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $elm$parser$Parser$Advanced$consumeExp = F2(
+	function (offset, src) {
+		if (A3($elm$parser$Parser$Advanced$isAsciiCode, 101, offset, src) || A3($elm$parser$Parser$Advanced$isAsciiCode, 69, offset, src)) {
+			var eOffset = offset + 1;
+			var expOffset = (A3($elm$parser$Parser$Advanced$isAsciiCode, 43, eOffset, src) || A3($elm$parser$Parser$Advanced$isAsciiCode, 45, eOffset, src)) ? (eOffset + 1) : eOffset;
+			var newOffset = A2($elm$parser$Parser$Advanced$chompBase10, expOffset, src);
+			return _Utils_eq(expOffset, newOffset) ? (-newOffset) : newOffset;
+		} else {
+			return offset;
+		}
+	});
+var $elm$parser$Parser$Advanced$consumeDotAndExp = F2(
+	function (offset, src) {
+		return A3($elm$parser$Parser$Advanced$isAsciiCode, 46, offset, src) ? A2(
+			$elm$parser$Parser$Advanced$consumeExp,
+			A2($elm$parser$Parser$Advanced$chompBase10, offset + 1, src),
+			src) : A2($elm$parser$Parser$Advanced$consumeExp, offset, src);
+	});
+var $elm$parser$Parser$Advanced$AddRight = F2(
+	function (a, b) {
+		return {$: 1, a: a, b: b};
+	});
+var $elm$parser$Parser$Advanced$DeadEnd = F4(
+	function (row, col, problem, contextStack) {
+		return {ax: col, bn: contextStack, aX: problem, a3: row};
+	});
+var $elm$parser$Parser$Advanced$fromState = F2(
+	function (s, x) {
+		return A2(
+			$elm$parser$Parser$Advanced$AddRight,
+			$elm$parser$Parser$Advanced$Empty,
+			A4($elm$parser$Parser$Advanced$DeadEnd, s.a3, s.ax, x, s.c));
+	});
+var $elm$parser$Parser$Advanced$finalizeInt = F5(
+	function (invalid, handler, startOffset, _v0, s) {
+		var endOffset = _v0.a;
+		var n = _v0.b;
+		if (handler.$ === 1) {
+			var x = handler.a;
+			return A2(
+				$elm$parser$Parser$Advanced$Bad,
+				true,
+				A2($elm$parser$Parser$Advanced$fromState, s, x));
+		} else {
+			var toValue = handler.a;
+			return _Utils_eq(startOffset, endOffset) ? A2(
+				$elm$parser$Parser$Advanced$Bad,
+				_Utils_cmp(s.b, startOffset) < 0,
+				A2($elm$parser$Parser$Advanced$fromState, s, invalid)) : A3(
+				$elm$parser$Parser$Advanced$Good,
+				true,
+				toValue(n),
+				A2($elm$parser$Parser$Advanced$bumpOffset, endOffset, s));
+		}
+	});
+var $elm$parser$Parser$Advanced$fromInfo = F4(
+	function (row, col, x, context) {
+		return A2(
+			$elm$parser$Parser$Advanced$AddRight,
+			$elm$parser$Parser$Advanced$Empty,
+			A4($elm$parser$Parser$Advanced$DeadEnd, row, col, x, context));
+	});
+var $elm$core$String$slice = _String_slice;
+var $elm$core$String$toFloat = _String_toFloat;
+var $elm$parser$Parser$Advanced$finalizeFloat = F6(
+	function (invalid, expecting, intSettings, floatSettings, intPair, s) {
+		var intOffset = intPair.a;
+		var floatOffset = A2($elm$parser$Parser$Advanced$consumeDotAndExp, intOffset, s.a);
+		if (floatOffset < 0) {
+			return A2(
+				$elm$parser$Parser$Advanced$Bad,
+				true,
+				A4($elm$parser$Parser$Advanced$fromInfo, s.a3, s.ax - (floatOffset + s.b), invalid, s.c));
+		} else {
+			if (_Utils_eq(s.b, floatOffset)) {
+				return A2(
+					$elm$parser$Parser$Advanced$Bad,
+					false,
+					A2($elm$parser$Parser$Advanced$fromState, s, expecting));
+			} else {
+				if (_Utils_eq(intOffset, floatOffset)) {
+					return A5($elm$parser$Parser$Advanced$finalizeInt, invalid, intSettings, s.b, intPair, s);
+				} else {
+					if (floatSettings.$ === 1) {
+						var x = floatSettings.a;
+						return A2(
+							$elm$parser$Parser$Advanced$Bad,
+							true,
+							A2($elm$parser$Parser$Advanced$fromState, s, invalid));
+					} else {
+						var toValue = floatSettings.a;
+						var _v1 = $elm$core$String$toFloat(
+							A3($elm$core$String$slice, s.b, floatOffset, s.a));
+						if (_v1.$ === 1) {
+							return A2(
+								$elm$parser$Parser$Advanced$Bad,
+								true,
+								A2($elm$parser$Parser$Advanced$fromState, s, invalid));
+						} else {
+							var n = _v1.a;
+							return A3(
+								$elm$parser$Parser$Advanced$Good,
+								true,
+								toValue(n),
+								A2($elm$parser$Parser$Advanced$bumpOffset, floatOffset, s));
+						}
+					}
+				}
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$number = function (c) {
+	return function (s) {
+		if (A3($elm$parser$Parser$Advanced$isAsciiCode, 48, s.b, s.a)) {
+			var zeroOffset = s.b + 1;
+			var baseOffset = zeroOffset + 1;
+			return A3($elm$parser$Parser$Advanced$isAsciiCode, 120, zeroOffset, s.a) ? A5(
+				$elm$parser$Parser$Advanced$finalizeInt,
+				c.bB,
+				c.aI,
+				baseOffset,
+				A2($elm$parser$Parser$Advanced$consumeBase16, baseOffset, s.a),
+				s) : (A3($elm$parser$Parser$Advanced$isAsciiCode, 111, zeroOffset, s.a) ? A5(
+				$elm$parser$Parser$Advanced$finalizeInt,
+				c.bB,
+				c.aT,
+				baseOffset,
+				A3($elm$parser$Parser$Advanced$consumeBase, 8, baseOffset, s.a),
+				s) : (A3($elm$parser$Parser$Advanced$isAsciiCode, 98, zeroOffset, s.a) ? A5(
+				$elm$parser$Parser$Advanced$finalizeInt,
+				c.bB,
+				c.au,
+				baseOffset,
+				A3($elm$parser$Parser$Advanced$consumeBase, 2, baseOffset, s.a),
+				s) : A6(
+				$elm$parser$Parser$Advanced$finalizeFloat,
+				c.bB,
+				c.aB,
+				c.aM,
+				c.aC,
+				_Utils_Tuple2(zeroOffset, 0),
+				s)));
+		} else {
+			return A6(
+				$elm$parser$Parser$Advanced$finalizeFloat,
+				c.bB,
+				c.aB,
+				c.aM,
+				c.aC,
+				A3($elm$parser$Parser$Advanced$consumeBase, 10, s.b, s.a),
+				s);
+		}
+	};
+};
+var $elm$parser$Parser$Advanced$int = F2(
+	function (expecting, invalid) {
+		return $elm$parser$Parser$Advanced$number(
+			{
+				au: $elm$core$Result$Err(invalid),
+				aB: expecting,
+				aC: $elm$core$Result$Err(invalid),
+				aI: $elm$core$Result$Err(invalid),
+				aM: $elm$core$Result$Ok($elm$core$Basics$identity),
+				bB: invalid,
+				aT: $elm$core$Result$Err(invalid)
+			});
+	});
+var $elm$parser$Parser$int = A2($elm$parser$Parser$Advanced$int, $elm$parser$Parser$ExpectingInt, $elm$parser$Parser$ExpectingInt);
+var $elm$parser$Parser$Advanced$isSubChar = _Parser_isSubChar;
+var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
+	function (isGood, offset, row, col, s0) {
+		chompWhileHelp:
+		while (true) {
+			var newOffset = A3($elm$parser$Parser$Advanced$isSubChar, isGood, offset, s0.a);
+			if (_Utils_eq(newOffset, -1)) {
+				return A3(
+					$elm$parser$Parser$Advanced$Good,
+					_Utils_cmp(s0.b, offset) < 0,
+					0,
+					{ax: col, c: s0.c, d: s0.d, b: offset, a3: row, a: s0.a});
+			} else {
+				if (_Utils_eq(newOffset, -2)) {
+					var $temp$isGood = isGood,
+						$temp$offset = offset + 1,
+						$temp$row = row + 1,
+						$temp$col = 1,
+						$temp$s0 = s0;
+					isGood = $temp$isGood;
+					offset = $temp$offset;
+					row = $temp$row;
+					col = $temp$col;
+					s0 = $temp$s0;
+					continue chompWhileHelp;
+				} else {
+					var $temp$isGood = isGood,
+						$temp$offset = newOffset,
+						$temp$row = row,
+						$temp$col = col + 1,
+						$temp$s0 = s0;
+					isGood = $temp$isGood;
+					offset = $temp$offset;
+					row = $temp$row;
+					col = $temp$col;
+					s0 = $temp$s0;
+					continue chompWhileHelp;
+				}
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$chompWhile = function (isGood) {
+	return function (s) {
+		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.a3, s.ax, s);
+	};
+};
+var $elm$parser$Parser$chompWhile = $elm$parser$Parser$Advanced$chompWhile;
+var $elm$parser$Parser$Advanced$mapChompedString = F2(
+	function (func, _v0) {
+		var parse = _v0;
+		return function (s0) {
+			var _v1 = parse(s0);
+			if (_v1.$ === 1) {
+				var p = _v1.a;
+				var x = _v1.b;
+				return A2($elm$parser$Parser$Advanced$Bad, p, x);
+			} else {
+				var p = _v1.a;
+				var a = _v1.b;
+				var s1 = _v1.c;
+				return A3(
+					$elm$parser$Parser$Advanced$Good,
+					p,
+					A2(
+						func,
+						A3($elm$core$String$slice, s0.b, s1.b, s0.a),
+						a),
+					s1);
+			}
+		};
+	});
+var $elm$parser$Parser$Advanced$getChompedString = function (parser) {
+	return A2($elm$parser$Parser$Advanced$mapChompedString, $elm$core$Basics$always, parser);
+};
+var $elm$parser$Parser$getChompedString = $elm$parser$Parser$Advanced$getChompedString;
+var $elm$parser$Parser$Advanced$succeed = function (a) {
+	return function (s) {
+		return A3($elm$parser$Parser$Advanced$Good, false, a, s);
+	};
+};
+var $elm$parser$Parser$succeed = $elm$parser$Parser$Advanced$succeed;
+var $author$project$Solvers$Y2020$Day2$parseAlphaString = $elm$parser$Parser$getChompedString(
 	A2(
+		$elm$parser$Parser$ignorer,
+		$elm$parser$Parser$succeed(0),
+		$elm$parser$Parser$chompWhile(
+			function (_char) {
+				return $elm$core$Char$isAlpha(_char);
+			})));
+var $elm$parser$Parser$Advanced$andThen = F2(
+	function (callback, _v0) {
+		var parseA = _v0;
+		return function (s0) {
+			var _v1 = parseA(s0);
+			if (_v1.$ === 1) {
+				var p = _v1.a;
+				var x = _v1.b;
+				return A2($elm$parser$Parser$Advanced$Bad, p, x);
+			} else {
+				var p1 = _v1.a;
+				var a = _v1.b;
+				var s1 = _v1.c;
+				var _v2 = callback(a);
+				var parseB = _v2;
+				var _v3 = parseB(s1);
+				if (_v3.$ === 1) {
+					var p2 = _v3.a;
+					var x = _v3.b;
+					return A2($elm$parser$Parser$Advanced$Bad, p1 || p2, x);
+				} else {
+					var p2 = _v3.a;
+					var b = _v3.b;
+					var s2 = _v3.c;
+					return A3($elm$parser$Parser$Advanced$Good, p1 || p2, b, s2);
+				}
+			}
+		};
+	});
+var $elm$parser$Parser$andThen = $elm$parser$Parser$Advanced$andThen;
+var $elm$parser$Parser$UnexpectedChar = {$: 11};
+var $elm$parser$Parser$Advanced$chompIf = F2(
+	function (isGood, expecting) {
+		return function (s) {
+			var newOffset = A3($elm$parser$Parser$Advanced$isSubChar, isGood, s.b, s.a);
+			return _Utils_eq(newOffset, -1) ? A2(
+				$elm$parser$Parser$Advanced$Bad,
+				false,
+				A2($elm$parser$Parser$Advanced$fromState, s, expecting)) : (_Utils_eq(newOffset, -2) ? A3(
+				$elm$parser$Parser$Advanced$Good,
+				true,
+				0,
+				{ax: 1, c: s.c, d: s.d, b: s.b + 1, a3: s.a3 + 1, a: s.a}) : A3(
+				$elm$parser$Parser$Advanced$Good,
+				true,
+				0,
+				{ax: s.ax + 1, c: s.c, d: s.d, b: newOffset, a3: s.a3, a: s.a}));
+		};
+	});
+var $elm$parser$Parser$chompIf = function (isGood) {
+	return A2($elm$parser$Parser$Advanced$chompIf, isGood, $elm$parser$Parser$UnexpectedChar);
+};
+var $elm$parser$Parser$Problem = function (a) {
+	return {$: 12, a: a};
+};
+var $elm$parser$Parser$Advanced$problem = function (x) {
+	return function (s) {
+		return A2(
+			$elm$parser$Parser$Advanced$Bad,
+			false,
+			A2($elm$parser$Parser$Advanced$fromState, s, x));
+	};
+};
+var $elm$parser$Parser$problem = function (msg) {
+	return $elm$parser$Parser$Advanced$problem(
+		$elm$parser$Parser$Problem(msg));
+};
+var $author$project$Solvers$Y2020$Day2$parseSingleAlphaChar = A2(
+	$elm$parser$Parser$andThen,
+	function (a) {
+		var _v0 = $elm$core$String$uncons(a);
+		if (!_v0.$) {
+			var _v1 = _v0.a;
+			var _char = _v1.a;
+			return $elm$parser$Parser$succeed(_char);
+		} else {
+			return $elm$parser$Parser$problem('Something went wrong parsing this char');
+		}
+	},
+	$elm$parser$Parser$getChompedString(
+		A2(
+			$elm$parser$Parser$ignorer,
+			$elm$parser$Parser$succeed(0),
+			$elm$parser$Parser$chompIf(
+				function (_char) {
+					return $elm$core$Char$isAlpha(_char);
+				}))));
+var $elm$parser$Parser$Advanced$spaces = $elm$parser$Parser$Advanced$chompWhile(
+	function (c) {
+		return (c === ' ') || ((c === '\n') || (c === '\r'));
+	});
+var $elm$parser$Parser$spaces = $elm$parser$Parser$Advanced$spaces;
+var $elm$parser$Parser$ExpectingSymbol = function (a) {
+	return {$: 8, a: a};
+};
+var $elm$parser$Parser$Advanced$Token = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var $elm$core$String$isEmpty = function (string) {
+	return string === '';
+};
+var $elm$parser$Parser$Advanced$isSubString = _Parser_isSubString;
+var $elm$parser$Parser$Advanced$token = function (_v0) {
+	var str = _v0.a;
+	var expecting = _v0.b;
+	var progress = !$elm$core$String$isEmpty(str);
+	return function (s) {
+		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.a3, s.ax, s.a);
+		var newOffset = _v1.a;
+		var newRow = _v1.b;
+		var newCol = _v1.c;
+		return _Utils_eq(newOffset, -1) ? A2(
+			$elm$parser$Parser$Advanced$Bad,
+			false,
+			A2($elm$parser$Parser$Advanced$fromState, s, expecting)) : A3(
+			$elm$parser$Parser$Advanced$Good,
+			progress,
+			0,
+			{ax: newCol, c: s.c, d: s.d, b: newOffset, a3: newRow, a: s.a});
+	};
+};
+var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
+var $elm$parser$Parser$symbol = function (str) {
+	return $elm$parser$Parser$Advanced$symbol(
+		A2(
+			$elm$parser$Parser$Advanced$Token,
+			str,
+			$elm$parser$Parser$ExpectingSymbol(str)));
+};
+var $author$project$Solvers$Y2020$Day2$parserPassword = A2(
+	$elm$parser$Parser$keeper,
+	A2(
+		$elm$parser$Parser$keeper,
+		A2(
+			$elm$parser$Parser$keeper,
+			A2(
+				$elm$parser$Parser$keeper,
+				A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$succeed($author$project$Solvers$Y2020$Day2$Password),
+					$elm$parser$Parser$spaces),
+				A2(
+					$elm$parser$Parser$ignorer,
+					A2(
+						$elm$parser$Parser$ignorer,
+						$elm$parser$Parser$int,
+						$elm$parser$Parser$symbol('-')),
+					$elm$parser$Parser$spaces)),
+			A2($elm$parser$Parser$ignorer, $elm$parser$Parser$int, $elm$parser$Parser$spaces)),
+		A2(
+			$elm$parser$Parser$ignorer,
+			A2(
+				$elm$parser$Parser$ignorer,
+				$author$project$Solvers$Y2020$Day2$parseSingleAlphaChar,
+				$elm$parser$Parser$symbol(':')),
+			$elm$parser$Parser$spaces)),
+	$author$project$Solvers$Y2020$Day2$parseAlphaString);
+var $author$project$Solvers$Y2020$Day2$parserPasswords = A2(
+	$elm$parser$Parser$loop,
+	_List_Nil,
+	function (list) {
+		return $elm$parser$Parser$oneOf(
+			_List_fromArray(
+				[
+					A2(
+					$elm$parser$Parser$keeper,
+					$elm$parser$Parser$succeed(
+						function (password) {
+							return $elm$parser$Parser$Loop(
+								A2($elm$core$List$cons, password, list));
+						}),
+					A2($elm$parser$Parser$ignorer, $author$project$Solvers$Y2020$Day2$parserPassword, $elm$parser$Parser$spaces)),
+					A2(
+					$elm$parser$Parser$map,
+					function (_v0) {
+						return $elm$parser$Parser$Done(
+							$elm$core$List$reverse(list));
+					},
+					$elm$parser$Parser$succeed(0))
+				]));
+	});
+var $elm$parser$Parser$DeadEnd = F3(
+	function (row, col, problem) {
+		return {ax: col, aX: problem, a3: row};
+	});
+var $elm$parser$Parser$problemToDeadEnd = function (p) {
+	return A3($elm$parser$Parser$DeadEnd, p.a3, p.ax, p.aX);
+};
+var $elm$parser$Parser$Advanced$bagToList = F2(
+	function (bag, list) {
+		bagToList:
+		while (true) {
+			switch (bag.$) {
+				case 0:
+					return list;
+				case 1:
+					var bag1 = bag.a;
+					var x = bag.b;
+					var $temp$bag = bag1,
+						$temp$list = A2($elm$core$List$cons, x, list);
+					bag = $temp$bag;
+					list = $temp$list;
+					continue bagToList;
+				default:
+					var bag1 = bag.a;
+					var bag2 = bag.b;
+					var $temp$bag = bag1,
+						$temp$list = A2($elm$parser$Parser$Advanced$bagToList, bag2, list);
+					bag = $temp$bag;
+					list = $temp$list;
+					continue bagToList;
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$run = F2(
+	function (_v0, src) {
+		var parse = _v0;
+		var _v1 = parse(
+			{ax: 1, c: _List_Nil, d: 1, b: 0, a3: 1, a: src});
+		if (!_v1.$) {
+			var value = _v1.b;
+			return $elm$core$Result$Ok(value);
+		} else {
+			var bag = _v1.b;
+			return $elm$core$Result$Err(
+				A2($elm$parser$Parser$Advanced$bagToList, bag, _List_Nil));
+		}
+	});
+var $elm$parser$Parser$run = F2(
+	function (parser, source) {
+		var _v0 = A2($elm$parser$Parser$Advanced$run, parser, source);
+		if (!_v0.$) {
+			var a = _v0.a;
+			return $elm$core$Result$Ok(a);
+		} else {
+			var problems = _v0.a;
+			return $elm$core$Result$Err(
+				A2($elm$core$List$map, $elm$parser$Parser$problemToDeadEnd, problems));
+		}
+	});
+var $author$project$Solvers$Y2020$Day2$partToSolver = function (f) {
+	return A2(
 		$elm$core$Basics$composeR,
-		$author$project$Solvers$Y2020$Day2$listToPasswords,
+		$elm$parser$Parser$run($author$project$Solvers$Y2020$Day2$parserPasswords),
 		A2(
 			$elm$core$Basics$composeR,
-			$elm$core$List$filter(
-				function (_v0) {
-					var x = _v0.al;
-					var y = _v0.am;
-					var _char = _v0.W;
-					var password = _v0.ae;
-					var indexes = A2(
-						$elm$core$List$map,
-						$elm$core$Basics$add(1),
-						A2(
-							$elm$core$String$indexes,
-							$elm$core$String$fromChar(_char),
-							password));
-					var b = A2($elm$core$List$member, y, indexes);
-					var a = A2($elm$core$List$member, x, indexes);
-					return (a && (!b)) || ((!a) && b);
-				}),
-			A2($elm$core$Basics$composeR, $elm$core$List$length, $elm$core$String$fromInt))));
-var $author$project$Solvers$Y2020$Day2$partToSolver = function (f) {
-	return A2($elm$core$Basics$composeR, f, $elm$core$Result$Ok);
+			$elm$core$Result$map(f),
+			$elm$core$Result$mapError($elm$parser$Parser$deadEndsToString)));
 };
 var $author$project$Solvers$Y2020$Day2$solvers = _List_fromArray(
 	[
@@ -5438,9 +6246,9 @@ var $author$project$Solvers$Y2020$Day2$solvers = _List_fromArray(
 		$author$project$Solvers$Y2020$Day2$partToSolver($author$project$Solvers$Y2020$Day2$part2))
 	]);
 var $author$project$Com$Solver$toId = function (_v0) {
-	var year = _v0.an;
-	var day = _v0.X;
-	var part = _v0.ad;
+	var year = _v0.aq;
+	var day = _v0.aa;
+	var part = _v0.ag;
 	return A2(
 		$elm$core$String$join,
 		'',
@@ -5470,7 +6278,7 @@ var $author$project$Components$Layout$Update$update = F2(
 				return _Utils_Tuple3(
 					_Utils_update(
 						model,
-						{bi: input}),
+						{bA: input}),
 					_List_Nil,
 					$elm$core$Platform$Cmd$none);
 			case 1:
@@ -5479,12 +6287,12 @@ var $author$project$Components$Layout$Update$update = F2(
 					_Utils_update(
 						model,
 						{
-							bG: A2($elm$core$Dict$get, solverId, $author$project$Solvers$Y2020$solvers)
+							bZ: A2($elm$core$Dict$get, solverId, $author$project$Solvers$Y2020$solvers)
 						}),
 					_List_Nil,
 					$elm$core$Platform$Cmd$none);
 			case 2:
-				var _v1 = model.bG;
+				var _v1 = model.bZ;
 				if (_v1.$ === 1) {
 					return _Utils_Tuple3(model, _List_Nil, $elm$core$Platform$Cmd$none);
 				} else {
@@ -5492,10 +6300,10 @@ var $author$project$Components$Layout$Update$update = F2(
 					return _Utils_Tuple3(
 						_Utils_update(
 							model,
-							{bi: ''}),
+							{bA: ''}),
 						_List_fromArray(
 							[
-								A2($author$project$Components$Layout$Msg$Solve, solver, model.bi)
+								A2($author$project$Components$Layout$Msg$Solve, solver, model.bA)
 							]),
 						$elm$core$Platform$Cmd$none);
 				}
@@ -5505,7 +6313,7 @@ var $author$project$Components$Layout$Update$update = F2(
 					_Utils_update(
 						model,
 						{
-							bF: A2($elm$core$List$cons, pid, model.bF)
+							bY: A2($elm$core$List$cons, pid, model.bY)
 						}),
 					_List_Nil,
 					$elm$core$Platform$Cmd$none);
@@ -5615,9 +6423,9 @@ var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('
 var $elm$html$Html$option = _VirtualDom_node('option');
 var $elm$html$Html$Attributes$selected = $elm$html$Html$Attributes$boolProperty('selected');
 var $author$project$Com$Solver$toLabel = function (_v0) {
-	var year = _v0.an;
-	var day = _v0.X;
-	var part = _v0.ad;
+	var year = _v0.aq;
+	var day = _v0.aa;
+	var part = _v0.ag;
 	return A2(
 		$elm$core$String$join,
 		'',
@@ -5703,7 +6511,7 @@ var $author$project$Components$Layout$View$viewForm = F2(
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$name('input'),
-									$elm$html$Html$Attributes$value(model.bi),
+									$elm$html$Html$Attributes$value(model.bA),
 									$elm$html$Html$Events$onInput(
 									A2($elm$core$Basics$composeR, $author$project$Components$Layout$Msg$OnInput, toSelf))
 								]),
@@ -5750,7 +6558,7 @@ var $author$project$Components$Layout$View$viewForm = F2(
 										[
 											$elm$html$Html$Attributes$name('solver')
 										]),
-									$author$project$Components$Layout$View$viewSolverOptions(model.bG)),
+									$author$project$Components$Layout$View$viewSolverOptions(model.bZ)),
 									A2(
 									$elm$html$Html$span,
 									_List_Nil,
@@ -5765,7 +6573,7 @@ var $author$project$Components$Layout$View$viewForm = F2(
 					_List_fromArray(
 						[
 							$elm$html$Html$Attributes$disabled(
-							_Utils_eq(model.bG, $elm$core$Maybe$Nothing)),
+							_Utils_eq(model.bZ, $elm$core$Maybe$Nothing)),
 							$elm$html$Html$Events$onClick(
 							toSelf($author$project$Components$Layout$Msg$OnSolve))
 						]),
@@ -5783,7 +6591,7 @@ var $author$project$Components$Layout$View$viewSolutions = F2(
 				[
 					$elm$html$Html$Attributes$class('Layout_Solutions')
 				]),
-			A2($elm$core$List$filterMap, renderPid, model.bF));
+			A2($elm$core$List$filterMap, renderPid, model.bY));
 	});
 var $author$project$Components$Layout$View$view = F3(
 	function (toSelf, model, renderPid) {
@@ -5799,7 +6607,7 @@ var $author$project$Components$Layout$View$view = F3(
 					A2($author$project$Components$Layout$View$viewSolutions, model, renderPid)
 				]));
 	});
-var $author$project$Components$Layout$Main$component = {aC: $author$project$Components$Layout$Init$init, bI: $author$project$Components$Layout$Subscriptions$subscriptions, bO: $author$project$Components$Layout$Update$update, bP: $author$project$Components$Layout$View$view};
+var $author$project$Components$Layout$Main$component = {aK: $author$project$Components$Layout$Init$init, b$: $author$project$Components$Layout$Subscriptions$subscriptions, b5: $author$project$Components$Layout$Update$update, b6: $author$project$Components$Layout$View$view};
 var $author$project$Actors$Layout$fromAppMsg = function (appMsg) {
 	if (!appMsg.$) {
 		var msgIn = appMsg.a;
@@ -5852,9 +6660,9 @@ var $tricycle$elm_actor_framework$Framework$Internal$Message$toSelf = F2(
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Actor$wrapToTuple = F3(
 	function (_v0, pid, _v1) {
-		var toAppModel = _v0.bM;
-		var toAppMsg = _v0.bN;
-		var onMsgOut = _v0.bu;
+		var toAppModel = _v0.b3;
+		var toAppMsg = _v0.b4;
+		var onMsgOut = _v0.bN;
 		var model = _v1.a;
 		var msgsOut = _v1.b;
 		var cmd = _v1.c;
@@ -5880,7 +6688,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Actor$wrapToTuple = F3(
 							$elm$core$List$map,
 							function (msgOut) {
 								return onMsgOut(
-									{bk: msgOut, bE: pid});
+									{bD: msgOut, bX: pid});
 							},
 							msgsOut)))));
 	});
@@ -5898,7 +6706,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentInit = F
 var $elm$core$Platform$Sub$map = _Platform_map;
 var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentSubscriptions = F4(
 	function (_v0, subs, componentModel, pid) {
-		var toAppMsg = _v0.bN;
+		var toAppMsg = _v0.b4;
 		return _Utils_eq(
 			subs(componentModel),
 			$elm$core$Platform$Sub$none) ? $elm$core$Platform$Sub$none : A2(
@@ -5912,7 +6720,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentUpdate =
 	function (_arguments, update, componentModel, msg, pid) {
 		if (!msg.$) {
 			var appMsg = msg.a;
-			var _v1 = _arguments.bf(appMsg);
+			var _v1 = _arguments.bx(appMsg);
 			if (!_v1.$) {
 				var componentMsgIn = _v1.a;
 				return A3(
@@ -5922,18 +6730,18 @@ var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentUpdate =
 					A2(update, componentMsgIn, componentModel));
 			} else {
 				return _Utils_Tuple2(
-					_arguments.bM(componentModel),
+					_arguments.b3(componentModel),
 					$tricycle$elm_actor_framework$Framework$Internal$Message$noOperation);
 			}
 		} else {
 			return _Utils_Tuple2(
-				_arguments.bM(componentModel),
+				_arguments.b3(componentModel),
 				$tricycle$elm_actor_framework$Framework$Internal$Message$noOperation);
 		}
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentView = F4(
 	function (_v0, view, componentModel, pid) {
-		var toAppMsg = _v0.bN;
+		var toAppMsg = _v0.b4;
 		return A2(
 			view,
 			A2($tricycle$elm_actor_framework$Framework$Internal$Message$toSelf, toAppMsg, pid),
@@ -5941,19 +6749,19 @@ var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentView = F
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponent = F2(
 	function (_arguments, component) {
-		var view = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentView, _arguments, component.bP);
-		var update = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentUpdate, _arguments, component.bO);
-		var subscriptions = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentSubscriptions, _arguments, component.bI);
-		var processMethods = {bI: subscriptions, bO: update, bP: view};
-		var init = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentInit, _arguments, component.aC);
+		var view = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentView, _arguments, component.b6);
+		var update = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentUpdate, _arguments, component.b5);
+		var subscriptions = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentSubscriptions, _arguments, component.b$);
+		var processMethods = {b$: subscriptions, b5: update, b6: view};
+		var init = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentInit, _arguments, component.aK);
 		var apply = function (componentModel) {
 			return {
-				bI: subscriptions(componentModel),
-				bO: update(componentModel),
-				bP: view(componentModel)
+				b$: subscriptions(componentModel),
+				b5: update(componentModel),
+				b6: view(componentModel)
 			};
 		};
-		return {ap: apply, aC: init, bB: processMethods};
+		return {as: apply, aK: init, bU: processMethods};
 	});
 var $tricycle$elm_actor_framework$Framework$Actor$fromComponent = $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponent;
 var $author$project$Components$Layout$Msg$OnSpawnedSolver = function (a) {
@@ -5980,8 +6788,8 @@ var $tricycle$elm_actor_framework$Framework$Internal$Message$spawn = F3(
 	});
 var $tricycle$elm_actor_framework$Framework$Message$spawn = $tricycle$elm_actor_framework$Framework$Internal$Message$spawn;
 var $author$project$Actors$Layout$onMsgOut = function (_v0) {
-	var self = _v0.bE;
-	var msgOut = _v0.bk;
+	var self = _v0.bX;
+	var msgOut = _v0.bD;
 	var solver = msgOut.a;
 	var input = msgOut.b;
 	return A3(
@@ -6007,14 +6815,14 @@ var $author$project$Actors$Layout$onMsgOut = function (_v0) {
 };
 var $author$project$Actors$Layout$actor = A2(
 	$tricycle$elm_actor_framework$Framework$Actor$fromComponent,
-	{bf: $author$project$Actors$Layout$fromAppMsg, bu: $author$project$Actors$Layout$onMsgOut, bM: $author$project$Model$Layout, bN: $author$project$Msg$Layout},
+	{bx: $author$project$Actors$Layout$fromAppMsg, bN: $author$project$Actors$Layout$onMsgOut, b3: $author$project$Model$Layout, b4: $author$project$Msg$Layout},
 	$author$project$Components$Layout$Main$component);
 var $author$project$Model$Solver = function (a) {
 	return {$: 1, a: a};
 };
 var $author$project$Components$Solver$Init$init = function (_v0) {
 	return _Utils_Tuple3(
-		{bi: '', bz: $elm$core$Maybe$Nothing, bG: $elm$core$Maybe$Nothing},
+		{bA: '', bS: $elm$core$Maybe$Nothing, bZ: $elm$core$Maybe$Nothing},
 		_List_Nil,
 		$elm$core$Platform$Cmd$none);
 };
@@ -6022,7 +6830,7 @@ var $author$project$Components$Solver$Subscriptions$subscriptions = function (mo
 	return $elm$core$Platform$Sub$none;
 };
 var $author$project$Com$Solver$solve = function (_v0) {
-	var func = _v0.ax;
+	var func = _v0.aE;
 	return func;
 };
 var $author$project$Components$Solver$Update$update = F2(
@@ -6031,10 +6839,10 @@ var $author$project$Components$Solver$Update$update = F2(
 		var input = msg.b;
 		return _Utils_Tuple3(
 			{
-				bi: input,
-				bz: $elm$core$Maybe$Just(
+				bA: input,
+				bS: $elm$core$Maybe$Just(
 					A2($author$project$Com$Solver$solve, solver, input)),
-				bG: $elm$core$Maybe$Just(solver)
+				bZ: $elm$core$Maybe$Just(solver)
 			},
 			_List_Nil,
 			$elm$core$Platform$Cmd$none);
@@ -6117,16 +6925,16 @@ var $author$project$Components$Solver$View$viewResult = F3(
 	});
 var $author$project$Components$Solver$View$view = F3(
 	function (_v0, model, _v1) {
-		var _v2 = _Utils_Tuple2(model.bz, model.bG);
+		var _v2 = _Utils_Tuple2(model.bS, model.bZ);
 		if ((!_v2.a.$) && (!_v2.b.$)) {
 			var result = _v2.a.a;
 			var solver = _v2.b.a;
-			return A3($author$project$Components$Solver$View$viewResult, solver, model.bi, result);
+			return A3($author$project$Components$Solver$View$viewResult, solver, model.bA, result);
 		} else {
 			return $elm$html$Html$text('');
 		}
 	});
-var $author$project$Components$Solver$Main$component = {aC: $author$project$Components$Solver$Init$init, bI: $author$project$Components$Solver$Subscriptions$subscriptions, bO: $author$project$Components$Solver$Update$update, bP: $author$project$Components$Solver$View$view};
+var $author$project$Components$Solver$Main$component = {aK: $author$project$Components$Solver$Init$init, b$: $author$project$Components$Solver$Subscriptions$subscriptions, b5: $author$project$Components$Solver$Update$update, b6: $author$project$Components$Solver$View$view};
 var $author$project$Actors$Solver$fromAppMsg = function (appMsg) {
 	if (appMsg.$ === 1) {
 		var msgIn = appMsg.a;
@@ -6137,21 +6945,21 @@ var $author$project$Actors$Solver$fromAppMsg = function (appMsg) {
 };
 var $tricycle$elm_actor_framework$Framework$Message$noOperation = $tricycle$elm_actor_framework$Framework$Internal$Message$noOperation;
 var $author$project$Actors$Solver$onMsgOut = function (_v0) {
-	var self = _v0.bE;
-	var msgOut = _v0.bk;
+	var self = _v0.bX;
+	var msgOut = _v0.bD;
 	return $tricycle$elm_actor_framework$Framework$Message$noOperation;
 };
 var $author$project$Actors$Solver$actor = A2(
 	$tricycle$elm_actor_framework$Framework$Actor$fromComponent,
-	{bf: $author$project$Actors$Solver$fromAppMsg, bu: $author$project$Actors$Solver$onMsgOut, bM: $author$project$Model$Solver, bN: $author$project$Msg$Solver},
+	{bx: $author$project$Actors$Solver$fromAppMsg, bN: $author$project$Actors$Solver$onMsgOut, b3: $author$project$Model$Solver, b4: $author$project$Msg$Solver},
 	$author$project$Components$Solver$Main$component);
 var $author$project$Bootstrap$apply = function (model) {
 	if (!model.$) {
 		var m = model.a;
-		return $author$project$Actors$Layout$actor.ap(m);
+		return $author$project$Actors$Layout$actor.as(m);
 	} else {
 		var m = model.a;
-		return $author$project$Actors$Solver$actor.ap(m);
+		return $author$project$Actors$Solver$actor.as(m);
 	}
 };
 var $elm$browser$Browser$External = function (a) {
@@ -6165,11 +6973,10 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {aw: fragment, aB: host, aJ: path, aL: port_, aO: protocol, aP: query};
+		return {aD: fragment, aJ: host, aU: path, aW: port_, a_: protocol, a$: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
-var $elm$core$String$slice = _String_slice;
 var $elm$core$String$dropLeft = F2(
 	function (n, string) {
 		return (n < 1) ? string : A3(
@@ -6178,9 +6985,6 @@ var $elm$core$String$dropLeft = F2(
 			$elm$core$String$length(string),
 			string);
 	});
-var $elm$core$String$isEmpty = function (string) {
-	return string === '';
-};
 var $elm$core$String$left = F2(
 	function (n, string) {
 		return (n < 1) ? '' : A3($elm$core$String$slice, 0, n, string);
@@ -6374,7 +7178,7 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$document = _Browser_document;
 var $tricycle$elm_actor_framework$Framework$Internal$Model$getViews = function ($) {
-	return $.w;
+	return $.A;
 };
 var $elm$core$Tuple$second = function (_v0) {
 	var y = _v0.b;
@@ -6388,7 +7192,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Pid$toInt = function (pid) 
 	if (pid.$ === 1) {
 		return 1;
 	} else {
-		var id = pid.a.Z;
+		var id = pid.a.ac;
 		return id;
 	}
 };
@@ -6414,7 +7218,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$Instances$get = funct
 };
 var $tricycle$elm_actor_framework$Framework$Internal$Model$getInstance = F2(
 	function (pid, _v0) {
-		var instances = _v0.q;
+		var instances = _v0.u;
 		return A2($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$get, pid, instances);
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Render$renderPid = F3(
@@ -6439,21 +7243,21 @@ var $tricycle$elm_actor_framework$Framework$Internal$Render$element = F2(
 				A2(
 					$elm$core$Basics$composeL,
 					function ($) {
-						return $.bP;
+						return $.b6;
 					},
 					apply),
 				frameworkModel),
 			$tricycle$elm_actor_framework$Framework$Internal$Model$getViews(frameworkModel));
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Model$getDocumentTitle = function ($) {
-	return $.R;
+	return $.V;
 };
 var $tricycle$elm_actor_framework$Framework$Internal$Render$application = F3(
 	function (apply, view, frameworkModel) {
 		return function (body) {
 			return {
-				a2: body,
-				bL: $tricycle$elm_actor_framework$Framework$Internal$Model$getDocumentTitle(frameworkModel)
+				bj: body,
+				b2: $tricycle$elm_actor_framework$Framework$Internal$Model$getDocumentTitle(frameworkModel)
 			};
 		}(
 			view(
@@ -6473,7 +7277,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$Parents$fromPidCollec
 var $tricycle$elm_actor_framework$Framework$Internal$Model$Parents$empty = $tricycle$elm_actor_framework$Framework$Internal$Model$Parents$fromPidCollection($tricycle$elm_actor_framework$Framework$Internal$Model$PidCollection$empty);
 var $tricycle$elm_actor_framework$Framework$Internal$Pid$System = {$: 1};
 var $tricycle$elm_actor_framework$Framework$Internal$Pid$system = $tricycle$elm_actor_framework$Framework$Internal$Pid$System;
-var $tricycle$elm_actor_framework$Framework$Internal$Model$empty = {R: '', q: $tricycle$elm_actor_framework$Framework$Internal$Model$Instances$empty, S: $tricycle$elm_actor_framework$Framework$Internal$Pid$system, s: $tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$empty, G: $tricycle$elm_actor_framework$Framework$Internal$Model$Parents$empty, w: _List_Nil};
+var $tricycle$elm_actor_framework$Framework$Internal$Model$empty = {V: '', u: $tricycle$elm_actor_framework$Framework$Internal$Model$Instances$empty, W: $tricycle$elm_actor_framework$Framework$Internal$Pid$system, w: $tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$empty, K: $tricycle$elm_actor_framework$Framework$Internal$Model$Parents$empty, A: _List_Nil};
 var $elm$core$Dict$foldl = F3(
 	function (func, acc, dict) {
 		foldl:
@@ -6523,7 +7327,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$Instances$fold = F2(
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Model$foldlInstances = F3(
 	function (f, initial, _v0) {
-		var instances = _v0.q;
+		var instances = _v0.u;
 		return A3($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$fold, f, initial, instances);
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Subscriptions$getSubscriptions = function (apply) {
@@ -6534,7 +7338,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Subscriptions$getSubscripti
 			F3(
 				function (pid, appModel, listOfSubs) {
 					var process = apply(appModel);
-					var processSubscriptions = process.bI(pid);
+					var processSubscriptions = process.b$(pid);
 					return _Utils_eq(processSubscriptions, $elm$core$Platform$Sub$none) ? listOfSubs : A2($elm$core$List$cons, processSubscriptions, listOfSubs);
 				}),
 			_List_Nil),
@@ -6545,8 +7349,8 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$addToView = F2(
 		return _Utils_update(
 			model,
 			{
-				w: _Utils_ap(
-					model.w,
+				A: _Utils_ap(
+					model.A,
 					_List_fromArray(
 						[pid]))
 			});
@@ -6634,7 +7438,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$getInhabitants = func
 		$elm$core$Basics$composeL,
 		$tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$getPidsOnAddress(address),
 		function ($) {
-			return $.s;
+			return $.w;
 		});
 };
 var $elm$core$List$isEmpty = function (xs) {
@@ -6679,7 +7483,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$populateAddress = F3(
 		return _Utils_update(
 			model,
 			{
-				s: A3($tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$insert, address, pid, model.s)
+				w: A3($tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$insert, address, pid, model.w)
 			});
 	});
 var $elm$core$List$singleton = function (value) {
@@ -6734,7 +7538,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$removeFromAddress = F
 		return _Utils_update(
 			model,
 			{
-				s: A3($tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$remove, address, pid, model.s)
+				w: A3($tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$remove, address, pid, model.w)
 			});
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Model$removeFromView = F2(
@@ -6742,13 +7546,13 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$removeFromView = F2(
 		return _Utils_update(
 			model,
 			{
-				w: A2(
+				A: A2(
 					$elm$core$List$filter,
 					A2(
 						$elm$core$Basics$composeL,
 						$elm$core$Basics$not,
 						$tricycle$elm_actor_framework$Framework$Internal$Pid$equals(pid)),
-					model.w)
+					model.A)
 			});
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$getAddressesForPid = function (queryPid) {
@@ -7278,29 +8082,29 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$removePid = F2(
 		return _Utils_update(
 			model,
 			{
-				q: A2($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$remove, pid, model.q),
-				s: A3(
+				u: A2($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$remove, pid, model.u),
+				w: A3(
 					$elm$core$List$foldl,
 					function (address) {
 						return A2($tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$remove, address, pid);
 					},
-					model.s,
-					A2($tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$getAddressesForPid, pid, model.s)),
-				G: A2($tricycle$elm_actor_framework$Framework$Internal$Model$Parents$remove, pid, model.G),
-				w: A2(
+					model.w,
+					A2($tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$getAddressesForPid, pid, model.w)),
+				K: A2($tricycle$elm_actor_framework$Framework$Internal$Model$Parents$remove, pid, model.K),
+				A: A2(
 					$elm$core$List$filter,
 					A2(
 						$elm$core$Basics$composeL,
 						$elm$core$Basics$not,
 						$tricycle$elm_actor_framework$Framework$Internal$Pid$equals(pid)),
-					model.w)
+					model.A)
 			});
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Pid$toSpawnedBy = function (pid) {
 	if (pid.$ === 1) {
 		return pid;
 	} else {
-		var spawnedBy = pid.a.bH;
+		var spawnedBy = pid.a.b_;
 		return spawnedBy;
 	}
 };
@@ -7366,18 +8170,18 @@ var $tricycle$elm_actor_framework$Framework$Internal$Pid$Pid = function (a) {
 	return {$: 0, a: a};
 };
 var $tricycle$elm_actor_framework$Framework$Internal$Pid$new = function (_v0) {
-	var previousPid = _v0.bA;
-	var spawnedBy = _v0.bH;
+	var previousPid = _v0.bT;
+	var spawnedBy = _v0.b_;
 	return $tricycle$elm_actor_framework$Framework$Internal$Pid$Pid(
 		{
-			Z: 1 + $tricycle$elm_actor_framework$Framework$Internal$Pid$toInt(previousPid),
-			bH: spawnedBy
+			ac: 1 + $tricycle$elm_actor_framework$Framework$Internal$Pid$toInt(previousPid),
+			b_: spawnedBy
 		});
 };
 var $tricycle$elm_actor_framework$Framework$Internal$Model$spawnInstance = F5(
 	function (factory, spawnedBy, actorName, flags, model) {
 		var newPid = $tricycle$elm_actor_framework$Framework$Internal$Pid$new(
-			{bA: model.S, bH: spawnedBy});
+			{bT: model.W, b_: spawnedBy});
 		var _v0 = A2(
 			factory,
 			actorName,
@@ -7388,9 +8192,9 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$spawnInstance = F5(
 			_Utils_update(
 				model,
 				{
-					q: A3($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$insert, newPid, appModel, model.q),
-					S: newPid,
-					G: A2($tricycle$elm_actor_framework$Framework$Internal$Model$Parents$addChild, newPid, model.G)
+					u: A3($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$insert, newPid, appModel, model.u),
+					W: newPid,
+					K: A2($tricycle$elm_actor_framework$Framework$Internal$Model$Parents$addChild, newPid, model.K)
 				}),
 			msg);
 	});
@@ -7398,14 +8202,14 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$updateDocumentTitle =
 	function (title, model) {
 		return _Utils_update(
 			model,
-			{R: title});
+			{V: title});
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Model$updateInstance = F3(
 	function (model, pid, appModel) {
 		return _Utils_update(
 			model,
 			{
-				q: A3($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$insert, pid, appModel, model.q)
+				u: A3($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$insert, pid, appModel, model.u)
 			});
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Update$andThen = F4(
@@ -7429,8 +8233,8 @@ var $tricycle$elm_actor_framework$Framework$Internal$Update$update = F4(
 	function (args, maybePid, msg, model) {
 		update:
 		while (true) {
-			var factory = args.bd;
-			var apply = args.ap;
+			var factory = args.bv;
+			var apply = args.as;
 			switch (msg.$) {
 				case 0:
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -7503,7 +8307,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Update$update = F4(
 												function (appMsg, _v6) {
 													var model_ = _v6.a;
 													var msgs_ = _v6.b;
-													var instanceUpdate = apply(model_).bO;
+													var instanceUpdate = apply(model_).b5;
 													return A2(
 														$elm$core$Tuple$mapSecond,
 														$tricycle$elm_actor_framework$Framework$Internal$Helper$List$postpend(msgs_),
@@ -7542,7 +8346,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Update$update = F4(
 								_List_fromArray(
 									[
 										newMsg,
-										callback(updatedModel.S)
+										callback(updatedModel.W)
 									]));
 							if ($elm$core$List$isEmpty(newMsgs)) {
 								return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
@@ -7598,34 +8402,34 @@ var $tricycle$elm_actor_framework$Framework$Internal$Update$update = F4(
 		}
 	});
 var $tricycle$elm_actor_framework$Framework$Browser$toProgramRecord = function (args) {
-	var view = $tricycle$elm_actor_framework$Framework$Internal$Render$application(args.ap);
+	var view = $tricycle$elm_actor_framework$Framework$Internal$Render$application(args.as);
 	var update = A2($tricycle$elm_actor_framework$Framework$Internal$Update$update, args, $elm$core$Maybe$Nothing);
-	var subscriptions = $tricycle$elm_actor_framework$Framework$Internal$Subscriptions$getSubscriptions(args.ap);
+	var subscriptions = $tricycle$elm_actor_framework$Framework$Internal$Subscriptions$getSubscriptions(args.as);
 	var init = function (msg) {
 		return A2(update, msg, $tricycle$elm_actor_framework$Framework$Internal$Model$empty);
 	};
-	return {aC: init, bI: subscriptions, bO: update, bP: view};
+	return {aK: init, b$: subscriptions, b5: update, b6: view};
 };
 var $tricycle$elm_actor_framework$Framework$Browser$document = function (_v0) {
-	var factory = _v0.bd;
-	var apply = _v0.ap;
-	var init = _v0.aC;
-	var view = _v0.bP;
+	var factory = _v0.bv;
+	var apply = _v0.as;
+	var init = _v0.aK;
+	var view = _v0.b6;
 	var record = $tricycle$elm_actor_framework$Framework$Browser$toProgramRecord(
-		{ap: apply, bd: factory});
+		{as: apply, bv: factory});
 	return $elm$browser$Browser$document(
 		{
-			aC: A2($elm$core$Basics$composeR, init, record.aC),
-			bI: record.bI,
-			bO: record.bO,
-			bP: record.bP(view)
+			aK: A2($elm$core$Basics$composeR, init, record.aK),
+			b$: record.b$,
+			b5: record.b5,
+			b6: record.b6(view)
 		});
 };
 var $author$project$Bootstrap$factory = function (actorName) {
 	if (!actorName) {
-		return $author$project$Actors$Layout$actor.aC;
+		return $author$project$Actors$Layout$actor.aK;
 	} else {
-		return $author$project$Actors$Solver$actor.aC;
+		return $author$project$Actors$Solver$actor.aK;
 	}
 };
 var $author$project$Actors$Layout = 0;
@@ -7704,7 +8508,7 @@ var $author$project$Main$view = function (output) {
 		]);
 };
 var $author$project$Main$main = $tricycle$elm_actor_framework$Framework$Browser$document(
-	{ap: $author$project$Bootstrap$apply, bd: $author$project$Bootstrap$factory, aC: $author$project$Main$init, bP: $author$project$Main$view});
+	{as: $author$project$Bootstrap$apply, bv: $author$project$Bootstrap$factory, aK: $author$project$Main$init, b6: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
 
