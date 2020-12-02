@@ -36,7 +36,7 @@ findTargetThroughAdditionAndMultiplyResult fa fb target =
 
 inputToList : String -> List Int
 inputToList =
-    String.split "\n"
+    String.lines
         >> List.filterMap (String.toInt << String.trim)
 
 
