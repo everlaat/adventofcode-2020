@@ -19,47 +19,37 @@ solvers =
     ]
 
 
-partToSolver : (List Password -> String) -> (String -> Result String String)
+partToSolver : (Password -> Bool) -> (String -> Result String String)
 partToSolver f =
     Parser.run parserPasswords
-        >> Result.map f
+        >> Result.map (List.filter f >> List.length >> String.fromInt)
         >> Result.mapError Parser.deadEndsToString
 
 
-part1 : List Password -> String
-part1 =
-    List.filter
-        (\{ x, y, char, password } ->
-            let
-                amount =
-                    String.indexes (String.fromChar char) password
-                        |> List.length
-            in
-            amount >= x && amount <= y
-        )
-        >> List.length
-        >> String.fromInt
+part1 : Password -> Bool
+part1 { x, y, char, password } =
+    let
+        amount =
+            String.indexes (String.fromChar char) password
+                |> List.length
+    in
+    amount >= x && amount <= y
 
 
-part2 : List Password -> String
-part2 =
-    List.filter
-        (\{ x, y, char, password } ->
-            let
-                indexes =
-                    String.indexes (String.fromChar char) password
-                        |> List.map ((+) 1)
+part2 : Password -> Bool
+part2 { x, y, char, password } =
+    let
+        indexes =
+            String.indexes (String.fromChar char) password
+                |> List.map ((+) 1)
 
-                a =
-                    List.member x indexes
+        a =
+            List.member x indexes
 
-                b =
-                    List.member y indexes
-            in
-            a && not b || not a && b
-        )
-        >> List.length
-        >> String.fromInt
+        b =
+            List.member y indexes
+    in
+    a && not b || not a && b
 
 
 
