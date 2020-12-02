@@ -6,7 +6,7 @@ import Com.Solver as Solver exposing (Solver)
 solvers : List Solver
 solvers =
     [ Solver.make 2020 1 1 (part1 2020 |> partToSolver)
-    , Solver.make 2020 1 2 (part1 2020 |> partToSolver)
+    , Solver.make 2020 1 2 (part2 2020 |> partToSolver)
     ]
 
 
