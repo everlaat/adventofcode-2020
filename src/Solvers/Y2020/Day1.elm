@@ -1,18 +1,32 @@
-module Days.Day1 exposing (part1, part2)
+module Solvers.Y2020.Day1 exposing (part1, part2, solvers)
+
+import Com.Solver as Solver exposing (Solver)
+
+
+solvers : List Solver
+solvers =
+    [ Solver.make 2020 1 1 (part1 2020 |> partToSolver)
+    , Solver.make 2020 1 2 (part1 2020 |> partToSolver)
+    ]
+
+
+partToSolver : (String -> Maybe Int) -> (String -> Result String String)
+partToSolver f =
+    f >> (Maybe.map (String.fromInt >> Ok) >> Maybe.withDefault (Err "Target not found"))
 
 
 part1 : Int -> String -> Maybe Int
 part1 =
-    findTargetAndMultiplyResult listMakePairs uncurry
+    findTargetThroughAdditionAndMultiplyResult listMakePairs uncurry
 
 
 part2 : Int -> String -> Maybe Int
 part2 =
-    findTargetAndMultiplyResult listMakeTrios uncurry3
+    findTargetThroughAdditionAndMultiplyResult listMakeTrios uncurry3
 
 
-findTargetAndMultiplyResult : (List Int -> List b) -> ((Int -> Int -> Int) -> b -> Int) -> Int -> String -> Maybe Int
-findTargetAndMultiplyResult fa fb target =
+findTargetThroughAdditionAndMultiplyResult : (List Int -> List b) -> ((Int -> Int -> Int) -> b -> Int) -> Int -> String -> Maybe Int
+findTargetThroughAdditionAndMultiplyResult fa fb target =
     inputToList
         >> fa
         >> List.filter (fb (+) >> (==) target)
