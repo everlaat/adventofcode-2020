@@ -4,6 +4,14 @@ import Com.Solver as Solver exposing (Solver)
 import Parser exposing ((|.), (|=), Parser)
 
 
+type alias Password =
+    { x : Int
+    , y : Int
+    , char : Char
+    , password : String
+    }
+
+
 solvers : List Solver
 solvers =
     [ Solver.make 2020 2 1 (part1 |> partToSolver)
@@ -16,13 +24,6 @@ partToSolver f =
     Parser.run parserPasswords
         >> Result.map f
         >> Result.mapError Parser.deadEndsToString
-
-
-parseAlphaString : Parser String
-parseAlphaString =
-    Parser.succeed ()
-        |. Parser.chompWhile (\char -> Char.isAlpha char)
-        |> Parser.getChompedString
 
 
 part1 : List Password -> String
@@ -38,14 +39,6 @@ part1 =
         )
         >> List.length
         >> String.fromInt
-
-
-type alias Password =
-    { x : Int
-    , y : Int
-    , char : Char
-    , password : String
-    }
 
 
 part2 : List Password -> String
@@ -116,3 +109,10 @@ parseSingleAlphaChar =
                     _ ->
                         Parser.problem "Something went wrong parsing this char"
             )
+
+
+parseAlphaString : Parser String
+parseAlphaString =
+    Parser.succeed ()
+        |. Parser.chompWhile (\char -> Char.isAlpha char)
+        |> Parser.getChompedString
