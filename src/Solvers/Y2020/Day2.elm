@@ -30,7 +30,7 @@ part1 : Password -> Bool
 part1 { x, y, char, password } =
     let
         amount =
-            String.indexes (String.fromChar char) password
+            String.indices (String.fromChar char) password
                 |> List.length
     in
     amount >= x && amount <= y
@@ -39,17 +39,13 @@ part1 { x, y, char, password } =
 part2 : Password -> Bool
 part2 { x, y, char, password } =
     let
-        indexes =
-            String.indexes (String.fromChar char) password
+        indices =
+            String.indices (String.fromChar char) password
                 |> List.map ((+) 1)
-
-        a =
-            List.member x indexes
-
-        b =
-            List.member y indexes
     in
-    a && not b || not a && b
+    xor
+        (List.member x indices)
+        (List.member y indices)
 
 
 
