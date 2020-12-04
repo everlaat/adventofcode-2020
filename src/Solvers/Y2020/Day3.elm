@@ -1,4 +1,4 @@
-module Solvers.Y2020.Day3 exposing (part1, part2, partToSolver, solvers)
+module Solvers.Y2020.Day3 exposing (getTreesOnPath, inputToMatrix, part1, part2, partToSolver, solvers)
 
 import Array exposing (Array)
 import Com.Solver as Solver exposing (Solver)
