@@ -533,11 +533,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.ak.O === region.az.O)
+	if (region.aw.W === region.aL.W)
 	{
-		return 'on line ' + region.ak.O;
+		return 'on line ' + region.aw.W;
 	}
-	return 'on lines ' + region.ak.O + ' through ' + region.az.O;
+	return 'on lines ' + region.aw.W + ' through ' + region.aL.W;
 }
 
 
@@ -1871,9 +1871,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aK,
-		impl.b5,
-		impl.b$,
+		impl.aW,
+		impl.ch,
+		impl.cb,
 		function() { return function() {} }
 	);
 });
@@ -2885,9 +2885,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		C: func(record.C),
-		al: record.al,
-		ai: record.ai
+		E: func(record.E),
+		ax: record.ax,
+		au: record.au
 	}
 });
 
@@ -3155,11 +3155,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.C;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.al;
+		var message = !tag ? value : tag < 3 ? value.a : value.E;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ax;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.ai) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.au) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -4109,11 +4109,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aK,
-		impl.b5,
-		impl.b$,
+		impl.aW,
+		impl.ch,
+		impl.cb,
 		function(sendToApp, initialModel) {
-			var view = impl.b6;
+			var view = impl.ci;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -4145,12 +4145,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aK,
-		impl.b5,
-		impl.b$,
+		impl.aW,
+		impl.ch,
+		impl.cb,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.aj && impl.aj(sendToApp)
-			var view = impl.b6;
+			var divertHrefToApp = impl.av && impl.av(sendToApp)
+			var view = impl.ci;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -4158,12 +4158,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.bj);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.bv);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.b2) && (_VirtualDom_doc.title = title = doc.b2);
+				(title !== doc.ce) && (_VirtualDom_doc.title = title = doc.ce);
 			});
 		}
 	);
@@ -4219,12 +4219,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.bO;
-	var onUrlRequest = impl.bP;
+	var onUrlChange = impl.b_;
+	var onUrlRequest = impl.b$;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		aj: function(sendToApp)
+		av: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4240,9 +4240,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.a_ === next.a_
-							&& curr.aJ === next.aJ
-							&& curr.aW.a === next.aW.a
+							&& curr.ba === next.ba
+							&& curr.aV === next.aV
+							&& curr.a6.a === next.a6.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4250,13 +4250,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aK: function(flags)
+		aW: function(flags)
 		{
-			return A3(impl.aK, flags, _Browser_getUrl(), key);
+			return A3(impl.aW, flags, _Browser_getUrl(), key);
 		},
-		b6: impl.b6,
-		b5: impl.b5,
-		b$: impl.b$
+		ci: impl.ci,
+		ch: impl.ch,
+		cb: impl.cb
 	});
 }
 
@@ -4322,17 +4322,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { by: 'hidden', bl: 'visibilitychange' }
+		? { bK: 'hidden', bx: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { by: 'mozHidden', bl: 'mozvisibilitychange' }
+		? { bK: 'mozHidden', bx: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { by: 'msHidden', bl: 'msvisibilitychange' }
+		? { bK: 'msHidden', bx: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { by: 'webkitHidden', bl: 'webkitvisibilitychange' }
-		: { by: 'hidden', bl: 'visibilitychange' };
+		? { bK: 'webkitHidden', bx: 'webkitvisibilitychange' }
+		: { bK: 'hidden', bx: 'visibilitychange' };
 }
 
 
@@ -4413,12 +4413,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		a6: _Browser_getScene(),
-		bf: {
-			ao: _Browser_window.pageXOffset,
-			ap: _Browser_window.pageYOffset,
-			bg: _Browser_doc.documentElement.clientWidth,
-			aH: _Browser_doc.documentElement.clientHeight
+		bi: _Browser_getScene(),
+		br: {
+			aA: _Browser_window.pageXOffset,
+			aB: _Browser_window.pageYOffset,
+			bs: _Browser_doc.documentElement.clientWidth,
+			aT: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4428,8 +4428,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		bg: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		aH: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		bs: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		aT: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4452,15 +4452,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			a6: {
-				bg: node.scrollWidth,
-				aH: node.scrollHeight
+			bi: {
+				bs: node.scrollWidth,
+				aT: node.scrollHeight
 			},
-			bf: {
-				ao: node.scrollLeft,
-				ap: node.scrollTop,
-				bg: node.clientWidth,
-				aH: node.clientHeight
+			br: {
+				aA: node.scrollLeft,
+				aB: node.scrollTop,
+				bs: node.clientWidth,
+				aT: node.clientHeight
 			}
 		};
 	});
@@ -4490,18 +4490,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			a6: _Browser_getScene(),
-			bf: {
-				ao: x,
-				ap: y,
-				bg: _Browser_doc.documentElement.clientWidth,
-				aH: _Browser_doc.documentElement.clientHeight
+			bi: _Browser_getScene(),
+			br: {
+				aA: x,
+				aB: y,
+				bs: _Browser_doc.documentElement.clientWidth,
+				aT: _Browser_doc.documentElement.clientHeight
 			},
-			bq: {
-				ao: x + rect.left,
-				ap: y + rect.top,
-				bg: rect.width,
-				aH: rect.height
+			bC: {
+				aA: x + rect.left,
+				aB: y + rect.top,
+				bs: rect.width,
+				aT: rect.height
 			}
 		};
 	});
@@ -5021,7 +5021,7 @@ var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Components$Layout$Init$init = function (_v0) {
 	return _Utils_Tuple3(
-		{bA: '', bY: _List_Nil, bZ: $elm$core$Maybe$Nothing},
+		{bM: '', b8: _List_Nil, b9: $elm$core$Maybe$Nothing},
 		_List_Nil,
 		$elm$core$Platform$Cmd$none);
 };
@@ -5274,7 +5274,7 @@ var $elm$core$Basics$identity = function (x) {
 var $author$project$Com$Solver$Solver = $elm$core$Basics$identity;
 var $author$project$Com$Solver$make = F4(
 	function (year, day, part, func) {
-		return {aa: day, aE: func, ag: part, aq: year};
+		return {am: day, aQ: func, as: part, aC: year};
 	});
 var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
@@ -5461,10 +5461,10 @@ var $elm$core$String$fromChar = function (_char) {
 var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$String$indices = _String_indexes;
 var $author$project$Solvers$Y2020$Day2$part1 = function (_v0) {
-	var x = _v0.ao;
-	var y = _v0.ap;
-	var _char = _v0._;
-	var password = _v0.ah;
+	var x = _v0.aA;
+	var y = _v0.aB;
+	var _char = _v0.ak;
+	var password = _v0.at;
 	var amount = $elm$core$List$length(
 		A2(
 			$elm$core$String$indices,
@@ -5504,10 +5504,10 @@ var $elm$core$List$member = F2(
 	});
 var $elm$core$Basics$xor = _Basics_xor;
 var $author$project$Solvers$Y2020$Day2$part2 = function (_v0) {
-	var x = _v0.ao;
-	var y = _v0.ap;
-	var _char = _v0._;
-	var password = _v0.ah;
+	var x = _v0.aA;
+	var y = _v0.aB;
+	var _char = _v0.ak;
+	var password = _v0.at;
 	var indices = A2(
 		$elm$core$List$map,
 		$elm$core$Basics$add(1),
@@ -5736,14 +5736,14 @@ var $elm$parser$Parser$Advanced$oneOf = function (parsers) {
 var $elm$parser$Parser$oneOf = $elm$parser$Parser$Advanced$oneOf;
 var $author$project$Solvers$Y2020$Day2$Password = F4(
 	function (x, y, _char, password) {
-		return {_: _char, ah: password, ao: x, ap: y};
+		return {ak: _char, at: password, aA: x, aB: y};
 	});
 var $elm$parser$Parser$ExpectingInt = {$: 1};
 var $elm$parser$Parser$Advanced$consumeBase = _Parser_consumeBase;
 var $elm$parser$Parser$Advanced$consumeBase16 = _Parser_consumeBase16;
 var $elm$parser$Parser$Advanced$bumpOffset = F2(
 	function (newOffset, s) {
-		return {ax: s.ax + (newOffset - s.b), c: s.c, d: s.d, b: newOffset, a3: s.a3, a: s.a};
+		return {aJ: s.aJ + (newOffset - s.b), c: s.c, d: s.d, b: newOffset, bf: s.bf, a: s.a};
 	});
 var $elm$parser$Parser$Advanced$chompBase10 = _Parser_chompBase10;
 var $elm$parser$Parser$Advanced$isAsciiCode = _Parser_isAsciiCode;
@@ -5774,14 +5774,14 @@ var $elm$parser$Parser$Advanced$AddRight = F2(
 	});
 var $elm$parser$Parser$Advanced$DeadEnd = F4(
 	function (row, col, problem, contextStack) {
-		return {ax: col, bn: contextStack, aX: problem, a3: row};
+		return {aJ: col, bz: contextStack, a7: problem, bf: row};
 	});
 var $elm$parser$Parser$Advanced$fromState = F2(
 	function (s, x) {
 		return A2(
 			$elm$parser$Parser$Advanced$AddRight,
 			$elm$parser$Parser$Advanced$Empty,
-			A4($elm$parser$Parser$Advanced$DeadEnd, s.a3, s.ax, x, s.c));
+			A4($elm$parser$Parser$Advanced$DeadEnd, s.bf, s.aJ, x, s.c));
 	});
 var $elm$parser$Parser$Advanced$finalizeInt = F5(
 	function (invalid, handler, startOffset, _v0, s) {
@@ -5822,7 +5822,7 @@ var $elm$parser$Parser$Advanced$finalizeFloat = F6(
 			return A2(
 				$elm$parser$Parser$Advanced$Bad,
 				true,
-				A4($elm$parser$Parser$Advanced$fromInfo, s.a3, s.ax - (floatOffset + s.b), invalid, s.c));
+				A4($elm$parser$Parser$Advanced$fromInfo, s.bf, s.aJ - (floatOffset + s.b), invalid, s.c));
 		} else {
 			if (_Utils_eq(s.b, floatOffset)) {
 				return A2(
@@ -5868,37 +5868,37 @@ var $elm$parser$Parser$Advanced$number = function (c) {
 			var baseOffset = zeroOffset + 1;
 			return A3($elm$parser$Parser$Advanced$isAsciiCode, 120, zeroOffset, s.a) ? A5(
 				$elm$parser$Parser$Advanced$finalizeInt,
-				c.bB,
-				c.aI,
+				c.bN,
+				c.aU,
 				baseOffset,
 				A2($elm$parser$Parser$Advanced$consumeBase16, baseOffset, s.a),
 				s) : (A3($elm$parser$Parser$Advanced$isAsciiCode, 111, zeroOffset, s.a) ? A5(
 				$elm$parser$Parser$Advanced$finalizeInt,
-				c.bB,
-				c.aT,
+				c.bN,
+				c.a3,
 				baseOffset,
 				A3($elm$parser$Parser$Advanced$consumeBase, 8, baseOffset, s.a),
 				s) : (A3($elm$parser$Parser$Advanced$isAsciiCode, 98, zeroOffset, s.a) ? A5(
 				$elm$parser$Parser$Advanced$finalizeInt,
-				c.bB,
-				c.au,
+				c.bN,
+				c.aG,
 				baseOffset,
 				A3($elm$parser$Parser$Advanced$consumeBase, 2, baseOffset, s.a),
 				s) : A6(
 				$elm$parser$Parser$Advanced$finalizeFloat,
-				c.bB,
-				c.aB,
-				c.aM,
-				c.aC,
+				c.bN,
+				c.aN,
+				c.aY,
+				c.aO,
 				_Utils_Tuple2(zeroOffset, 0),
 				s)));
 		} else {
 			return A6(
 				$elm$parser$Parser$Advanced$finalizeFloat,
-				c.bB,
-				c.aB,
-				c.aM,
-				c.aC,
+				c.bN,
+				c.aN,
+				c.aY,
+				c.aO,
 				A3($elm$parser$Parser$Advanced$consumeBase, 10, s.b, s.a),
 				s);
 		}
@@ -5908,13 +5908,13 @@ var $elm$parser$Parser$Advanced$int = F2(
 	function (expecting, invalid) {
 		return $elm$parser$Parser$Advanced$number(
 			{
-				au: $elm$core$Result$Err(invalid),
-				aB: expecting,
-				aC: $elm$core$Result$Err(invalid),
-				aI: $elm$core$Result$Err(invalid),
-				aM: $elm$core$Result$Ok($elm$core$Basics$identity),
-				bB: invalid,
-				aT: $elm$core$Result$Err(invalid)
+				aG: $elm$core$Result$Err(invalid),
+				aN: expecting,
+				aO: $elm$core$Result$Err(invalid),
+				aU: $elm$core$Result$Err(invalid),
+				aY: $elm$core$Result$Ok($elm$core$Basics$identity),
+				bN: invalid,
+				a3: $elm$core$Result$Err(invalid)
 			});
 	});
 var $elm$parser$Parser$int = A2($elm$parser$Parser$Advanced$int, $elm$parser$Parser$ExpectingInt, $elm$parser$Parser$ExpectingInt);
@@ -5929,7 +5929,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 					$elm$parser$Parser$Advanced$Good,
 					_Utils_cmp(s0.b, offset) < 0,
 					0,
-					{ax: col, c: s0.c, d: s0.d, b: offset, a3: row, a: s0.a});
+					{aJ: col, c: s0.c, d: s0.d, b: offset, bf: row, a: s0.a});
 			} else {
 				if (_Utils_eq(newOffset, -2)) {
 					var $temp$isGood = isGood,
@@ -5961,7 +5961,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 	});
 var $elm$parser$Parser$Advanced$chompWhile = function (isGood) {
 	return function (s) {
-		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.a3, s.ax, s);
+		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.bf, s.aJ, s);
 	};
 };
 var $elm$parser$Parser$chompWhile = $elm$parser$Parser$Advanced$chompWhile;
@@ -6049,11 +6049,11 @@ var $elm$parser$Parser$Advanced$chompIf = F2(
 				$elm$parser$Parser$Advanced$Good,
 				true,
 				0,
-				{ax: 1, c: s.c, d: s.d, b: s.b + 1, a3: s.a3 + 1, a: s.a}) : A3(
+				{aJ: 1, c: s.c, d: s.d, b: s.b + 1, bf: s.bf + 1, a: s.a}) : A3(
 				$elm$parser$Parser$Advanced$Good,
 				true,
 				0,
-				{ax: s.ax + 1, c: s.c, d: s.d, b: newOffset, a3: s.a3, a: s.a}));
+				{aJ: s.aJ + 1, c: s.c, d: s.d, b: newOffset, bf: s.bf, a: s.a}));
 		};
 	});
 var $elm$parser$Parser$chompIf = function (isGood) {
@@ -6116,7 +6116,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 	var expecting = _v0.b;
 	var progress = !$elm$core$String$isEmpty(str);
 	return function (s) {
-		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.a3, s.ax, s.a);
+		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.bf, s.aJ, s.a);
 		var newOffset = _v1.a;
 		var newRow = _v1.b;
 		var newCol = _v1.c;
@@ -6127,7 +6127,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 			$elm$parser$Parser$Advanced$Good,
 			progress,
 			0,
-			{ax: newCol, c: s.c, d: s.d, b: newOffset, a3: newRow, a: s.a});
+			{aJ: newCol, c: s.c, d: s.d, b: newOffset, bf: newRow, a: s.a});
 	};
 };
 var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
@@ -6192,10 +6192,10 @@ var $author$project$Solvers$Y2020$Day2$parserPasswords = A2(
 	});
 var $elm$parser$Parser$DeadEnd = F3(
 	function (row, col, problem) {
-		return {ax: col, aX: problem, a3: row};
+		return {aJ: col, a7: problem, bf: row};
 	});
 var $elm$parser$Parser$problemToDeadEnd = function (p) {
-	return A3($elm$parser$Parser$DeadEnd, p.a3, p.ax, p.aX);
+	return A3($elm$parser$Parser$DeadEnd, p.bf, p.aJ, p.a7);
 };
 var $elm$parser$Parser$Advanced$bagToList = F2(
 	function (bag, list) {
@@ -6227,7 +6227,7 @@ var $elm$parser$Parser$Advanced$run = F2(
 	function (_v0, src) {
 		var parse = _v0;
 		var _v1 = parse(
-			{ax: 1, c: _List_Nil, d: 1, b: 0, a3: 1, a: src});
+			{aJ: 1, c: _List_Nil, d: 1, b: 0, bf: 1, a: src});
 		if (!_v1.$) {
 			var value = _v1.b;
 			return $elm$core$Result$Ok(value);
@@ -6490,10 +6490,678 @@ var $author$project$Solvers$Y2020$Day3$solvers = _List_fromArray(
 		2,
 		$author$project$Solvers$Y2020$Day3$partToSolver($author$project$Solvers$Y2020$Day3$part2))
 	]);
+var $elm$core$Basics$neq = _Utils_notEqual;
+var $author$project$Solvers$Y2020$Day4$isValidSimple = function (_v0) {
+	var byr = _v0.Q;
+	var iyr = _v0.V;
+	var eyr = _v0.S;
+	var hgt = _v0.U;
+	var hcl = _v0.T;
+	var ecl = _v0.R;
+	var pid = _v0.Z;
+	return (!_Utils_eq(byr, $elm$core$Maybe$Nothing)) && ((!_Utils_eq(iyr, $elm$core$Maybe$Nothing)) && ((!_Utils_eq(eyr, $elm$core$Maybe$Nothing)) && ((!_Utils_eq(hgt, $elm$core$Maybe$Nothing)) && ((!_Utils_eq(hcl, $elm$core$Maybe$Nothing)) && ((!_Utils_eq(ecl, $elm$core$Maybe$Nothing)) && (!_Utils_eq(pid, $elm$core$Maybe$Nothing)))))));
+};
+var $author$project$Solvers$Y2020$Day4$part1 = A2(
+	$elm$core$Basics$composeR,
+	$elm$core$List$filter($author$project$Solvers$Y2020$Day4$isValidSimple),
+	A2($elm$core$Basics$composeR, $elm$core$List$length, $elm$core$String$fromInt));
+var $elm$core$List$all = F2(
+	function (isOkay, list) {
+		return !A2(
+			$elm$core$List$any,
+			A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay),
+			list);
+	});
+var $author$project$Solvers$Y2020$Day4$isValid_byr = function (str) {
+	var _v0 = $elm$core$String$toInt(str);
+	if (!_v0.$) {
+		var _int = _v0.a;
+		return (_int >= 1920) && (_int <= 2020);
+	} else {
+		return false;
+	}
+};
+var $author$project$Solvers$Y2020$Day4$isValid_ecl = function (str) {
+	return A2(
+		$elm$core$List$member,
+		str,
+		_List_fromArray(
+			['amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth']));
+};
+var $author$project$Solvers$Y2020$Day4$isValid_eyr = function (str) {
+	var _v0 = $elm$core$String$toInt(str);
+	if (!_v0.$) {
+		var _int = _v0.a;
+		return (_int >= 2020) && (_int <= 2030);
+	} else {
+		return false;
+	}
+};
+var $elm$core$String$contains = _String_contains;
+var $elm$core$Basics$pow = _Basics_pow;
+var $rtfeldman$elm_hex$Hex$fromStringHelp = F3(
+	function (position, chars, accumulated) {
+		fromStringHelp:
+		while (true) {
+			if (!chars.b) {
+				return $elm$core$Result$Ok(accumulated);
+			} else {
+				var _char = chars.a;
+				var rest = chars.b;
+				switch (_char) {
+					case '0':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated;
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '1':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + A2($elm$core$Basics$pow, 16, position);
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '2':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (2 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '3':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (3 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '4':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (4 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '5':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (5 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '6':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (6 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '7':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (7 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '8':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (8 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '9':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (9 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case 'a':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (10 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case 'b':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (11 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case 'c':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (12 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case 'd':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (13 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case 'e':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (14 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case 'f':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (15 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					default:
+						var nonHex = _char;
+						return $elm$core$Result$Err(
+							$elm$core$String$fromChar(nonHex) + ' is not a valid hexadecimal character.');
+				}
+			}
+		}
+	});
+var $elm$core$String$length = _String_length;
+var $elm$core$String$startsWith = _String_startsWith;
+var $elm$core$List$tail = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(xs);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $rtfeldman$elm_hex$Hex$fromString = function (str) {
+	if ($elm$core$String$isEmpty(str)) {
+		return $elm$core$Result$Err('Empty strings are not valid hexadecimal strings.');
+	} else {
+		var result = function () {
+			if (A2($elm$core$String$startsWith, '-', str)) {
+				var list = A2(
+					$elm$core$Maybe$withDefault,
+					_List_Nil,
+					$elm$core$List$tail(
+						$elm$core$String$toList(str)));
+				return A2(
+					$elm$core$Result$map,
+					$elm$core$Basics$negate,
+					A3(
+						$rtfeldman$elm_hex$Hex$fromStringHelp,
+						$elm$core$List$length(list) - 1,
+						list,
+						0));
+			} else {
+				return A3(
+					$rtfeldman$elm_hex$Hex$fromStringHelp,
+					$elm$core$String$length(str) - 1,
+					$elm$core$String$toList(str),
+					0);
+			}
+		}();
+		var formatError = function (err) {
+			return A2(
+				$elm$core$String$join,
+				' ',
+				_List_fromArray(
+					['\"' + (str + '\"'), 'is not a valid hexadecimal string because', err]));
+		};
+		return A2($elm$core$Result$mapError, formatError, result);
+	}
+};
+var $elm$core$String$replace = F3(
+	function (before, after, string) {
+		return A2(
+			$elm$core$String$join,
+			after,
+			A2($elm$core$String$split, before, string));
+	});
+var $elm$core$Result$toMaybe = function (result) {
+	if (!result.$) {
+		var v = result.a;
+		return $elm$core$Maybe$Just(v);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Solvers$Y2020$Day4$isValid_hcl = function (str) {
+	return A2($elm$core$String$contains, '#', str) ? (!_Utils_eq(
+		$elm$core$Maybe$Nothing,
+		$elm$core$Result$toMaybe(
+			$rtfeldman$elm_hex$Hex$fromString(
+				A3($elm$core$String$replace, '#', '', str))))) : false;
+};
+var $elm$core$Maybe$andThen = F2(
+	function (callback, maybeValue) {
+		if (!maybeValue.$) {
+			var value = maybeValue.a;
+			return callback(value);
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $author$project$Solvers$Y2020$Day4$isValid_hgt = function (str) {
+	if (A2($elm$core$String$contains, 'cm', str) || A2($elm$core$String$contains, 'in', str)) {
+		var _v0 = A2(
+			$elm$core$Maybe$andThen,
+			$elm$core$String$toInt,
+			$elm$core$List$head(
+				A2($elm$core$String$split, 'cm', str)));
+		if (!_v0.$) {
+			var _int = _v0.a;
+			return (_int >= 150) && (_int <= 193);
+		} else {
+			var _v1 = A2(
+				$elm$core$Maybe$andThen,
+				$elm$core$String$toInt,
+				$elm$core$List$head(
+					A2($elm$core$String$split, 'in', str)));
+			if (!_v1.$) {
+				var _int = _v1.a;
+				return (_int >= 59) && (_int <= 76);
+			} else {
+				return false;
+			}
+		}
+	} else {
+		return false;
+	}
+};
+var $author$project$Solvers$Y2020$Day4$isValid_iyr = function (str) {
+	var _v0 = $elm$core$String$toInt(str);
+	if (!_v0.$) {
+		var _int = _v0.a;
+		return (_int >= 2010) && (_int <= 2020);
+	} else {
+		return false;
+	}
+};
+var $author$project$Solvers$Y2020$Day4$isValid_pid = function (str) {
+	return function (a) {
+		return A2($elm$core$List$all, $elm$core$Basics$identity, a) && ($elm$core$List$length(a) === 9);
+	}(
+		A2(
+			$elm$core$List$map,
+			$elm$core$Char$isDigit,
+			$elm$core$String$toList(str)));
+};
+var $author$project$Solvers$Y2020$Day4$isValid = function (_v0) {
+	var byr = _v0.Q;
+	var iyr = _v0.V;
+	var eyr = _v0.S;
+	var hgt = _v0.U;
+	var hcl = _v0.T;
+	var ecl = _v0.R;
+	var pid = _v0.Z;
+	return A2(
+		$elm$core$List$all,
+		$elm$core$Basics$identity,
+		_List_fromArray(
+			[
+				A2(
+				$elm$core$Maybe$withDefault,
+				false,
+				A2($elm$core$Maybe$map, $author$project$Solvers$Y2020$Day4$isValid_byr, byr)),
+				A2(
+				$elm$core$Maybe$withDefault,
+				false,
+				A2($elm$core$Maybe$map, $author$project$Solvers$Y2020$Day4$isValid_iyr, iyr)),
+				A2(
+				$elm$core$Maybe$withDefault,
+				false,
+				A2($elm$core$Maybe$map, $author$project$Solvers$Y2020$Day4$isValid_eyr, eyr)),
+				A2(
+				$elm$core$Maybe$withDefault,
+				false,
+				A2($elm$core$Maybe$map, $author$project$Solvers$Y2020$Day4$isValid_hgt, hgt)),
+				A2(
+				$elm$core$Maybe$withDefault,
+				false,
+				A2($elm$core$Maybe$map, $author$project$Solvers$Y2020$Day4$isValid_hcl, hcl)),
+				A2(
+				$elm$core$Maybe$withDefault,
+				false,
+				A2($elm$core$Maybe$map, $author$project$Solvers$Y2020$Day4$isValid_ecl, ecl)),
+				A2(
+				$elm$core$Maybe$withDefault,
+				false,
+				A2($elm$core$Maybe$map, $author$project$Solvers$Y2020$Day4$isValid_pid, pid))
+			]));
+};
+var $author$project$Solvers$Y2020$Day4$part2 = A2(
+	$elm$core$Basics$composeR,
+	$elm$core$List$filter($author$project$Solvers$Y2020$Day4$isValid),
+	A2($elm$core$Basics$composeR, $elm$core$List$length, $elm$core$String$fromInt));
+var $author$project$Solvers$Y2020$Day4$emptyPassport = {Q: $elm$core$Maybe$Nothing, al: $elm$core$Maybe$Nothing, R: $elm$core$Maybe$Nothing, S: $elm$core$Maybe$Nothing, T: $elm$core$Maybe$Nothing, U: $elm$core$Maybe$Nothing, V: $elm$core$Maybe$Nothing, Z: $elm$core$Maybe$Nothing};
+var $author$project$Solvers$Y2020$Day4$inputToListOfPassport = A2(
+	$elm$core$Basics$composeR,
+	$elm$core$String$trim,
+	A2(
+		$elm$core$Basics$composeR,
+		$elm$core$String$lines,
+		A2(
+			$elm$core$Basics$composeR,
+			A2(
+				$elm$core$List$foldl,
+				F2(
+					function (a, b) {
+						if ($elm$core$String$trim(a) === '') {
+							return A2($elm$core$List$cons, '', b);
+						} else {
+							if (!b.b) {
+								return A2($elm$core$List$cons, a, b);
+							} else {
+								var head = b.a;
+								var rest = b.b;
+								return A2($elm$core$List$cons, a + (' ' + head), rest);
+							}
+						}
+					}),
+				_List_Nil),
+			$elm$core$List$map(
+				A2(
+					$elm$core$Basics$composeR,
+					$elm$core$String$split(' '),
+					A2(
+						$elm$core$List$foldl,
+						F2(
+							function (a, b) {
+								var _v1 = A2(
+									$elm$core$String$split,
+									':',
+									$elm$core$String$trim(a));
+								_v1$8:
+								while (true) {
+									if ((_v1.b && _v1.b.b) && (!_v1.b.b.b)) {
+										switch (_v1.a) {
+											case 'byr':
+												var _v2 = _v1.b;
+												var v = _v2.a;
+												return _Utils_update(
+													b,
+													{
+														Q: $elm$core$Maybe$Just(v)
+													});
+											case 'iyr':
+												var _v3 = _v1.b;
+												var v = _v3.a;
+												return _Utils_update(
+													b,
+													{
+														V: $elm$core$Maybe$Just(v)
+													});
+											case 'eyr':
+												var _v4 = _v1.b;
+												var v = _v4.a;
+												return _Utils_update(
+													b,
+													{
+														S: $elm$core$Maybe$Just(v)
+													});
+											case 'hgt':
+												var _v5 = _v1.b;
+												var v = _v5.a;
+												return _Utils_update(
+													b,
+													{
+														U: $elm$core$Maybe$Just(v)
+													});
+											case 'hcl':
+												var _v6 = _v1.b;
+												var v = _v6.a;
+												return _Utils_update(
+													b,
+													{
+														T: $elm$core$Maybe$Just(v)
+													});
+											case 'ecl':
+												var _v7 = _v1.b;
+												var v = _v7.a;
+												return _Utils_update(
+													b,
+													{
+														R: $elm$core$Maybe$Just(v)
+													});
+											case 'pid':
+												var _v8 = _v1.b;
+												var v = _v8.a;
+												return _Utils_update(
+													b,
+													{
+														Z: $elm$core$Maybe$Just(v)
+													});
+											case 'cid':
+												var _v9 = _v1.b;
+												var v = _v9.a;
+												return _Utils_update(
+													b,
+													{
+														al: $elm$core$Maybe$Just(v)
+													});
+											default:
+												break _v1$8;
+										}
+									} else {
+										break _v1$8;
+									}
+								}
+								return b;
+							}),
+						$author$project$Solvers$Y2020$Day4$emptyPassport))))));
+var $author$project$Solvers$Y2020$Day4$partToSolver = function (f) {
+	return A2(
+		$elm$core$Basics$composeR,
+		$author$project$Solvers$Y2020$Day4$inputToListOfPassport,
+		A2($elm$core$Basics$composeR, f, $elm$core$Result$Ok));
+};
+var $author$project$Solvers$Y2020$Day4$solvers = _List_fromArray(
+	[
+		A4(
+		$author$project$Com$Solver$make,
+		2020,
+		4,
+		1,
+		$author$project$Solvers$Y2020$Day4$partToSolver($author$project$Solvers$Y2020$Day4$part1)),
+		A4(
+		$author$project$Com$Solver$make,
+		2020,
+		4,
+		2,
+		$author$project$Solvers$Y2020$Day4$partToSolver($author$project$Solvers$Y2020$Day4$part2))
+	]);
+var $elm$core$List$maximum = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(
+			A3($elm$core$List$foldl, $elm$core$Basics$max, x, xs));
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Solvers$Y2020$Day5$part1 = $elm$core$List$maximum;
+var $author$project$Solvers$Y2020$Day5$foldMissing = F2(
+	function (list, a) {
+		foldMissing:
+		while (true) {
+			if (!list.b) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var xs = list.a;
+				var rest = list.b;
+				if (_Utils_eq(xs, a)) {
+					var $temp$list = rest,
+						$temp$a = a - 1;
+					list = $temp$list;
+					a = $temp$a;
+					continue foldMissing;
+				} else {
+					return $elm$core$Maybe$Just(a);
+				}
+			}
+		}
+	});
+var $elm$core$List$sortBy = _List_sortBy;
+var $elm$core$List$sort = function (xs) {
+	return A2($elm$core$List$sortBy, $elm$core$Basics$identity, xs);
+};
+var $author$project$Solvers$Y2020$Day5$part2 = function (list) {
+	return A2(
+		$elm$core$Maybe$andThen,
+		$author$project$Solvers$Y2020$Day5$foldMissing(
+			$elm$core$List$reverse(
+				$elm$core$List$sort(list))),
+		$author$project$Solvers$Y2020$Day5$part1(list));
+};
+var $elm$core$Result$fromMaybe = F2(
+	function (err, maybe) {
+		if (!maybe.$) {
+			var v = maybe.a;
+			return $elm$core$Result$Ok(v);
+		} else {
+			return $elm$core$Result$Err(err);
+		}
+	});
+var $icidasset$elm_binary$Binary$Bits = $elm$core$Basics$identity;
+var $icidasset$elm_binary$Binary$ifThenElse = F3(
+	function (bool, a, b) {
+		return bool ? a : b;
+	});
+var $icidasset$elm_binary$Binary$fromIntegers = A2(
+	$elm$core$Basics$composeR,
+	$elm$core$List$map(
+		function (i) {
+			return A3($icidasset$elm_binary$Binary$ifThenElse, i <= 0, false, true);
+		}),
+	$elm$core$Basics$identity);
+var $icidasset$elm_binary$Binary$toDecimal = function (_v0) {
+	var bits = _v0;
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (bit, _v1) {
+				var x = _v1.a;
+				var exponent = _v1.b;
+				return _Utils_Tuple2(
+					(A2($elm$core$Basics$pow, 2, exponent) * A3($icidasset$elm_binary$Binary$ifThenElse, bit, 1, 0)) + x,
+					exponent - 1);
+			}),
+		_Utils_Tuple2(
+			0,
+			$elm$core$List$length(bits) - 1),
+		bits).a;
+};
+var $author$project$Solvers$Y2020$Day5$parsePass = A2(
+	$elm$core$Basics$composeR,
+	A2(
+		$elm$core$List$foldl,
+		F2(
+			function (operator, _v0) {
+				var r = _v0.a;
+				var c = _v0.b;
+				switch (operator) {
+					case 'B':
+						return _Utils_Tuple2(
+							A2($elm$core$List$cons, 1, r),
+							c);
+					case 'F':
+						return _Utils_Tuple2(
+							A2($elm$core$List$cons, 0, r),
+							c);
+					case 'L':
+						return _Utils_Tuple2(
+							r,
+							A2($elm$core$List$cons, 0, c));
+					case 'R':
+						return _Utils_Tuple2(
+							r,
+							A2($elm$core$List$cons, 1, c));
+					default:
+						return _Utils_Tuple2(r, c);
+				}
+			}),
+		_Utils_Tuple2(_List_Nil, _List_Nil)),
+	A2(
+		$elm$core$Basics$composeR,
+		function (_v2) {
+			var a = _v2.a;
+			var b = _v2.b;
+			var parseBits = A2(
+				$elm$core$Basics$composeR,
+				$elm$core$List$reverse,
+				A2($elm$core$Basics$composeR, $icidasset$elm_binary$Binary$fromIntegers, $icidasset$elm_binary$Binary$toDecimal));
+			return _Utils_Tuple2(
+				parseBits(a),
+				parseBits(b));
+		},
+		function (_v3) {
+			var r = _v3.a;
+			var c = _v3.b;
+			return (r * 8) + c;
+		}));
+var $author$project$Solvers$Y2020$Day5$inputToListOfInt = A2(
+	$elm$core$Basics$composeR,
+	$elm$core$String$trim,
+	A2(
+		$elm$core$Basics$composeR,
+		$elm$core$String$lines,
+		$elm$core$List$map(
+			A2($elm$core$Basics$composeR, $elm$core$String$toList, $author$project$Solvers$Y2020$Day5$parsePass))));
+var $author$project$Solvers$Y2020$Day5$partToSolver = function (f) {
+	return A2(
+		$elm$core$Basics$composeR,
+		$author$project$Solvers$Y2020$Day5$inputToListOfInt,
+		A2(
+			$elm$core$Basics$composeR,
+			f,
+			A2(
+				$elm$core$Basics$composeR,
+				$elm$core$Maybe$map($elm$core$String$fromInt),
+				$elm$core$Result$fromMaybe('answer not found'))));
+};
+var $author$project$Solvers$Y2020$Day5$solvers = _List_fromArray(
+	[
+		A4(
+		$author$project$Com$Solver$make,
+		2020,
+		5,
+		1,
+		$author$project$Solvers$Y2020$Day5$partToSolver($author$project$Solvers$Y2020$Day5$part1)),
+		A4(
+		$author$project$Com$Solver$make,
+		2020,
+		5,
+		2,
+		$author$project$Solvers$Y2020$Day5$partToSolver($author$project$Solvers$Y2020$Day5$part2))
+	]);
 var $author$project$Com$Solver$toId = function (_v0) {
-	var year = _v0.aq;
-	var day = _v0.aa;
-	var part = _v0.ag;
+	var year = _v0.aC;
+	var day = _v0.am;
+	var part = _v0.as;
 	return A2(
 		$elm$core$String$join,
 		'',
@@ -6514,7 +7182,7 @@ var $author$project$Solvers$Y2020$solvers = $elm$core$Dict$fromList(
 		},
 		$elm$core$List$concat(
 			_List_fromArray(
-				[$author$project$Solvers$Y2020$Day1$solvers, $author$project$Solvers$Y2020$Day2$solvers, $author$project$Solvers$Y2020$Day3$solvers]))));
+				[$author$project$Solvers$Y2020$Day1$solvers, $author$project$Solvers$Y2020$Day2$solvers, $author$project$Solvers$Y2020$Day3$solvers, $author$project$Solvers$Y2020$Day4$solvers, $author$project$Solvers$Y2020$Day5$solvers]))));
 var $author$project$Components$Layout$Update$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -6523,7 +7191,7 @@ var $author$project$Components$Layout$Update$update = F2(
 				return _Utils_Tuple3(
 					_Utils_update(
 						model,
-						{bA: input}),
+						{bM: input}),
 					_List_Nil,
 					$elm$core$Platform$Cmd$none);
 			case 1:
@@ -6532,12 +7200,12 @@ var $author$project$Components$Layout$Update$update = F2(
 					_Utils_update(
 						model,
 						{
-							bZ: A2($elm$core$Dict$get, solverId, $author$project$Solvers$Y2020$solvers)
+							b9: A2($elm$core$Dict$get, solverId, $author$project$Solvers$Y2020$solvers)
 						}),
 					_List_Nil,
 					$elm$core$Platform$Cmd$none);
 			case 2:
-				var _v1 = model.bZ;
+				var _v1 = model.b9;
 				if (_v1.$ === 1) {
 					return _Utils_Tuple3(model, _List_Nil, $elm$core$Platform$Cmd$none);
 				} else {
@@ -6545,10 +7213,10 @@ var $author$project$Components$Layout$Update$update = F2(
 					return _Utils_Tuple3(
 						_Utils_update(
 							model,
-							{bA: ''}),
+							{bM: ''}),
 						_List_fromArray(
 							[
-								A2($author$project$Components$Layout$Msg$Solve, solver, model.bA)
+								A2($author$project$Components$Layout$Msg$Solve, solver, model.bM)
 							]),
 						$elm$core$Platform$Cmd$none);
 				}
@@ -6558,7 +7226,7 @@ var $author$project$Components$Layout$Update$update = F2(
 					_Utils_update(
 						model,
 						{
-							bY: A2($elm$core$List$cons, pid, model.bY)
+							b8: A2($elm$core$List$cons, pid, model.b8)
 						}),
 					_List_Nil,
 					$elm$core$Platform$Cmd$none);
@@ -6668,9 +7336,9 @@ var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('
 var $elm$html$Html$option = _VirtualDom_node('option');
 var $elm$html$Html$Attributes$selected = $elm$html$Html$Attributes$boolProperty('selected');
 var $author$project$Com$Solver$toLabel = function (_v0) {
-	var year = _v0.aq;
-	var day = _v0.aa;
-	var part = _v0.ag;
+	var year = _v0.aC;
+	var day = _v0.am;
+	var part = _v0.as;
 	return A2(
 		$elm$core$String$join,
 		'',
@@ -6756,7 +7424,7 @@ var $author$project$Components$Layout$View$viewForm = F2(
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$name('input'),
-									$elm$html$Html$Attributes$value(model.bA),
+									$elm$html$Html$Attributes$value(model.bM),
 									$elm$html$Html$Events$onInput(
 									A2($elm$core$Basics$composeR, $author$project$Components$Layout$Msg$OnInput, toSelf))
 								]),
@@ -6803,7 +7471,7 @@ var $author$project$Components$Layout$View$viewForm = F2(
 										[
 											$elm$html$Html$Attributes$name('solver')
 										]),
-									$author$project$Components$Layout$View$viewSolverOptions(model.bZ)),
+									$author$project$Components$Layout$View$viewSolverOptions(model.b9)),
 									A2(
 									$elm$html$Html$span,
 									_List_Nil,
@@ -6818,7 +7486,7 @@ var $author$project$Components$Layout$View$viewForm = F2(
 					_List_fromArray(
 						[
 							$elm$html$Html$Attributes$disabled(
-							_Utils_eq(model.bZ, $elm$core$Maybe$Nothing)),
+							_Utils_eq(model.b9, $elm$core$Maybe$Nothing)),
 							$elm$html$Html$Events$onClick(
 							toSelf($author$project$Components$Layout$Msg$OnSolve))
 						]),
@@ -6836,7 +7504,7 @@ var $author$project$Components$Layout$View$viewSolutions = F2(
 				[
 					$elm$html$Html$Attributes$class('Layout_Solutions')
 				]),
-			A2($elm$core$List$filterMap, renderPid, model.bY));
+			A2($elm$core$List$filterMap, renderPid, model.b8));
 	});
 var $author$project$Components$Layout$View$view = F3(
 	function (toSelf, model, renderPid) {
@@ -6852,7 +7520,7 @@ var $author$project$Components$Layout$View$view = F3(
 					A2($author$project$Components$Layout$View$viewSolutions, model, renderPid)
 				]));
 	});
-var $author$project$Components$Layout$Main$component = {aK: $author$project$Components$Layout$Init$init, b$: $author$project$Components$Layout$Subscriptions$subscriptions, b5: $author$project$Components$Layout$Update$update, b6: $author$project$Components$Layout$View$view};
+var $author$project$Components$Layout$Main$component = {aW: $author$project$Components$Layout$Init$init, cb: $author$project$Components$Layout$Subscriptions$subscriptions, ch: $author$project$Components$Layout$Update$update, ci: $author$project$Components$Layout$View$view};
 var $author$project$Actors$Layout$fromAppMsg = function (appMsg) {
 	if (!appMsg.$) {
 		var msgIn = appMsg.a;
@@ -6905,9 +7573,9 @@ var $tricycle$elm_actor_framework$Framework$Internal$Message$toSelf = F2(
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Actor$wrapToTuple = F3(
 	function (_v0, pid, _v1) {
-		var toAppModel = _v0.b3;
-		var toAppMsg = _v0.b4;
-		var onMsgOut = _v0.bN;
+		var toAppModel = _v0.cf;
+		var toAppMsg = _v0.cg;
+		var onMsgOut = _v0.bZ;
 		var model = _v1.a;
 		var msgsOut = _v1.b;
 		var cmd = _v1.c;
@@ -6933,7 +7601,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Actor$wrapToTuple = F3(
 							$elm$core$List$map,
 							function (msgOut) {
 								return onMsgOut(
-									{bD: msgOut, bX: pid});
+									{bP: msgOut, b7: pid});
 							},
 							msgsOut)))));
 	});
@@ -6951,7 +7619,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentInit = F
 var $elm$core$Platform$Sub$map = _Platform_map;
 var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentSubscriptions = F4(
 	function (_v0, subs, componentModel, pid) {
-		var toAppMsg = _v0.b4;
+		var toAppMsg = _v0.cg;
 		return _Utils_eq(
 			subs(componentModel),
 			$elm$core$Platform$Sub$none) ? $elm$core$Platform$Sub$none : A2(
@@ -6965,7 +7633,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentUpdate =
 	function (_arguments, update, componentModel, msg, pid) {
 		if (!msg.$) {
 			var appMsg = msg.a;
-			var _v1 = _arguments.bx(appMsg);
+			var _v1 = _arguments.bJ(appMsg);
 			if (!_v1.$) {
 				var componentMsgIn = _v1.a;
 				return A3(
@@ -6975,18 +7643,18 @@ var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentUpdate =
 					A2(update, componentMsgIn, componentModel));
 			} else {
 				return _Utils_Tuple2(
-					_arguments.b3(componentModel),
+					_arguments.cf(componentModel),
 					$tricycle$elm_actor_framework$Framework$Internal$Message$noOperation);
 			}
 		} else {
 			return _Utils_Tuple2(
-				_arguments.b3(componentModel),
+				_arguments.cf(componentModel),
 				$tricycle$elm_actor_framework$Framework$Internal$Message$noOperation);
 		}
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentView = F4(
 	function (_v0, view, componentModel, pid) {
-		var toAppMsg = _v0.b4;
+		var toAppMsg = _v0.cg;
 		return A2(
 			view,
 			A2($tricycle$elm_actor_framework$Framework$Internal$Message$toSelf, toAppMsg, pid),
@@ -6994,19 +7662,19 @@ var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentView = F
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponent = F2(
 	function (_arguments, component) {
-		var view = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentView, _arguments, component.b6);
-		var update = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentUpdate, _arguments, component.b5);
-		var subscriptions = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentSubscriptions, _arguments, component.b$);
-		var processMethods = {b$: subscriptions, b5: update, b6: view};
-		var init = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentInit, _arguments, component.aK);
+		var view = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentView, _arguments, component.ci);
+		var update = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentUpdate, _arguments, component.ch);
+		var subscriptions = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentSubscriptions, _arguments, component.cb);
+		var processMethods = {cb: subscriptions, ch: update, ci: view};
+		var init = A2($tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponentInit, _arguments, component.aW);
 		var apply = function (componentModel) {
 			return {
-				b$: subscriptions(componentModel),
-				b5: update(componentModel),
-				b6: view(componentModel)
+				cb: subscriptions(componentModel),
+				ch: update(componentModel),
+				ci: view(componentModel)
 			};
 		};
-		return {as: apply, aK: init, bU: processMethods};
+		return {aE: apply, aW: init, b4: processMethods};
 	});
 var $tricycle$elm_actor_framework$Framework$Actor$fromComponent = $tricycle$elm_actor_framework$Framework$Internal$Actor$fromComponent;
 var $author$project$Components$Layout$Msg$OnSpawnedSolver = function (a) {
@@ -7033,8 +7701,8 @@ var $tricycle$elm_actor_framework$Framework$Internal$Message$spawn = F3(
 	});
 var $tricycle$elm_actor_framework$Framework$Message$spawn = $tricycle$elm_actor_framework$Framework$Internal$Message$spawn;
 var $author$project$Actors$Layout$onMsgOut = function (_v0) {
-	var self = _v0.bX;
-	var msgOut = _v0.bD;
+	var self = _v0.b7;
+	var msgOut = _v0.bP;
 	var solver = msgOut.a;
 	var input = msgOut.b;
 	return A3(
@@ -7060,14 +7728,14 @@ var $author$project$Actors$Layout$onMsgOut = function (_v0) {
 };
 var $author$project$Actors$Layout$actor = A2(
 	$tricycle$elm_actor_framework$Framework$Actor$fromComponent,
-	{bx: $author$project$Actors$Layout$fromAppMsg, bN: $author$project$Actors$Layout$onMsgOut, b3: $author$project$Model$Layout, b4: $author$project$Msg$Layout},
+	{bJ: $author$project$Actors$Layout$fromAppMsg, bZ: $author$project$Actors$Layout$onMsgOut, cf: $author$project$Model$Layout, cg: $author$project$Msg$Layout},
 	$author$project$Components$Layout$Main$component);
 var $author$project$Model$Solver = function (a) {
 	return {$: 1, a: a};
 };
 var $author$project$Components$Solver$Init$init = function (_v0) {
 	return _Utils_Tuple3(
-		{bA: '', bS: $elm$core$Maybe$Nothing, bZ: $elm$core$Maybe$Nothing},
+		{bM: '', b2: $elm$core$Maybe$Nothing, b9: $elm$core$Maybe$Nothing},
 		_List_Nil,
 		$elm$core$Platform$Cmd$none);
 };
@@ -7075,7 +7743,7 @@ var $author$project$Components$Solver$Subscriptions$subscriptions = function (mo
 	return $elm$core$Platform$Sub$none;
 };
 var $author$project$Com$Solver$solve = function (_v0) {
-	var func = _v0.aE;
+	var func = _v0.aQ;
 	return func;
 };
 var $author$project$Components$Solver$Update$update = F2(
@@ -7084,10 +7752,10 @@ var $author$project$Components$Solver$Update$update = F2(
 		var input = msg.b;
 		return _Utils_Tuple3(
 			{
-				bA: input,
-				bS: $elm$core$Maybe$Just(
+				bM: input,
+				b2: $elm$core$Maybe$Just(
 					A2($author$project$Com$Solver$solve, solver, input)),
-				bZ: $elm$core$Maybe$Just(solver)
+				b9: $elm$core$Maybe$Just(solver)
 			},
 			_List_Nil,
 			$elm$core$Platform$Cmd$none);
@@ -7170,16 +7838,16 @@ var $author$project$Components$Solver$View$viewResult = F3(
 	});
 var $author$project$Components$Solver$View$view = F3(
 	function (_v0, model, _v1) {
-		var _v2 = _Utils_Tuple2(model.bS, model.bZ);
+		var _v2 = _Utils_Tuple2(model.b2, model.b9);
 		if ((!_v2.a.$) && (!_v2.b.$)) {
 			var result = _v2.a.a;
 			var solver = _v2.b.a;
-			return A3($author$project$Components$Solver$View$viewResult, solver, model.bA, result);
+			return A3($author$project$Components$Solver$View$viewResult, solver, model.bM, result);
 		} else {
 			return $elm$html$Html$text('');
 		}
 	});
-var $author$project$Components$Solver$Main$component = {aK: $author$project$Components$Solver$Init$init, b$: $author$project$Components$Solver$Subscriptions$subscriptions, b5: $author$project$Components$Solver$Update$update, b6: $author$project$Components$Solver$View$view};
+var $author$project$Components$Solver$Main$component = {aW: $author$project$Components$Solver$Init$init, cb: $author$project$Components$Solver$Subscriptions$subscriptions, ch: $author$project$Components$Solver$Update$update, ci: $author$project$Components$Solver$View$view};
 var $author$project$Actors$Solver$fromAppMsg = function (appMsg) {
 	if (appMsg.$ === 1) {
 		var msgIn = appMsg.a;
@@ -7190,21 +7858,21 @@ var $author$project$Actors$Solver$fromAppMsg = function (appMsg) {
 };
 var $tricycle$elm_actor_framework$Framework$Message$noOperation = $tricycle$elm_actor_framework$Framework$Internal$Message$noOperation;
 var $author$project$Actors$Solver$onMsgOut = function (_v0) {
-	var self = _v0.bX;
-	var msgOut = _v0.bD;
+	var self = _v0.b7;
+	var msgOut = _v0.bP;
 	return $tricycle$elm_actor_framework$Framework$Message$noOperation;
 };
 var $author$project$Actors$Solver$actor = A2(
 	$tricycle$elm_actor_framework$Framework$Actor$fromComponent,
-	{bx: $author$project$Actors$Solver$fromAppMsg, bN: $author$project$Actors$Solver$onMsgOut, b3: $author$project$Model$Solver, b4: $author$project$Msg$Solver},
+	{bJ: $author$project$Actors$Solver$fromAppMsg, bZ: $author$project$Actors$Solver$onMsgOut, cf: $author$project$Model$Solver, cg: $author$project$Msg$Solver},
 	$author$project$Components$Solver$Main$component);
 var $author$project$Bootstrap$apply = function (model) {
 	if (!model.$) {
 		var m = model.a;
-		return $author$project$Actors$Layout$actor.as(m);
+		return $author$project$Actors$Layout$actor.aE(m);
 	} else {
 		var m = model.a;
-		return $author$project$Actors$Solver$actor.as(m);
+		return $author$project$Actors$Solver$actor.aE(m);
 	}
 };
 var $elm$browser$Browser$External = function (a) {
@@ -7218,10 +7886,8 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {aD: fragment, aJ: host, aU: path, aW: port_, a_: protocol, a$: query};
+		return {aP: fragment, aV: host, a4: path, a6: port_, ba: protocol, bb: query};
 	});
-var $elm$core$String$contains = _String_contains;
-var $elm$core$String$length = _String_length;
 var $elm$core$String$dropLeft = F2(
 	function (n, string) {
 		return (n < 1) ? string : A3(
@@ -7328,7 +7994,6 @@ var $elm$url$Url$chompAfterProtocol = F2(
 			}
 		}
 	});
-var $elm$core$String$startsWith = _String_startsWith;
 var $elm$url$Url$fromString = function (str) {
 	return A2($elm$core$String$startsWith, 'http://', str) ? A2(
 		$elm$url$Url$chompAfterProtocol,
@@ -7424,7 +8089,7 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$document = _Browser_document;
 var $tricycle$elm_actor_framework$Framework$Internal$Model$getViews = function ($) {
-	return $.A;
+	return $.B;
 };
 var $elm$core$Tuple$second = function (_v0) {
 	var y = _v0.b;
@@ -7438,7 +8103,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Pid$toInt = function (pid) 
 	if (pid.$ === 1) {
 		return 1;
 	} else {
-		var id = pid.a.ac;
+		var id = pid.a.ao;
 		return id;
 	}
 };
@@ -7464,7 +8129,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$Instances$get = funct
 };
 var $tricycle$elm_actor_framework$Framework$Internal$Model$getInstance = F2(
 	function (pid, _v0) {
-		var instances = _v0.u;
+		var instances = _v0.v;
 		return A2($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$get, pid, instances);
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Render$renderPid = F3(
@@ -7489,21 +8154,21 @@ var $tricycle$elm_actor_framework$Framework$Internal$Render$element = F2(
 				A2(
 					$elm$core$Basics$composeL,
 					function ($) {
-						return $.b6;
+						return $.ci;
 					},
 					apply),
 				frameworkModel),
 			$tricycle$elm_actor_framework$Framework$Internal$Model$getViews(frameworkModel));
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Model$getDocumentTitle = function ($) {
-	return $.V;
+	return $.ad;
 };
 var $tricycle$elm_actor_framework$Framework$Internal$Render$application = F3(
 	function (apply, view, frameworkModel) {
 		return function (body) {
 			return {
-				bj: body,
-				b2: $tricycle$elm_actor_framework$Framework$Internal$Model$getDocumentTitle(frameworkModel)
+				bv: body,
+				ce: $tricycle$elm_actor_framework$Framework$Internal$Model$getDocumentTitle(frameworkModel)
 			};
 		}(
 			view(
@@ -7523,7 +8188,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$Parents$fromPidCollec
 var $tricycle$elm_actor_framework$Framework$Internal$Model$Parents$empty = $tricycle$elm_actor_framework$Framework$Internal$Model$Parents$fromPidCollection($tricycle$elm_actor_framework$Framework$Internal$Model$PidCollection$empty);
 var $tricycle$elm_actor_framework$Framework$Internal$Pid$System = {$: 1};
 var $tricycle$elm_actor_framework$Framework$Internal$Pid$system = $tricycle$elm_actor_framework$Framework$Internal$Pid$System;
-var $tricycle$elm_actor_framework$Framework$Internal$Model$empty = {V: '', u: $tricycle$elm_actor_framework$Framework$Internal$Model$Instances$empty, W: $tricycle$elm_actor_framework$Framework$Internal$Pid$system, w: $tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$empty, K: $tricycle$elm_actor_framework$Framework$Internal$Model$Parents$empty, A: _List_Nil};
+var $tricycle$elm_actor_framework$Framework$Internal$Model$empty = {ad: '', v: $tricycle$elm_actor_framework$Framework$Internal$Model$Instances$empty, ae: $tricycle$elm_actor_framework$Framework$Internal$Pid$system, x: $tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$empty, M: $tricycle$elm_actor_framework$Framework$Internal$Model$Parents$empty, B: _List_Nil};
 var $elm$core$Dict$foldl = F3(
 	function (func, acc, dict) {
 		foldl:
@@ -7573,7 +8238,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$Instances$fold = F2(
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Model$foldlInstances = F3(
 	function (f, initial, _v0) {
-		var instances = _v0.u;
+		var instances = _v0.v;
 		return A3($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$fold, f, initial, instances);
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Subscriptions$getSubscriptions = function (apply) {
@@ -7584,7 +8249,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Subscriptions$getSubscripti
 			F3(
 				function (pid, appModel, listOfSubs) {
 					var process = apply(appModel);
-					var processSubscriptions = process.b$(pid);
+					var processSubscriptions = process.cb(pid);
 					return _Utils_eq(processSubscriptions, $elm$core$Platform$Sub$none) ? listOfSubs : A2($elm$core$List$cons, processSubscriptions, listOfSubs);
 				}),
 			_List_Nil),
@@ -7595,8 +8260,8 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$addToView = F2(
 		return _Utils_update(
 			model,
 			{
-				A: _Utils_ap(
-					model.A,
+				B: _Utils_ap(
+					model.B,
 					_List_fromArray(
 						[pid]))
 			});
@@ -7626,13 +8291,6 @@ var $tricycle$elm_actor_framework$Framework$Internal$Message$filterAppMsgs = fun
 	}
 	return _List_Nil;
 };
-var $elm$core$List$all = F2(
-	function (isOkay, list) {
-		return !A2(
-			$elm$core$List$any,
-			A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay),
-			list);
-	});
 var $tricycle$elm_actor_framework$Framework$Internal$Message$isNoOp = function (msg) {
 	_v0$2:
 	while (true) {
@@ -7684,7 +8342,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$getInhabitants = func
 		$elm$core$Basics$composeL,
 		$tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$getPidsOnAddress(address),
 		function ($) {
-			return $.w;
+			return $.x;
 		});
 };
 var $elm$core$List$isEmpty = function (xs) {
@@ -7729,7 +8387,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$populateAddress = F3(
 		return _Utils_update(
 			model,
 			{
-				w: A3($tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$insert, address, pid, model.w)
+				x: A3($tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$insert, address, pid, model.x)
 			});
 	});
 var $elm$core$List$singleton = function (value) {
@@ -7784,7 +8442,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$removeFromAddress = F
 		return _Utils_update(
 			model,
 			{
-				w: A3($tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$remove, address, pid, model.w)
+				x: A3($tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$remove, address, pid, model.x)
 			});
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Model$removeFromView = F2(
@@ -7792,13 +8450,13 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$removeFromView = F2(
 		return _Utils_update(
 			model,
 			{
-				A: A2(
+				B: A2(
 					$elm$core$List$filter,
 					A2(
 						$elm$core$Basics$composeL,
 						$elm$core$Basics$not,
 						$tricycle$elm_actor_framework$Framework$Internal$Pid$equals(pid)),
-					model.A)
+					model.B)
 			});
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$getAddressesForPid = function (queryPid) {
@@ -8328,29 +8986,29 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$removePid = F2(
 		return _Utils_update(
 			model,
 			{
-				u: A2($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$remove, pid, model.u),
-				w: A3(
+				v: A2($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$remove, pid, model.v),
+				x: A3(
 					$elm$core$List$foldl,
 					function (address) {
 						return A2($tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$remove, address, pid);
 					},
-					model.w,
-					A2($tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$getAddressesForPid, pid, model.w)),
-				K: A2($tricycle$elm_actor_framework$Framework$Internal$Model$Parents$remove, pid, model.K),
-				A: A2(
+					model.x,
+					A2($tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$getAddressesForPid, pid, model.x)),
+				M: A2($tricycle$elm_actor_framework$Framework$Internal$Model$Parents$remove, pid, model.M),
+				B: A2(
 					$elm$core$List$filter,
 					A2(
 						$elm$core$Basics$composeL,
 						$elm$core$Basics$not,
 						$tricycle$elm_actor_framework$Framework$Internal$Pid$equals(pid)),
-					model.A)
+					model.B)
 			});
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Pid$toSpawnedBy = function (pid) {
 	if (pid.$ === 1) {
 		return pid;
 	} else {
-		var spawnedBy = pid.a.b_;
+		var spawnedBy = pid.a.ca;
 		return spawnedBy;
 	}
 };
@@ -8416,18 +9074,18 @@ var $tricycle$elm_actor_framework$Framework$Internal$Pid$Pid = function (a) {
 	return {$: 0, a: a};
 };
 var $tricycle$elm_actor_framework$Framework$Internal$Pid$new = function (_v0) {
-	var previousPid = _v0.bT;
-	var spawnedBy = _v0.b_;
+	var previousPid = _v0.b3;
+	var spawnedBy = _v0.ca;
 	return $tricycle$elm_actor_framework$Framework$Internal$Pid$Pid(
 		{
-			ac: 1 + $tricycle$elm_actor_framework$Framework$Internal$Pid$toInt(previousPid),
-			b_: spawnedBy
+			ao: 1 + $tricycle$elm_actor_framework$Framework$Internal$Pid$toInt(previousPid),
+			ca: spawnedBy
 		});
 };
 var $tricycle$elm_actor_framework$Framework$Internal$Model$spawnInstance = F5(
 	function (factory, spawnedBy, actorName, flags, model) {
 		var newPid = $tricycle$elm_actor_framework$Framework$Internal$Pid$new(
-			{bT: model.W, b_: spawnedBy});
+			{b3: model.ae, ca: spawnedBy});
 		var _v0 = A2(
 			factory,
 			actorName,
@@ -8438,9 +9096,9 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$spawnInstance = F5(
 			_Utils_update(
 				model,
 				{
-					u: A3($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$insert, newPid, appModel, model.u),
-					W: newPid,
-					K: A2($tricycle$elm_actor_framework$Framework$Internal$Model$Parents$addChild, newPid, model.K)
+					v: A3($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$insert, newPid, appModel, model.v),
+					ae: newPid,
+					M: A2($tricycle$elm_actor_framework$Framework$Internal$Model$Parents$addChild, newPid, model.M)
 				}),
 			msg);
 	});
@@ -8448,14 +9106,14 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$updateDocumentTitle =
 	function (title, model) {
 		return _Utils_update(
 			model,
-			{V: title});
+			{ad: title});
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Model$updateInstance = F3(
 	function (model, pid, appModel) {
 		return _Utils_update(
 			model,
 			{
-				u: A3($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$insert, pid, appModel, model.u)
+				v: A3($tricycle$elm_actor_framework$Framework$Internal$Model$Instances$insert, pid, appModel, model.v)
 			});
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Update$andThen = F4(
@@ -8479,8 +9137,8 @@ var $tricycle$elm_actor_framework$Framework$Internal$Update$update = F4(
 	function (args, maybePid, msg, model) {
 		update:
 		while (true) {
-			var factory = args.bv;
-			var apply = args.as;
+			var factory = args.bH;
+			var apply = args.aE;
 			switch (msg.$) {
 				case 0:
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -8553,7 +9211,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Update$update = F4(
 												function (appMsg, _v6) {
 													var model_ = _v6.a;
 													var msgs_ = _v6.b;
-													var instanceUpdate = apply(model_).b5;
+													var instanceUpdate = apply(model_).ch;
 													return A2(
 														$elm$core$Tuple$mapSecond,
 														$tricycle$elm_actor_framework$Framework$Internal$Helper$List$postpend(msgs_),
@@ -8592,7 +9250,7 @@ var $tricycle$elm_actor_framework$Framework$Internal$Update$update = F4(
 								_List_fromArray(
 									[
 										newMsg,
-										callback(updatedModel.W)
+										callback(updatedModel.ae)
 									]));
 							if ($elm$core$List$isEmpty(newMsgs)) {
 								return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
@@ -8648,34 +9306,34 @@ var $tricycle$elm_actor_framework$Framework$Internal$Update$update = F4(
 		}
 	});
 var $tricycle$elm_actor_framework$Framework$Browser$toProgramRecord = function (args) {
-	var view = $tricycle$elm_actor_framework$Framework$Internal$Render$application(args.as);
+	var view = $tricycle$elm_actor_framework$Framework$Internal$Render$application(args.aE);
 	var update = A2($tricycle$elm_actor_framework$Framework$Internal$Update$update, args, $elm$core$Maybe$Nothing);
-	var subscriptions = $tricycle$elm_actor_framework$Framework$Internal$Subscriptions$getSubscriptions(args.as);
+	var subscriptions = $tricycle$elm_actor_framework$Framework$Internal$Subscriptions$getSubscriptions(args.aE);
 	var init = function (msg) {
 		return A2(update, msg, $tricycle$elm_actor_framework$Framework$Internal$Model$empty);
 	};
-	return {aK: init, b$: subscriptions, b5: update, b6: view};
+	return {aW: init, cb: subscriptions, ch: update, ci: view};
 };
 var $tricycle$elm_actor_framework$Framework$Browser$document = function (_v0) {
-	var factory = _v0.bv;
-	var apply = _v0.as;
-	var init = _v0.aK;
-	var view = _v0.b6;
+	var factory = _v0.bH;
+	var apply = _v0.aE;
+	var init = _v0.aW;
+	var view = _v0.ci;
 	var record = $tricycle$elm_actor_framework$Framework$Browser$toProgramRecord(
-		{as: apply, bv: factory});
+		{aE: apply, bH: factory});
 	return $elm$browser$Browser$document(
 		{
-			aK: A2($elm$core$Basics$composeR, init, record.aK),
-			b$: record.b$,
-			b5: record.b5,
-			b6: record.b6(view)
+			aW: A2($elm$core$Basics$composeR, init, record.aW),
+			cb: record.cb,
+			ch: record.ch,
+			ci: record.ci(view)
 		});
 };
 var $author$project$Bootstrap$factory = function (actorName) {
 	if (!actorName) {
-		return $author$project$Actors$Layout$actor.aK;
+		return $author$project$Actors$Layout$actor.aW;
 	} else {
-		return $author$project$Actors$Solver$actor.aK;
+		return $author$project$Actors$Solver$actor.aW;
 	}
 };
 var $author$project$Actors$Layout = 0;
@@ -8754,7 +9412,7 @@ var $author$project$Main$view = function (output) {
 		]);
 };
 var $author$project$Main$main = $tricycle$elm_actor_framework$Framework$Browser$document(
-	{as: $author$project$Bootstrap$apply, bv: $author$project$Bootstrap$factory, aK: $author$project$Main$init, b6: $author$project$Main$view});
+	{aE: $author$project$Bootstrap$apply, bH: $author$project$Bootstrap$factory, aW: $author$project$Main$init, ci: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
 

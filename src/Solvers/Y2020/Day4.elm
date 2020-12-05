@@ -91,6 +91,17 @@ inputToListOfPassport =
             )
 
 
+
+-- >> Debug.log "?"
+-- >> (\a ->
+--         let
+--             _ =
+--                 Debug.log "passports: " (List.length a)
+--         in
+--         a
+--    )
+
+
 partToSolver : (List Passport -> String) -> (String -> Result String String)
 partToSolver f =
     inputToListOfPassport >> f >> Ok
