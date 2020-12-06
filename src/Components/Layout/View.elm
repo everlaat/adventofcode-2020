@@ -71,6 +71,7 @@ viewSolverOptions maybeSelectedSolver =
                 else
                     options
            )
+        |> List.reverse
 
 
 viewSolutions : Model -> (Pid -> Maybe (Html msg)) -> Html msg

@@ -23,9 +23,9 @@ solve (Solver { func }) =
 toLabel : Solver -> String
 toLabel (Solver { year, day, part }) =
     [ String.fromInt year
-    , " d"
+    , " day "
     , String.fromInt day
-    , " p"
+    , ", part "
     , String.fromInt part
     ]
         |> String.join ""

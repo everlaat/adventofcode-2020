@@ -7345,51 +7345,52 @@ var $author$project$Com$Solver$toLabel = function (_v0) {
 		_List_fromArray(
 			[
 				$elm$core$String$fromInt(year),
-				' d',
+				' day ',
 				$elm$core$String$fromInt(day),
-				' p',
+				', part ',
 				$elm$core$String$fromInt(part)
 			]));
 };
 var $author$project$Components$Layout$View$viewSolverOptions = function (maybeSelectedSolver) {
 	var selectedSolverId = A2($elm$core$Maybe$map, $author$project$Com$Solver$toId, maybeSelectedSolver);
-	return function (options) {
-		return _Utils_eq(selectedSolverId, $elm$core$Maybe$Nothing) ? A2(
-			$elm$core$List$cons,
-			A2(
-				$elm$html$Html$option,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$selected(true)
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('')
-					])),
-			options) : options;
-	}(
-		A2(
-			$elm$core$List$map,
-			function (_v0) {
-				var solverId = _v0.a;
-				var solver = _v0.b;
-				return A2(
+	return $elm$core$List$reverse(
+		function (options) {
+			return _Utils_eq(selectedSolverId, $elm$core$Maybe$Nothing) ? A2(
+				$elm$core$List$cons,
+				A2(
 					$elm$html$Html$option,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$value(solverId),
-							$elm$html$Html$Attributes$selected(
-							_Utils_eq(
-								selectedSolverId,
-								$elm$core$Maybe$Just(solverId)))
+							$elm$html$Html$Attributes$selected(true)
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text(
-							$author$project$Com$Solver$toLabel(solver))
-						]));
-			},
-			$elm$core$Dict$toList($author$project$Solvers$Y2020$solvers)));
+							$elm$html$Html$text('')
+						])),
+				options) : options;
+		}(
+			A2(
+				$elm$core$List$map,
+				function (_v0) {
+					var solverId = _v0.a;
+					var solver = _v0.b;
+					return A2(
+						$elm$html$Html$option,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$value(solverId),
+								$elm$html$Html$Attributes$selected(
+								_Utils_eq(
+									selectedSolverId,
+									$elm$core$Maybe$Just(solverId)))
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text(
+								$author$project$Com$Solver$toLabel(solver))
+							]));
+				},
+				$elm$core$Dict$toList($author$project$Solvers$Y2020$solvers))));
 };
 var $author$project$Components$Layout$View$viewForm = F2(
 	function (toSelf, model) {
