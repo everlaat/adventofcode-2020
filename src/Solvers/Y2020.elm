@@ -7,6 +7,7 @@ import Solvers.Y2020.Day2 as Y2020D2
 import Solvers.Y2020.Day3 as Y2020D3
 import Solvers.Y2020.Day4 as Y2020D4
 import Solvers.Y2020.Day5 as Y2020D5
+import Solvers.Y2020.Day6 as Y2020D6
 
 
 solvers : Dict String Solver
@@ -16,6 +17,7 @@ solvers =
     , Y2020D3.solvers
     , Y2020D4.solvers
     , Y2020D5.solvers
+    , Y2020D6.solvers
     ]
         |> List.concat
         |> List.map (\solver -> ( Solver.toId solver, solver ))

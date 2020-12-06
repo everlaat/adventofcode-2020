@@ -7158,6 +7158,194 @@ var $author$project$Solvers$Y2020$Day5$solvers = _List_fromArray(
 		2,
 		$author$project$Solvers$Y2020$Day5$partToSolver($author$project$Solvers$Y2020$Day5$part2))
 	]);
+var $elm_community$list_extra$List$Extra$foldl1 = F2(
+	function (func, list) {
+		if (!list.b) {
+			return $elm$core$Maybe$Nothing;
+		} else {
+			var x = list.a;
+			var xs = list.b;
+			return $elm$core$Maybe$Just(
+				A3($elm$core$List$foldl, func, x, xs));
+		}
+	});
+var $elm$core$Dict$sizeHelp = F2(
+	function (n, dict) {
+		sizeHelp:
+		while (true) {
+			if (dict.$ === -2) {
+				return n;
+			} else {
+				var left = dict.d;
+				var right = dict.e;
+				var $temp$n = A2($elm$core$Dict$sizeHelp, n + 1, right),
+					$temp$dict = left;
+				n = $temp$n;
+				dict = $temp$dict;
+				continue sizeHelp;
+			}
+		}
+	});
+var $elm$core$Dict$size = function (dict) {
+	return A2($elm$core$Dict$sizeHelp, 0, dict);
+};
+var $elm$core$Set$size = function (_v0) {
+	var dict = _v0;
+	return $elm$core$Dict$size(dict);
+};
+var $elm$core$Set$Set_elm_builtin = $elm$core$Basics$identity;
+var $elm$core$Dict$foldl = F3(
+	function (func, acc, dict) {
+		foldl:
+		while (true) {
+			if (dict.$ === -2) {
+				return acc;
+			} else {
+				var key = dict.b;
+				var value = dict.c;
+				var left = dict.d;
+				var right = dict.e;
+				var $temp$func = func,
+					$temp$acc = A3(
+					func,
+					key,
+					value,
+					A3($elm$core$Dict$foldl, func, acc, left)),
+					$temp$dict = right;
+				func = $temp$func;
+				acc = $temp$acc;
+				dict = $temp$dict;
+				continue foldl;
+			}
+		}
+	});
+var $elm$core$Dict$union = F2(
+	function (t1, t2) {
+		return A3($elm$core$Dict$foldl, $elm$core$Dict$insert, t2, t1);
+	});
+var $elm$core$Set$union = F2(
+	function (_v0, _v1) {
+		var dict1 = _v0;
+		var dict2 = _v1;
+		return A2($elm$core$Dict$union, dict1, dict2);
+	});
+var $elm_community$maybe_extra$Maybe$Extra$unwrap = F3(
+	function (_default, f, m) {
+		if (m.$ === 1) {
+			return _default;
+		} else {
+			var a = m.a;
+			return f(a);
+		}
+	});
+var $author$project$Solvers$Y2020$Day6$part1 = A2(
+	$elm$core$Basics$composeR,
+	$elm$core$List$map(
+		$elm_community$list_extra$List$Extra$foldl1($elm$core$Set$union)),
+	A2(
+		$elm$core$Basics$composeR,
+		$elm$core$List$map(
+			A2($elm_community$maybe_extra$Maybe$Extra$unwrap, 0, $elm$core$Set$size)),
+		A2(
+			$elm$core$Basics$composeR,
+			A2($elm$core$List$foldl, $elm$core$Basics$add, 0),
+			$elm$core$Maybe$Just)));
+var $elm$core$Dict$filter = F2(
+	function (isGood, dict) {
+		return A3(
+			$elm$core$Dict$foldl,
+			F3(
+				function (k, v, d) {
+					return A2(isGood, k, v) ? A3($elm$core$Dict$insert, k, v, d) : d;
+				}),
+			$elm$core$Dict$empty,
+			dict);
+	});
+var $elm$core$Dict$member = F2(
+	function (key, dict) {
+		var _v0 = A2($elm$core$Dict$get, key, dict);
+		if (!_v0.$) {
+			return true;
+		} else {
+			return false;
+		}
+	});
+var $elm$core$Dict$intersect = F2(
+	function (t1, t2) {
+		return A2(
+			$elm$core$Dict$filter,
+			F2(
+				function (k, _v0) {
+					return A2($elm$core$Dict$member, k, t2);
+				}),
+			t1);
+	});
+var $elm$core$Set$intersect = F2(
+	function (_v0, _v1) {
+		var dict1 = _v0;
+		var dict2 = _v1;
+		return A2($elm$core$Dict$intersect, dict1, dict2);
+	});
+var $author$project$Solvers$Y2020$Day6$part2 = A2(
+	$elm$core$Basics$composeR,
+	$elm$core$List$map(
+		$elm_community$list_extra$List$Extra$foldl1($elm$core$Set$intersect)),
+	A2(
+		$elm$core$Basics$composeR,
+		$elm$core$List$map(
+			A2($elm_community$maybe_extra$Maybe$Extra$unwrap, 0, $elm$core$Set$size)),
+		A2(
+			$elm$core$Basics$composeR,
+			A2($elm$core$List$foldl, $elm$core$Basics$add, 0),
+			$elm$core$Maybe$Just)));
+var $elm$core$Set$empty = $elm$core$Dict$empty;
+var $elm$core$Set$insert = F2(
+	function (key, _v0) {
+		var dict = _v0;
+		return A3($elm$core$Dict$insert, key, 0, dict);
+	});
+var $elm$core$Set$fromList = function (list) {
+	return A3($elm$core$List$foldl, $elm$core$Set$insert, $elm$core$Set$empty, list);
+};
+var $author$project$Solvers$Y2020$Day6$inputToGroupAnswers = A2(
+	$elm$core$Basics$composeR,
+	$elm$core$String$trim,
+	A2(
+		$elm$core$Basics$composeR,
+		$elm$core$String$split('\n\n'),
+		$elm$core$List$map(
+			A2(
+				$elm$core$Basics$composeR,
+				$elm$core$String$lines,
+				$elm$core$List$map(
+					A2($elm$core$Basics$composeR, $elm$core$String$toList, $elm$core$Set$fromList))))));
+var $author$project$Solvers$Y2020$Day6$partToSolver = function (f) {
+	return A2(
+		$elm$core$Basics$composeR,
+		$author$project$Solvers$Y2020$Day6$inputToGroupAnswers,
+		A2(
+			$elm$core$Basics$composeR,
+			f,
+			A2(
+				$elm$core$Basics$composeR,
+				$elm$core$Maybe$map($elm$core$String$fromInt),
+				$elm$core$Result$fromMaybe('answer not found'))));
+};
+var $author$project$Solvers$Y2020$Day6$solvers = _List_fromArray(
+	[
+		A4(
+		$author$project$Com$Solver$make,
+		2020,
+		6,
+		1,
+		$author$project$Solvers$Y2020$Day6$partToSolver($author$project$Solvers$Y2020$Day6$part1)),
+		A4(
+		$author$project$Com$Solver$make,
+		2020,
+		6,
+		2,
+		$author$project$Solvers$Y2020$Day6$partToSolver($author$project$Solvers$Y2020$Day6$part2))
+	]);
 var $author$project$Com$Solver$toId = function (_v0) {
 	var year = _v0.aC;
 	var day = _v0.am;
@@ -7182,7 +7370,7 @@ var $author$project$Solvers$Y2020$solvers = $elm$core$Dict$fromList(
 		},
 		$elm$core$List$concat(
 			_List_fromArray(
-				[$author$project$Solvers$Y2020$Day1$solvers, $author$project$Solvers$Y2020$Day2$solvers, $author$project$Solvers$Y2020$Day3$solvers, $author$project$Solvers$Y2020$Day4$solvers, $author$project$Solvers$Y2020$Day5$solvers]))));
+				[$author$project$Solvers$Y2020$Day1$solvers, $author$project$Solvers$Y2020$Day2$solvers, $author$project$Solvers$Y2020$Day3$solvers, $author$project$Solvers$Y2020$Day4$solvers, $author$project$Solvers$Y2020$Day5$solvers, $author$project$Solvers$Y2020$Day6$solvers]))));
 var $author$project$Components$Layout$Update$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -8190,31 +8378,6 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$Parents$empty = $tric
 var $tricycle$elm_actor_framework$Framework$Internal$Pid$System = {$: 1};
 var $tricycle$elm_actor_framework$Framework$Internal$Pid$system = $tricycle$elm_actor_framework$Framework$Internal$Pid$System;
 var $tricycle$elm_actor_framework$Framework$Internal$Model$empty = {ad: '', v: $tricycle$elm_actor_framework$Framework$Internal$Model$Instances$empty, ae: $tricycle$elm_actor_framework$Framework$Internal$Pid$system, x: $tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$empty, M: $tricycle$elm_actor_framework$Framework$Internal$Model$Parents$empty, B: _List_Nil};
-var $elm$core$Dict$foldl = F3(
-	function (func, acc, dict) {
-		foldl:
-		while (true) {
-			if (dict.$ === -2) {
-				return acc;
-			} else {
-				var key = dict.b;
-				var value = dict.c;
-				var left = dict.d;
-				var right = dict.e;
-				var $temp$func = func,
-					$temp$acc = A3(
-					func,
-					key,
-					value,
-					A3($elm$core$Dict$foldl, func, acc, left)),
-					$temp$dict = right;
-				func = $temp$func;
-				acc = $temp$acc;
-				dict = $temp$dict;
-				continue foldl;
-			}
-		}
-	});
 var $tricycle$elm_actor_framework$Framework$Internal$Model$PidCollection$fold = F2(
 	function (f, b) {
 		return A2(
