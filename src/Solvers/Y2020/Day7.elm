@@ -1,4 +1,4 @@
-module Solvers.Y2020.Day7 exposing (part1, partToSolver, solvers)
+module Solvers.Y2020.Day7 exposing (part1, part2, partToSolver, solvers)
 
 import Com.Solver as Solver exposing (Solver)
 import Dict exposing (Dict)
@@ -10,14 +10,13 @@ import Maybe.Extra as Maybe
 solvers : List Solver
 solvers =
     [ Solver.make 2020 7 1 (part1 |> partToSolver)
-
-    -- , Solver.make 2020 7 2 (part2 |> partToSolver)
+    , Solver.make 2020 7 2 (part2 |> partToSolver)
     ]
 
 
-partToSolver : (Dict String (List ( String, Int )) -> Maybe Int) -> (String -> Result String String)
+partToSolver : (BagDict -> Maybe Int) -> (String -> Result String String)
 partToSolver f =
-    inputToBagRules
+    inputToBagDict
         >> f
         >> Maybe.map String.fromInt
         >> Result.fromMaybe "answer not found"
@@ -28,8 +27,20 @@ strRemove list str =
     List.foldl (\a -> String.replace a "") str list
 
 
-inputToBagRules : String -> Dict String (List ( String, Int ))
-inputToBagRules =
+type Bag
+    = Bag String Bags
+
+
+type alias Bags =
+    List Bag
+
+
+type alias BagDict =
+    Dict String (List ( String, Int ))
+
+
+inputToBagDict : String -> BagDict
+inputToBagDict =
     String.trim
         >> strRemove [ "bags", "bag", "." ]
         >> String.lines
@@ -56,7 +67,34 @@ inputToBagRules =
         >> Dict.fromList
 
 
-part1 : Dict String (List ( String, Int )) -> Maybe Int
+bagDictToBags : BagDict -> Bags
+bagDictToBags bagDict =
+    Dict.toList bagDict
+        |> List.map
+            (\( name, list ) ->
+                bagListToBags bagDict list
+                    |> Bag name
+            )
+
+
+bagDictItemToBags : BagDict -> String -> Bags
+bagDictItemToBags bagDict item =
+    Dict.get item bagDict
+        |> Maybe.unwrap [] (bagListToBags bagDict)
+
+
+bagListToBags : BagDict -> List ( String, Int ) -> Bags
+bagListToBags bagDict =
+    List.map
+        (\( k, v ) ->
+            Bag k
+                (bagDictItemToBags bagDict k)
+                |> List.repeat v
+        )
+        >> List.concat
+
+
+part1 : BagDict -> Maybe Int
 part1 dict =
     let
         query =
@@ -82,3 +120,24 @@ search dict query children =
             |> List.map Tuple.first
             |> List.filterMap (\a -> Dict.get a dict |> Maybe.map (search dict query))
             |> List.any identity
+
+
+part2 : BagDict -> Maybe Int
+part2 bagDict =
+    let
+        query =
+            "shiny gold"
+
+        bags =
+            bagDictItemToBags bagDict query
+    in
+    countBagsInBags bags
+        |> Just
+
+
+countBagsInBags : Bags -> Int
+countBagsInBags bags =
+    bags
+        |> List.map (\(Bag _ list) -> countBagsInBags list)
+        |> List.foldl (+) 0
+        |> (\a -> a + List.length bags)

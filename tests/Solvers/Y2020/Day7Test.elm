@@ -28,4 +28,9 @@ suite =
                 exampleInput
                     |> D7.partToSolver D7.part1
                     |> Expect.equal (Ok "4")
+        , Test.test "D7P2" <|
+            \_ ->
+                exampleInput
+                    |> D7.partToSolver D7.part2
+                    |> Expect.equal (Ok "32")
         ]
