@@ -20,6 +20,19 @@ dotted black bags contain no other bags.
 """
 
 
+example2Input : String
+example2Input =
+    """
+shiny gold bags contain 2 dark red bags.
+dark red bags contain 2 dark orange bags.
+dark orange bags contain 2 dark yellow bags.
+dark yellow bags contain 2 dark green bags.
+dark green bags contain 2 dark blue bags.
+dark blue bags contain 2 dark violet bags.
+dark violet bags contain no other bags.
+"""
+
+
 suite : Test
 suite =
     Test.describe "AdventOfCode 2020 Day 7"
@@ -33,4 +46,9 @@ suite =
                 exampleInput
                     |> D7.partToSolver D7.part2
                     |> Expect.equal (Ok "32")
+        , Test.test "D7P2 II" <|
+            \_ ->
+                example2Input
+                    |> D7.partToSolver D7.part2
+                    |> Expect.equal (Ok "126")
         ]
