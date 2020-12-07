@@ -13,6 +13,7 @@
             "elm-community/list-extra": "8.2.4",
             "elm-community/maybe-extra": "5.2.0",
             "icidasset/elm-binary": "2.1.0",
+            "pd-andy/tuple-extra": "1.0.1",
             "rtfeldman/elm-hex": "1.0.0",
             "tricycle/elm-actor-framework": "1.4.0"
         },

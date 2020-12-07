@@ -5,6 +5,7 @@ import Dict exposing (Dict)
 import List
 import List.Extra as List
 import Maybe.Extra as Maybe
+import Tuple.Extra as Tuple
 
 
 solvers : List Solver
@@ -28,15 +29,25 @@ strRemove list str =
 
 
 type Bag
-    = Bag String Bags
+    = Bag String (() -> FitsBags)
 
 
-type alias Bags =
-    List Bag
+type alias FitsBags =
+    List ( Int, Bag )
 
 
 type alias BagDict =
-    Dict String (List ( String, Int ))
+    Dict String Bag
+
+
+toFitsBags : Bag -> FitsBags
+toFitsBags (Bag _ f) =
+    f ()
+
+
+toName : Bag -> String
+toName (Bag name _) =
+    name
 
 
 inputToBagDict : String -> BagDict
@@ -65,79 +76,46 @@ inputToBagDict =
                         Nothing
             )
         >> Dict.fromList
+        >> (\dict -> Dict.map (\k _ -> bagDictItemToBag dict k) dict)
 
 
-bagDictToBags : BagDict -> Bags
-bagDictToBags bagDict =
-    Dict.toList bagDict
-        |> List.map
-            (\( name, list ) ->
-                bagListToBags bagDict list
-                    |> Bag name
-            )
-
-
-bagDictItemToBags : BagDict -> String -> Bags
-bagDictItemToBags bagDict item =
-    Dict.get item bagDict
-        |> Maybe.unwrap [] (bagListToBags bagDict)
-
-
-bagListToBags : BagDict -> List ( String, Int ) -> Bags
-bagListToBags bagDict =
-    List.map
-        (\( k, v ) ->
-            Bag k
-                (bagDictItemToBags bagDict k)
-                |> List.repeat v
-        )
-        >> List.concat
+bagDictItemToBag : Dict String (List ( String, Int )) -> String -> Bag
+bagDictItemToBag bagDict bagName =
+    Dict.get bagName bagDict
+        |> Maybe.unwrap [] (List.map (Tuple.flip >> Tuple.mapSecond (bagDictItemToBag bagDict)))
+        |> always
+        |> Bag bagName
 
 
 part1 : BagDict -> Maybe Int
-part1 dict =
-    let
-        query =
-            "shiny gold"
-    in
-    Dict.toList dict
-        |> List.filter (Tuple.second >> search dict query)
-        |> List.length
-        |> Just
+part1 =
+    Dict.toList
+        >> List.filter (Tuple.second >> flattenFitsBags >> List.member "shiny gold")
+        >> List.length
+        >> Just
 
 
-search : Dict String (List ( String, Int )) -> String -> List ( String, Int ) -> Bool
-search dict query children =
-    if
-        children
-            |> List.map Tuple.first
-            |> List.member query
-    then
-        True
-
-    else
-        children
-            |> List.map Tuple.first
-            |> List.filterMap (\a -> Dict.get a dict |> Maybe.map (search dict query))
-            |> List.any identity
+flattenFitsBags : Bag -> List String
+flattenFitsBags =
+    toFitsBags
+        >> List.foldl
+            (\( _, a ) -> List.append (toName a :: flattenFitsBags a))
+            -- could count how many would fit
+            -- (\( a, b ) c ->
+            -- List.repeat a (toName b)
+            --     |> (\d -> List.concat [ d, c, flattenFitsBags b ])
+            -- )
+            []
 
 
 part2 : BagDict -> Maybe Int
-part2 bagDict =
-    let
-        query =
-            "shiny gold"
-
-        bags =
-            bagDictItemToBags bagDict query
-    in
-    countBagsInBags bags
-        |> Just
+part2 =
+    Dict.get "shiny gold"
+        >> Maybe.map (toFitsBags >> countBagsInBags >> (\a -> a - 1))
 
 
-countBagsInBags : Bags -> Int
-countBagsInBags bags =
-    bags
-        |> List.map (\(Bag _ list) -> countBagsInBags list)
-        |> List.foldl (+) 0
-        |> (\a -> a + List.length bags)
+countBagsInBags : FitsBags -> Int
+countBagsInBags fitsBags =
+    fitsBags
+        |> List.map (Tuple.mapSecond (toFitsBags >> countBagsInBags) >> Tuple.apply (*))
+        |> List.foldl (+) 1

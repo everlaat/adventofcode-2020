@@ -7346,112 +7346,138 @@ var $author$project$Solvers$Y2020$Day6$solvers = _List_fromArray(
 		2,
 		$author$project$Solvers$Y2020$Day6$partToSolver($author$project$Solvers$Y2020$Day6$part2))
 	]);
-var $author$project$Solvers$Y2020$Day7$search = F3(
-	function (dict, query, children) {
-		return A2(
-			$elm$core$List$member,
-			query,
-			A2($elm$core$List$map, $elm$core$Tuple$first, children)) ? true : A2(
-			$elm$core$List$any,
-			$elm$core$Basics$identity,
-			A2(
-				$elm$core$List$filterMap,
-				function (a) {
-					return A2(
-						$elm$core$Maybe$map,
-						A2($author$project$Solvers$Y2020$Day7$search, dict, query),
-						A2($elm$core$Dict$get, a, dict));
-				},
-				A2($elm$core$List$map, $elm$core$Tuple$first, children)));
-	});
+var $author$project$Solvers$Y2020$Day7$toFitsBags = function (_v0) {
+	var f = _v0.b;
+	return f(0);
+};
+var $author$project$Solvers$Y2020$Day7$toName = function (_v0) {
+	var name = _v0.a;
+	return name;
+};
+function $author$project$Solvers$Y2020$Day7$cyclic$flattenFitsBags() {
+	return A2(
+		$elm$core$Basics$composeR,
+		$author$project$Solvers$Y2020$Day7$toFitsBags,
+		A2(
+			$elm$core$List$foldl,
+			function (_v0) {
+				var a = _v0.b;
+				return $elm$core$List$append(
+					A2(
+						$elm$core$List$cons,
+						$author$project$Solvers$Y2020$Day7$toName(a),
+						$author$project$Solvers$Y2020$Day7$cyclic$flattenFitsBags()(a)));
+			},
+			_List_Nil));
+}
+var $author$project$Solvers$Y2020$Day7$flattenFitsBags = $author$project$Solvers$Y2020$Day7$cyclic$flattenFitsBags();
+$author$project$Solvers$Y2020$Day7$cyclic$flattenFitsBags = function () {
+	return $author$project$Solvers$Y2020$Day7$flattenFitsBags;
+};
 var $elm$core$Tuple$second = function (_v0) {
 	var y = _v0.b;
 	return y;
 };
-var $author$project$Solvers$Y2020$Day7$part1 = function (dict) {
-	var query = 'shiny gold';
-	return $elm$core$Maybe$Just(
-		$elm$core$List$length(
+var $author$project$Solvers$Y2020$Day7$part1 = A2(
+	$elm$core$Basics$composeR,
+	$elm$core$Dict$toList,
+	A2(
+		$elm$core$Basics$composeR,
+		$elm$core$List$filter(
 			A2(
-				$elm$core$List$filter,
+				$elm$core$Basics$composeR,
+				$elm$core$Tuple$second,
 				A2(
 					$elm$core$Basics$composeR,
-					$elm$core$Tuple$second,
-					A2($author$project$Solvers$Y2020$Day7$search, dict, query)),
-				$elm$core$Dict$toList(dict))));
+					$author$project$Solvers$Y2020$Day7$flattenFitsBags,
+					$elm$core$List$member('shiny gold')))),
+		A2($elm$core$Basics$composeR, $elm$core$List$length, $elm$core$Maybe$Just)));
+var $pd_andy$tuple_extra$Tuple$Extra$apply = F2(
+	function (f, _v0) {
+		var a = _v0.a;
+		var b = _v0.b;
+		return A2(f, a, b);
+	});
+var $elm$core$Tuple$mapSecond = F2(
+	function (func, _v0) {
+		var x = _v0.a;
+		var y = _v0.b;
+		return _Utils_Tuple2(
+			x,
+			func(y));
+	});
+var $author$project$Solvers$Y2020$Day7$countBagsInBags = function (fitsBags) {
+	return A3(
+		$elm$core$List$foldl,
+		$elm$core$Basics$add,
+		1,
+		A2(
+			$elm$core$List$map,
+			A2(
+				$elm$core$Basics$composeR,
+				$elm$core$Tuple$mapSecond(
+					A2($elm$core$Basics$composeR, $author$project$Solvers$Y2020$Day7$toFitsBags, $author$project$Solvers$Y2020$Day7$countBagsInBags)),
+				$pd_andy$tuple_extra$Tuple$Extra$apply($elm$core$Basics$mul)),
+			fitsBags));
 };
+var $author$project$Solvers$Y2020$Day7$part2 = A2(
+	$elm$core$Basics$composeR,
+	$elm$core$Dict$get('shiny gold'),
+	$elm$core$Maybe$map(
+		A2(
+			$elm$core$Basics$composeR,
+			$author$project$Solvers$Y2020$Day7$toFitsBags,
+			A2(
+				$elm$core$Basics$composeR,
+				$author$project$Solvers$Y2020$Day7$countBagsInBags,
+				function (a) {
+					return a - 1;
+				}))));
 var $author$project$Solvers$Y2020$Day7$Bag = F2(
 	function (a, b) {
 		return {$: 0, a: a, b: b};
 	});
-var $elm$core$List$repeatHelp = F3(
-	function (result, n, value) {
-		repeatHelp:
-		while (true) {
-			if (n <= 0) {
-				return result;
-			} else {
-				var $temp$result = A2($elm$core$List$cons, value, result),
-					$temp$n = n - 1,
-					$temp$value = value;
-				result = $temp$result;
-				n = $temp$n;
-				value = $temp$value;
-				continue repeatHelp;
-			}
+var $pd_andy$tuple_extra$Tuple$Extra$flip = function (_v0) {
+	var a = _v0.a;
+	var b = _v0.b;
+	return A2($elm$core$Tuple$pair, b, a);
+};
+var $author$project$Solvers$Y2020$Day7$bagDictItemToBag = F2(
+	function (bagDict, bagName) {
+		return A2(
+			$author$project$Solvers$Y2020$Day7$Bag,
+			bagName,
+			$elm$core$Basics$always(
+				A3(
+					$elm_community$maybe_extra$Maybe$Extra$unwrap,
+					_List_Nil,
+					$elm$core$List$map(
+						A2(
+							$elm$core$Basics$composeR,
+							$pd_andy$tuple_extra$Tuple$Extra$flip,
+							$elm$core$Tuple$mapSecond(
+								$author$project$Solvers$Y2020$Day7$bagDictItemToBag(bagDict)))),
+					A2($elm$core$Dict$get, bagName, bagDict))));
+	});
+var $elm$core$Dict$map = F2(
+	function (func, dict) {
+		if (dict.$ === -2) {
+			return $elm$core$Dict$RBEmpty_elm_builtin;
+		} else {
+			var color = dict.a;
+			var key = dict.b;
+			var value = dict.c;
+			var left = dict.d;
+			var right = dict.e;
+			return A5(
+				$elm$core$Dict$RBNode_elm_builtin,
+				color,
+				key,
+				A2(func, key, value),
+				A2($elm$core$Dict$map, func, left),
+				A2($elm$core$Dict$map, func, right));
 		}
 	});
-var $elm$core$List$repeat = F2(
-	function (n, value) {
-		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
-	});
-var $author$project$Solvers$Y2020$Day7$bagDictItemToBags = F2(
-	function (bagDict, item) {
-		return A3(
-			$elm_community$maybe_extra$Maybe$Extra$unwrap,
-			_List_Nil,
-			$author$project$Solvers$Y2020$Day7$bagListToBags(bagDict),
-			A2($elm$core$Dict$get, item, bagDict));
-	});
-var $author$project$Solvers$Y2020$Day7$bagListToBags = function (bagDict) {
-	return A2(
-		$elm$core$Basics$composeR,
-		$elm$core$List$map(
-			function (_v0) {
-				var k = _v0.a;
-				var v = _v0.b;
-				return A2(
-					$elm$core$List$repeat,
-					v,
-					A2(
-						$author$project$Solvers$Y2020$Day7$Bag,
-						k,
-						A2($author$project$Solvers$Y2020$Day7$bagDictItemToBags, bagDict, k)));
-			}),
-		$elm$core$List$concat);
-};
-var $author$project$Solvers$Y2020$Day7$countBagsInBags = function (bags) {
-	return function (a) {
-		return a + $elm$core$List$length(bags);
-	}(
-		A3(
-			$elm$core$List$foldl,
-			$elm$core$Basics$add,
-			0,
-			A2(
-				$elm$core$List$map,
-				function (_v0) {
-					var list = _v0.b;
-					return $author$project$Solvers$Y2020$Day7$countBagsInBags(list);
-				},
-				bags)));
-};
-var $author$project$Solvers$Y2020$Day7$part2 = function (bagDict) {
-	var query = 'shiny gold';
-	var bags = A2($author$project$Solvers$Y2020$Day7$bagDictItemToBags, bagDict, query);
-	return $elm$core$Maybe$Just(
-		$author$project$Solvers$Y2020$Day7$countBagsInBags(bags));
-};
 var $author$project$Solvers$Y2020$Day7$strRemove = F2(
 	function (list, str) {
 		return A3(
@@ -7515,7 +7541,18 @@ var $author$project$Solvers$Y2020$Day7$inputToBagDict = A2(
 							return $elm$core$Maybe$Nothing;
 						}
 					}),
-				$elm$core$Dict$fromList))));
+				A2(
+					$elm$core$Basics$composeR,
+					$elm$core$Dict$fromList,
+					function (dict) {
+						return A2(
+							$elm$core$Dict$map,
+							F2(
+								function (k, _v3) {
+									return A2($author$project$Solvers$Y2020$Day7$bagDictItemToBag, dict, k);
+								}),
+							dict);
+					})))));
 var $author$project$Solvers$Y2020$Day7$partToSolver = function (f) {
 	return A2(
 		$elm$core$Basics$composeR,
@@ -8717,14 +8754,6 @@ var $elm$core$Tuple$mapFirst = F2(
 			func(x),
 			y);
 	});
-var $elm$core$Tuple$mapSecond = F2(
-	function (func, _v0) {
-		var x = _v0.a;
-		var y = _v0.b;
-		return _Utils_Tuple2(
-			x,
-			func(y));
-	});
 var $tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$Inhabitant$Inhabitant = $elm$core$Basics$identity;
 var $tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$Inhabitant$fromTuple = $elm$core$Basics$identity;
 var $tricycle$elm_actor_framework$Framework$Internal$Model$OccupiedAddresses$insert = F2(
@@ -9278,25 +9307,6 @@ var $tricycle$elm_actor_framework$Framework$Internal$Model$Parents$getDescendant
 						$tricycle$elm_actor_framework$Framework$Internal$Model$PidCollection$get,
 						pid,
 						$tricycle$elm_actor_framework$Framework$Internal$Model$Parents$toPidCollection(parents)))));
-	});
-var $elm$core$Dict$map = F2(
-	function (func, dict) {
-		if (dict.$ === -2) {
-			return $elm$core$Dict$RBEmpty_elm_builtin;
-		} else {
-			var color = dict.a;
-			var key = dict.b;
-			var value = dict.c;
-			var left = dict.d;
-			var right = dict.e;
-			return A5(
-				$elm$core$Dict$RBNode_elm_builtin,
-				color,
-				key,
-				A2(func, key, value),
-				A2($elm$core$Dict$map, func, left),
-				A2($elm$core$Dict$map, func, right));
-		}
 	});
 var $tricycle$elm_actor_framework$Framework$Internal$Model$PidCollection$map = function (f) {
 	return A2(
