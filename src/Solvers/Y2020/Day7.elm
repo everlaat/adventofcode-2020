@@ -52,6 +52,14 @@ toName (Bag name _) =
 
 inputToBagDict : String -> BagDict
 inputToBagDict =
+    let
+        bagDictItemToBag : Dict String (List ( String, Int )) -> String -> Bag
+        bagDictItemToBag bagDict bagName =
+            Dict.get bagName bagDict
+                |> Maybe.unwrap [] (List.map (Tuple.flip >> Tuple.mapSecond (bagDictItemToBag bagDict)))
+                |> always
+                |> Bag bagName
+    in
     String.trim
         >> strRemove [ "bags", "bag", "." ]
         >> String.lines
@@ -77,14 +85,6 @@ inputToBagDict =
             )
         >> Dict.fromList
         >> (\dict -> Dict.map (\k _ -> bagDictItemToBag dict k) dict)
-
-
-bagDictItemToBag : Dict String (List ( String, Int )) -> String -> Bag
-bagDictItemToBag bagDict bagName =
-    Dict.get bagName bagDict
-        |> Maybe.unwrap [] (List.map (Tuple.flip >> Tuple.mapSecond (bagDictItemToBag bagDict)))
-        |> always
-        |> Bag bagName
 
 
 part1 : BagDict -> Maybe Int
