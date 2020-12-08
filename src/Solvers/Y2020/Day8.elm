@@ -119,7 +119,5 @@ part2 instructions =
                 )
                     |> (\a -> Array.set index a instructions)
             )
-        |> List.reverse
-        |> List.map runInstructions
-        |> List.filterMap Result.toMaybe
+        |> List.filterMap (runInstructions >> Result.toMaybe)
         |> List.head
