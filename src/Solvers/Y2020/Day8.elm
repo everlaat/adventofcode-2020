@@ -60,7 +60,7 @@ inputToInstructions =
 
 part1 : Instructions -> Maybe Int
 part1 instructions =
-    case run [] 0 0 instructions of
+    case runInstructions instructions of
         Err a ->
             Just a
 
@@ -68,8 +68,13 @@ part1 instructions =
             Just a
 
 
-run : List Int -> Int -> Int -> Instructions -> Result Int Int
-run visited pointer accumulated instructions =
+runInstructions : Instructions -> Result Int Int
+runInstructions =
+    next 0 0 []
+
+
+next : Int -> Int -> List Int -> Instructions -> Result Int Int
+next pointer accumulated visited instructions =
     case Array.get pointer instructions of
         Nothing ->
             Ok accumulated
@@ -91,7 +96,7 @@ run visited pointer accumulated instructions =
                 Err accumulated
 
             else
-                run (pointer :: visited) newPointer newAccumulated instructions
+                next newPointer newAccumulated (pointer :: visited) instructions
 
 
 part2 : Instructions -> Maybe Int
@@ -115,6 +120,6 @@ part2 instructions =
                     |> (\a -> Array.set index a instructions)
             )
         |> List.reverse
-        |> List.map (run [] 0 0)
+        |> List.map runInstructions
         |> List.filterMap Result.toMaybe
         |> List.head
