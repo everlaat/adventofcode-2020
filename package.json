@@ -1,0 +1,22 @@
+{
+  "name": "adventofcode-2020",
+  "version": "1.0.0",
+  "description": "https:///adventofcode.com",
+  "dependencies": {
+    "elm-test": "^0.19.1-revision4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "elm-test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/everlaat/adventofcode-2020.git"
+  },
+  "author": "Elvin Verlaat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/everlaat/adventofcode-2020/issues"
+  },
+  "homepage": "https://github.com/everlaat/adventofcode-2020#readme"
+}
