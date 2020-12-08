@@ -31,29 +31,42 @@ type Operator
     | Jump Int
 
 
+operatorFromString : String -> Maybe Operator
+operatorFromString str =
+    case
+        String.replace "+" "" str
+            |> String.trim
+            |> String.split " "
+    of
+        [ opp, val ] ->
+            String.toInt val
+                |> Maybe.andThen
+                    (case opp of
+                        "nop" ->
+                            Just << NoOp
+
+                        "acc" ->
+                            Just << Accumulate
+
+                        "jmp" ->
+                            Just << Jump
+
+                        _ ->
+                            always Nothing
+                    )
+
+        _ ->
+            Nothing
+
+
 inputToInstructions : String -> Instructions
 inputToInstructions =
     String.trim
         >> String.lines
         >> List.foldl
             (\line array ->
-                case String.replace "+" "" line |> String.trim |> String.split " " of
-                    [ opp, val ] ->
-                        case ( opp, String.toInt val ) of
-                            ( "acc", Just int ) ->
-                                Array.push (Accumulate int) array
-
-                            ( "jmp", Just int ) ->
-                                Array.push (Jump int) array
-
-                            ( "nop", Just int ) ->
-                                Array.push (NoOp int) array
-
-                            _ ->
-                                array
-
-                    _ ->
-                        array
+                operatorFromString line
+                    |> Maybe.unwrap array (\a -> Array.push a array)
             )
             Array.empty
 
