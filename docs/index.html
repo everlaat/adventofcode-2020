@@ -7582,9 +7582,9 @@ var $author$project$Solvers$Y2020$Day7$solvers = _List_fromArray(
 		2,
 		$author$project$Solvers$Y2020$Day7$partToSolver($author$project$Solvers$Y2020$Day7$part2))
 	]);
-var $author$project$Solvers$Y2020$Day8$run = F4(
-	function (visited, pointer, accumulated, instructions) {
-		run:
+var $author$project$Solvers$Y2020$Day8$next = F4(
+	function (pointer, accumulated, visited, instructions) {
+		next:
 		while (true) {
 			var _v0 = A2($elm$core$Array$get, pointer, instructions);
 			if (_v0.$ === 1) {
@@ -7608,21 +7608,22 @@ var $author$project$Solvers$Y2020$Day8$run = F4(
 				if (A2($elm$core$List$member, newPointer, visited)) {
 					return $elm$core$Result$Err(accumulated);
 				} else {
-					var $temp$visited = A2($elm$core$List$cons, pointer, visited),
-						$temp$pointer = newPointer,
+					var $temp$pointer = newPointer,
 						$temp$accumulated = newAccumulated,
+						$temp$visited = A2($elm$core$List$cons, pointer, visited),
 						$temp$instructions = instructions;
-					visited = $temp$visited;
 					pointer = $temp$pointer;
 					accumulated = $temp$accumulated;
+					visited = $temp$visited;
 					instructions = $temp$instructions;
-					continue run;
+					continue next;
 				}
 			}
 		}
 	});
+var $author$project$Solvers$Y2020$Day8$runInstructions = A3($author$project$Solvers$Y2020$Day8$next, 0, 0, _List_Nil);
 var $author$project$Solvers$Y2020$Day8$part1 = function (instructions) {
-	var _v0 = A4($author$project$Solvers$Y2020$Day8$run, _List_Nil, 0, 0, instructions);
+	var _v0 = $author$project$Solvers$Y2020$Day8$runInstructions(instructions);
 	if (_v0.$ === 1) {
 		var a = _v0.a;
 		return $elm$core$Maybe$Just(a);
@@ -7687,40 +7688,65 @@ var $author$project$Solvers$Y2020$Day8$part2 = function (instructions) {
 	return $elm$core$List$head(
 		A2(
 			$elm$core$List$filterMap,
-			$elm$core$Result$toMaybe,
+			A2($elm$core$Basics$composeR, $author$project$Solvers$Y2020$Day8$runInstructions, $elm$core$Result$toMaybe),
 			A2(
 				$elm$core$List$map,
-				A3($author$project$Solvers$Y2020$Day8$run, _List_Nil, 0, 0),
-				$elm$core$List$reverse(
-					A2(
-						$elm$core$List$map,
-						function (index) {
-							return function (a) {
-								return A3($elm$core$Array$set, index, a, instructions);
-							}(
-								function () {
-									var _v0 = A2($elm$core$Array$get, index, instructions);
-									if (!_v0.$) {
-										switch (_v0.a.$) {
-											case 1:
-												var x = _v0.a.a;
-												return $author$project$Solvers$Y2020$Day8$Accumulate(x);
-											case 2:
-												var x = _v0.a.a;
-												return $author$project$Solvers$Y2020$Day8$NoOp(x);
-											default:
-												var x = _v0.a.a;
-												return $author$project$Solvers$Y2020$Day8$Jump(x);
-										}
-									} else {
-										return $author$project$Solvers$Y2020$Day8$NoOp(0);
-									}
-								}());
-						},
-						A2(
-							$elm$core$List$range,
-							0,
-							$elm$core$Array$length(instructions)))))));
+				function (index) {
+					return function (a) {
+						return A3($elm$core$Array$set, index, a, instructions);
+					}(
+						function () {
+							var _v0 = A2($elm$core$Array$get, index, instructions);
+							if (!_v0.$) {
+								switch (_v0.a.$) {
+									case 1:
+										var x = _v0.a.a;
+										return $author$project$Solvers$Y2020$Day8$Accumulate(x);
+									case 2:
+										var x = _v0.a.a;
+										return $author$project$Solvers$Y2020$Day8$NoOp(x);
+									default:
+										var x = _v0.a.a;
+										return $author$project$Solvers$Y2020$Day8$Jump(x);
+								}
+							} else {
+								return $author$project$Solvers$Y2020$Day8$NoOp(0);
+							}
+						}());
+				},
+				A2(
+					$elm$core$List$range,
+					0,
+					$elm$core$Array$length(instructions)))));
+};
+var $author$project$Solvers$Y2020$Day8$operatorFromString = function (str) {
+	var _v0 = A2(
+		$elm$core$String$split,
+		' ',
+		$elm$core$String$trim(
+			A3($elm$core$String$replace, '+', '', str)));
+	if ((_v0.b && _v0.b.b) && (!_v0.b.b.b)) {
+		var opp = _v0.a;
+		var _v1 = _v0.b;
+		var val = _v1.a;
+		return A2(
+			$elm$core$Maybe$andThen,
+			function () {
+				switch (opp) {
+					case 'nop':
+						return A2($elm$core$Basics$composeL, $elm$core$Maybe$Just, $author$project$Solvers$Y2020$Day8$NoOp);
+					case 'acc':
+						return A2($elm$core$Basics$composeL, $elm$core$Maybe$Just, $author$project$Solvers$Y2020$Day8$Accumulate);
+					case 'jmp':
+						return A2($elm$core$Basics$composeL, $elm$core$Maybe$Just, $author$project$Solvers$Y2020$Day8$Jump);
+					default:
+						return $elm$core$Basics$always($elm$core$Maybe$Nothing);
+				}
+			}(),
+			$elm$core$String$toInt(val));
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
 };
 var $elm$core$Elm$JsArray$push = _JsArray_push;
 var $elm$core$Elm$JsArray$singleton = _JsArray_singleton;
@@ -7810,51 +7836,13 @@ var $author$project$Solvers$Y2020$Day8$inputToInstructions = A2(
 			$elm$core$List$foldl,
 			F2(
 				function (line, array) {
-					var _v0 = A2(
-						$elm$core$String$split,
-						' ',
-						$elm$core$String$trim(
-							A3($elm$core$String$replace, '+', '', line)));
-					if ((_v0.b && _v0.b.b) && (!_v0.b.b.b)) {
-						var opp = _v0.a;
-						var _v1 = _v0.b;
-						var val = _v1.a;
-						var _v2 = _Utils_Tuple2(
-							opp,
-							$elm$core$String$toInt(val));
-						_v2$3:
-						while (true) {
-							if (!_v2.b.$) {
-								switch (_v2.a) {
-									case 'acc':
-										var _int = _v2.b.a;
-										return A2(
-											$elm$core$Array$push,
-											$author$project$Solvers$Y2020$Day8$Accumulate(_int),
-											array);
-									case 'jmp':
-										var _int = _v2.b.a;
-										return A2(
-											$elm$core$Array$push,
-											$author$project$Solvers$Y2020$Day8$Jump(_int),
-											array);
-									case 'nop':
-										var _int = _v2.b.a;
-										return A2(
-											$elm$core$Array$push,
-											$author$project$Solvers$Y2020$Day8$NoOp(_int),
-											array);
-									default:
-										break _v2$3;
-								}
-							} else {
-								break _v2$3;
-							}
-						}
-						return array;
-					} else {
-						return array;
-					}
+					return A3(
+						$elm_community$maybe_extra$Maybe$Extra$unwrap,
+						array,
+						function (a) {
+							return A2($elm$core$Array$push, a, array);
+						},
+						$author$project$Solvers$Y2020$Day8$operatorFromString(line));
 				}),
 			$elm$core$Array$empty)));
 var $author$project$Solvers$Y2020$Day8$partToSolver = function (f) {
@@ -7884,6 +7872,369 @@ var $author$project$Solvers$Y2020$Day8$solvers = _List_fromArray(
 		2,
 		$author$project$Solvers$Y2020$Day8$partToSolver($author$project$Solvers$Y2020$Day8$part2))
 	]);
+var $elm$core$Elm$JsArray$appendN = _JsArray_appendN;
+var $elm$core$Elm$JsArray$slice = _JsArray_slice;
+var $elm$core$Array$appendHelpBuilder = F2(
+	function (tail, builder) {
+		var tailLen = $elm$core$Elm$JsArray$length(tail);
+		var notAppended = ($elm$core$Array$branchFactor - $elm$core$Elm$JsArray$length(builder.h)) - tailLen;
+		var appended = A3($elm$core$Elm$JsArray$appendN, $elm$core$Array$branchFactor, builder.h, tail);
+		return (notAppended < 0) ? {
+			i: A2(
+				$elm$core$List$cons,
+				$elm$core$Array$Leaf(appended),
+				builder.i),
+			f: builder.f + 1,
+			h: A3($elm$core$Elm$JsArray$slice, notAppended, tailLen, tail)
+		} : ((!notAppended) ? {
+			i: A2(
+				$elm$core$List$cons,
+				$elm$core$Array$Leaf(appended),
+				builder.i),
+			f: builder.f + 1,
+			h: $elm$core$Elm$JsArray$empty
+		} : {i: builder.i, f: builder.f, h: appended});
+	});
+var $elm$core$Array$sliceLeft = F2(
+	function (from, array) {
+		var len = array.a;
+		var tree = array.c;
+		var tail = array.d;
+		if (!from) {
+			return array;
+		} else {
+			if (_Utils_cmp(
+				from,
+				$elm$core$Array$tailIndex(len)) > -1) {
+				return A4(
+					$elm$core$Array$Array_elm_builtin,
+					len - from,
+					$elm$core$Array$shiftStep,
+					$elm$core$Elm$JsArray$empty,
+					A3(
+						$elm$core$Elm$JsArray$slice,
+						from - $elm$core$Array$tailIndex(len),
+						$elm$core$Elm$JsArray$length(tail),
+						tail));
+			} else {
+				var skipNodes = (from / $elm$core$Array$branchFactor) | 0;
+				var helper = F2(
+					function (node, acc) {
+						if (!node.$) {
+							var subTree = node.a;
+							return A3($elm$core$Elm$JsArray$foldr, helper, acc, subTree);
+						} else {
+							var leaf = node.a;
+							return A2($elm$core$List$cons, leaf, acc);
+						}
+					});
+				var leafNodes = A3(
+					$elm$core$Elm$JsArray$foldr,
+					helper,
+					_List_fromArray(
+						[tail]),
+					tree);
+				var nodesToInsert = A2($elm$core$List$drop, skipNodes, leafNodes);
+				if (!nodesToInsert.b) {
+					return $elm$core$Array$empty;
+				} else {
+					var head = nodesToInsert.a;
+					var rest = nodesToInsert.b;
+					var firstSlice = from - (skipNodes * $elm$core$Array$branchFactor);
+					var initialBuilder = {
+						i: _List_Nil,
+						f: 0,
+						h: A3(
+							$elm$core$Elm$JsArray$slice,
+							firstSlice,
+							$elm$core$Elm$JsArray$length(head),
+							head)
+					};
+					return A2(
+						$elm$core$Array$builderToArray,
+						true,
+						A3($elm$core$List$foldl, $elm$core$Array$appendHelpBuilder, initialBuilder, rest));
+				}
+			}
+		}
+	});
+var $elm$core$Array$fetchNewTail = F4(
+	function (shift, end, treeEnd, tree) {
+		fetchNewTail:
+		while (true) {
+			var pos = $elm$core$Array$bitMask & (treeEnd >>> shift);
+			var _v0 = A2($elm$core$Elm$JsArray$unsafeGet, pos, tree);
+			if (!_v0.$) {
+				var sub = _v0.a;
+				var $temp$shift = shift - $elm$core$Array$shiftStep,
+					$temp$end = end,
+					$temp$treeEnd = treeEnd,
+					$temp$tree = sub;
+				shift = $temp$shift;
+				end = $temp$end;
+				treeEnd = $temp$treeEnd;
+				tree = $temp$tree;
+				continue fetchNewTail;
+			} else {
+				var values = _v0.a;
+				return A3($elm$core$Elm$JsArray$slice, 0, $elm$core$Array$bitMask & end, values);
+			}
+		}
+	});
+var $elm$core$Array$hoistTree = F3(
+	function (oldShift, newShift, tree) {
+		hoistTree:
+		while (true) {
+			if ((_Utils_cmp(oldShift, newShift) < 1) || (!$elm$core$Elm$JsArray$length(tree))) {
+				return tree;
+			} else {
+				var _v0 = A2($elm$core$Elm$JsArray$unsafeGet, 0, tree);
+				if (!_v0.$) {
+					var sub = _v0.a;
+					var $temp$oldShift = oldShift - $elm$core$Array$shiftStep,
+						$temp$newShift = newShift,
+						$temp$tree = sub;
+					oldShift = $temp$oldShift;
+					newShift = $temp$newShift;
+					tree = $temp$tree;
+					continue hoistTree;
+				} else {
+					return tree;
+				}
+			}
+		}
+	});
+var $elm$core$Array$sliceTree = F3(
+	function (shift, endIdx, tree) {
+		var lastPos = $elm$core$Array$bitMask & (endIdx >>> shift);
+		var _v0 = A2($elm$core$Elm$JsArray$unsafeGet, lastPos, tree);
+		if (!_v0.$) {
+			var sub = _v0.a;
+			var newSub = A3($elm$core$Array$sliceTree, shift - $elm$core$Array$shiftStep, endIdx, sub);
+			return (!$elm$core$Elm$JsArray$length(newSub)) ? A3($elm$core$Elm$JsArray$slice, 0, lastPos, tree) : A3(
+				$elm$core$Elm$JsArray$unsafeSet,
+				lastPos,
+				$elm$core$Array$SubTree(newSub),
+				A3($elm$core$Elm$JsArray$slice, 0, lastPos + 1, tree));
+		} else {
+			return A3($elm$core$Elm$JsArray$slice, 0, lastPos, tree);
+		}
+	});
+var $elm$core$Array$sliceRight = F2(
+	function (end, array) {
+		var len = array.a;
+		var startShift = array.b;
+		var tree = array.c;
+		var tail = array.d;
+		if (_Utils_eq(end, len)) {
+			return array;
+		} else {
+			if (_Utils_cmp(
+				end,
+				$elm$core$Array$tailIndex(len)) > -1) {
+				return A4(
+					$elm$core$Array$Array_elm_builtin,
+					end,
+					startShift,
+					tree,
+					A3($elm$core$Elm$JsArray$slice, 0, $elm$core$Array$bitMask & end, tail));
+			} else {
+				var endIdx = $elm$core$Array$tailIndex(end);
+				var depth = $elm$core$Basics$floor(
+					A2(
+						$elm$core$Basics$logBase,
+						$elm$core$Array$branchFactor,
+						A2($elm$core$Basics$max, 1, endIdx - 1)));
+				var newShift = A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep);
+				return A4(
+					$elm$core$Array$Array_elm_builtin,
+					end,
+					newShift,
+					A3(
+						$elm$core$Array$hoistTree,
+						startShift,
+						newShift,
+						A3($elm$core$Array$sliceTree, startShift, endIdx, tree)),
+					A4($elm$core$Array$fetchNewTail, startShift, end, endIdx, tree));
+			}
+		}
+	});
+var $elm$core$Array$translateIndex = F2(
+	function (index, _v0) {
+		var len = _v0.a;
+		var posIndex = (index < 0) ? (len + index) : index;
+		return (posIndex < 0) ? 0 : ((_Utils_cmp(posIndex, len) > 0) ? len : posIndex);
+	});
+var $elm$core$Array$slice = F3(
+	function (from, to, array) {
+		var correctTo = A2($elm$core$Array$translateIndex, to, array);
+		var correctFrom = A2($elm$core$Array$translateIndex, from, array);
+		return (_Utils_cmp(correctFrom, correctTo) > 0) ? $elm$core$Array$empty : A2(
+			$elm$core$Array$sliceLeft,
+			correctFrom,
+			A2($elm$core$Array$sliceRight, correctTo, array));
+	});
+var $elm_community$list_extra$List$Extra$uniquePairs = function (xs) {
+	if (!xs.b) {
+		return _List_Nil;
+	} else {
+		var x = xs.a;
+		var xs_ = xs.b;
+		return _Utils_ap(
+			A2(
+				$elm$core$List$map,
+				function (y) {
+					return _Utils_Tuple2(x, y);
+				},
+				xs_),
+			$elm_community$list_extra$List$Extra$uniquePairs(xs_));
+	}
+};
+var $author$project$Solvers$Y2020$Day9$part1 = F2(
+	function (preamble, numbers) {
+		var arr = $elm$core$Array$fromList(numbers);
+		var isTheSumOfTwo = function (index) {
+			var _v0 = $elm$core$List$reverse(
+				$elm$core$Array$toList(
+					A3($elm$core$Array$slice, (index - preamble) - 1, index, arr)));
+			if (_v0.b) {
+				var target = _v0.a;
+				var rest = _v0.b;
+				return A2(
+					$elm$core$List$member,
+					target,
+					A2(
+						$elm$core$List$map,
+						function (_v1) {
+							var a = _v1.a;
+							var b = _v1.b;
+							return a + b;
+						},
+						$elm_community$list_extra$List$Extra$uniquePairs(rest)));
+			} else {
+				return false;
+			}
+		};
+		return $elm$core$List$head(
+			A2(
+				$elm$core$List$filterMap,
+				$elm$core$Basics$identity,
+				A3(
+					$elm$core$List$foldl,
+					F2(
+						function (index, invalid) {
+							return isTheSumOfTwo(index) ? invalid : A2(
+								$elm$core$List$cons,
+								A2($elm$core$Array$get, index - 1, arr),
+								invalid);
+						}),
+					_List_Nil,
+					A2(
+						$elm$core$List$range,
+						preamble + 1,
+						$elm$core$List$length(numbers)))));
+	});
+var $elm$core$Maybe$map2 = F3(
+	function (func, ma, mb) {
+		if (ma.$ === 1) {
+			return $elm$core$Maybe$Nothing;
+		} else {
+			var a = ma.a;
+			if (mb.$ === 1) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var b = mb.a;
+				return $elm$core$Maybe$Just(
+					A2(func, a, b));
+			}
+		}
+	});
+var $elm$core$Basics$min = F2(
+	function (x, y) {
+		return (_Utils_cmp(x, y) < 0) ? x : y;
+	});
+var $elm$core$List$minimum = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(
+			A3($elm$core$List$foldl, $elm$core$Basics$min, x, xs));
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Solvers$Y2020$Day9$part2 = F2(
+	function (preamble, numbers) {
+		var invalidNumber = A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			A2($author$project$Solvers$Y2020$Day9$part1, preamble, numbers));
+		var arr = $elm$core$Array$fromList(numbers);
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (i, r) {
+					return _Utils_eq(r, $elm$core$Maybe$Nothing) ? A3(
+						$elm$core$List$foldl,
+						F2(
+							function (i_, r_) {
+								var window = $elm$core$Array$toList(
+									A3($elm$core$Array$slice, i, i_, arr));
+								var sum = A3($elm$core$List$foldl, $elm$core$Basics$add, 0, window);
+								return (_Utils_eq(r_, $elm$core$Maybe$Nothing) && _Utils_eq(sum, invalidNumber)) ? A3(
+									$elm$core$Maybe$map2,
+									$elm$core$Basics$add,
+									$elm$core$List$minimum(window),
+									$elm$core$List$maximum(window)) : r_;
+							}),
+						r,
+						A2(
+							$elm$core$List$range,
+							i,
+							$elm$core$List$length(numbers))) : r;
+				}),
+			$elm$core$Maybe$Nothing,
+			A2(
+				$elm$core$List$range,
+				0,
+				$elm$core$List$length(numbers)));
+	});
+var $author$project$Solvers$Y2020$Day9$inputToNumbers = A2(
+	$elm$core$Basics$composeR,
+	$elm$core$String$trim,
+	A2(
+		$elm$core$Basics$composeR,
+		$elm$core$String$lines,
+		$elm$core$List$filterMap($elm$core$String$toInt)));
+var $author$project$Solvers$Y2020$Day9$partToSolver = function (f) {
+	return A2(
+		$elm$core$Basics$composeR,
+		$author$project$Solvers$Y2020$Day9$inputToNumbers,
+		A2(
+			$elm$core$Basics$composeR,
+			f,
+			A2(
+				$elm$core$Basics$composeR,
+				$elm$core$Maybe$map($elm$core$String$fromInt),
+				$elm$core$Result$fromMaybe('answer not found'))));
+};
+var $author$project$Solvers$Y2020$Day9$solvers = _List_fromArray(
+	[
+		A4(
+		$author$project$Com$Solver$make,
+		2020,
+		8,
+		1,
+		$author$project$Solvers$Y2020$Day9$partToSolver(
+			$author$project$Solvers$Y2020$Day9$part1(25))),
+		A4(
+		$author$project$Com$Solver$make,
+		2020,
+		8,
+		2,
+		$author$project$Solvers$Y2020$Day9$partToSolver(
+			$author$project$Solvers$Y2020$Day9$part2(25)))
+	]);
 var $author$project$Com$Solver$toId = function (_v0) {
 	var year = _v0.aC;
 	var day = _v0.am;
@@ -7908,7 +8259,7 @@ var $author$project$Solvers$Y2020$solvers = $elm$core$Dict$fromList(
 		},
 		$elm$core$List$concat(
 			_List_fromArray(
-				[$author$project$Solvers$Y2020$Day1$solvers, $author$project$Solvers$Y2020$Day2$solvers, $author$project$Solvers$Y2020$Day3$solvers, $author$project$Solvers$Y2020$Day4$solvers, $author$project$Solvers$Y2020$Day5$solvers, $author$project$Solvers$Y2020$Day6$solvers, $author$project$Solvers$Y2020$Day7$solvers, $author$project$Solvers$Y2020$Day8$solvers]))));
+				[$author$project$Solvers$Y2020$Day1$solvers, $author$project$Solvers$Y2020$Day2$solvers, $author$project$Solvers$Y2020$Day3$solvers, $author$project$Solvers$Y2020$Day4$solvers, $author$project$Solvers$Y2020$Day5$solvers, $author$project$Solvers$Y2020$Day6$solvers, $author$project$Solvers$Y2020$Day7$solvers, $author$project$Solvers$Y2020$Day8$solvers, $author$project$Solvers$Y2020$Day9$solvers]))));
 var $author$project$Components$Layout$Update$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
