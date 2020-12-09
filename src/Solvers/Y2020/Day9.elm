@@ -73,26 +73,30 @@ part2 preamble numbers =
         |> List.foldl
             (\i r ->
                 if r == Nothing then
-                    List.range i (Array.length numbers)
+                    List.range (i + 2) (Array.length numbers)
                         |> List.foldl
                             (\i_ r_ ->
-                                let
-                                    window =
-                                        Array.slice i i_ numbers
-                                            |> Array.toList
+                                if r_ == Nothing then
+                                    let
+                                        window =
+                                            Array.slice i i_ numbers
+                                                |> Array.toList
 
-                                    sum =
-                                        List.foldl (+) 0 window
-                                in
-                                if r_ == Nothing && sum == invalidNumber then
-                                    Maybe.map2 (+)
-                                        (List.minimum window)
-                                        (List.maximum window)
+                                        sum =
+                                            List.foldl (+) 0 window
+                                    in
+                                    if sum == invalidNumber then
+                                        Maybe.map2 (+)
+                                            (List.minimum window)
+                                            (List.maximum window)
+
+                                    else
+                                        r_
 
                                 else
                                     r_
                             )
-                            r
+                            Nothing
 
                 else
                     r
