@@ -2,7 +2,6 @@ module Solvers.Y2020.Day4 exposing (part1, part2, partToSolver, solvers)
 
 import Com.Solver as Solver exposing (Solver)
 import Hex
-import Html exposing (a)
 
 
 type alias Passport =
@@ -89,17 +88,6 @@ inputToListOfPassport =
                     )
                     emptyPassport
             )
-
-
-
--- >> Debug.log "?"
--- >> (\a ->
---         let
---             _ =
---                 Debug.log "passports: " (List.length a)
---         in
---         a
---    )
 
 
 partToSolver : (List Passport -> String) -> (String -> Result String String)

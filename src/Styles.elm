@@ -1,7 +1,6 @@
 module Styles exposing (styleNode)
 
 import Html exposing (Html)
-import Html.Attributes as HtmlA
 
 
 styleNode : Html msg
