@@ -8092,11 +8092,10 @@ var $elm_community$list_extra$List$Extra$uniquePairs = function (xs) {
 };
 var $author$project$Solvers$Y2020$Day9$part1 = F2(
 	function (preamble, numbers) {
-		var arr = $elm$core$Array$fromList(numbers);
 		var isTheSumOfTwo = function (index) {
 			var _v0 = $elm$core$List$reverse(
 				$elm$core$Array$toList(
-					A3($elm$core$Array$slice, (index - preamble) - 1, index, arr)));
+					A3($elm$core$Array$slice, (index - preamble) - 1, index, numbers)));
 			if (_v0.b) {
 				var target = _v0.a;
 				var rest = _v0.b;
@@ -8105,11 +8104,7 @@ var $author$project$Solvers$Y2020$Day9$part1 = F2(
 					target,
 					A2(
 						$elm$core$List$map,
-						function (_v1) {
-							var a = _v1.a;
-							var b = _v1.b;
-							return a + b;
-						},
+						$pd_andy$tuple_extra$Tuple$Extra$apply($elm$core$Basics$add),
 						$elm_community$list_extra$List$Extra$uniquePairs(rest)));
 			} else {
 				return false;
@@ -8125,14 +8120,14 @@ var $author$project$Solvers$Y2020$Day9$part1 = F2(
 						function (index, invalid) {
 							return isTheSumOfTwo(index) ? invalid : A2(
 								$elm$core$List$cons,
-								A2($elm$core$Array$get, index - 1, arr),
+								A2($elm$core$Array$get, index - 1, numbers),
 								invalid);
 						}),
 					_List_Nil,
 					A2(
 						$elm$core$List$range,
 						preamble + 1,
-						$elm$core$List$length(numbers)))));
+						$elm$core$Array$length(numbers)))));
 	});
 var $elm$core$Maybe$map2 = F3(
 	function (func, ma, mb) {
@@ -8169,7 +8164,6 @@ var $author$project$Solvers$Y2020$Day9$part2 = F2(
 			$elm$core$Maybe$withDefault,
 			0,
 			A2($author$project$Solvers$Y2020$Day9$part1, preamble, numbers));
-		var arr = $elm$core$Array$fromList(numbers);
 		return A3(
 			$elm$core$List$foldl,
 			F2(
@@ -8178,26 +8172,30 @@ var $author$project$Solvers$Y2020$Day9$part2 = F2(
 						$elm$core$List$foldl,
 						F2(
 							function (i_, r_) {
-								var window = $elm$core$Array$toList(
-									A3($elm$core$Array$slice, i, i_, arr));
-								var sum = A3($elm$core$List$foldl, $elm$core$Basics$add, 0, window);
-								return (_Utils_eq(r_, $elm$core$Maybe$Nothing) && _Utils_eq(sum, invalidNumber)) ? A3(
-									$elm$core$Maybe$map2,
-									$elm$core$Basics$add,
-									$elm$core$List$minimum(window),
-									$elm$core$List$maximum(window)) : r_;
+								if (_Utils_eq(r_, $elm$core$Maybe$Nothing)) {
+									var window = $elm$core$Array$toList(
+										A3($elm$core$Array$slice, i, i_, numbers));
+									var sum = A3($elm$core$List$foldl, $elm$core$Basics$add, 0, window);
+									return _Utils_eq(sum, invalidNumber) ? A3(
+										$elm$core$Maybe$map2,
+										$elm$core$Basics$add,
+										$elm$core$List$minimum(window),
+										$elm$core$List$maximum(window)) : $elm$core$Maybe$Nothing;
+								} else {
+									return r_;
+								}
 							}),
-						r,
+						$elm$core$Maybe$Nothing,
 						A2(
 							$elm$core$List$range,
-							i,
-							$elm$core$List$length(numbers))) : r;
+							i + 2,
+							$elm$core$Array$length(numbers))) : r;
 				}),
 			$elm$core$Maybe$Nothing,
 			A2(
 				$elm$core$List$range,
 				0,
-				$elm$core$List$length(numbers)));
+				$elm$core$Array$length(numbers)));
 	});
 var $author$project$Solvers$Y2020$Day9$inputToNumbers = A2(
 	$elm$core$Basics$composeR,
@@ -8205,7 +8203,10 @@ var $author$project$Solvers$Y2020$Day9$inputToNumbers = A2(
 	A2(
 		$elm$core$Basics$composeR,
 		$elm$core$String$lines,
-		$elm$core$List$filterMap($elm$core$String$toInt)));
+		A2(
+			$elm$core$Basics$composeR,
+			$elm$core$List$filterMap($elm$core$String$toInt),
+			$elm$core$Array$fromList)));
 var $author$project$Solvers$Y2020$Day9$partToSolver = function (f) {
 	return A2(
 		$elm$core$Basics$composeR,
