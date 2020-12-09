@@ -73,7 +73,8 @@ part2 preamble numbers =
         |> List.foldl
             (\i r ->
                 if r == Nothing then
-                    List.range (i + 2) (Array.length numbers)
+                    Array.length numbers
+                        |> List.range (i + 2)
                         |> List.foldl
                             (\i_ r_ ->
                                 if r_ == Nothing then
@@ -91,7 +92,7 @@ part2 preamble numbers =
                                             (List.maximum window)
 
                                     else
-                                        r_
+                                        Nothing
 
                                 else
                                     r_
