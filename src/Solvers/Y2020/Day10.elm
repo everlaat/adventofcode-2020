@@ -4,7 +4,6 @@ import Com.Solver as Solver exposing (Solver)
 import Dict
 import Dict.Extra as Dict
 import List
-import List.Extra as List
 import Maybe
 import Maybe.Extra as Maybe
 
@@ -48,7 +47,16 @@ part2 : List Int -> Maybe Int
 part2 =
     List.foldl
         (\a r ->
-            List.takeWhile (\( b, _ ) -> a - b <= 3) r
+            List.foldl
+                (\b r_ ->
+                    if a - Tuple.first b <= 3 then
+                        b :: r_
+
+                    else
+                        r_
+                )
+                []
+                r
                 |> List.map Tuple.second
                 |> List.sum
                 |> Tuple.pair a
