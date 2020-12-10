@@ -48,11 +48,12 @@ part2 : List Int -> Maybe Int
 part2 =
     List.foldl
         (\a r ->
-            List.takeWhile (\( _, b ) -> a - b <= 3) r
-                |> List.map Tuple.first
+            List.takeWhile (\( b, _ ) -> a - b <= 3) r
+                |> List.map Tuple.second
                 |> List.sum
-                |> (\count -> ( count, a ) :: r)
+                |> Tuple.pair a
+                |> (\c -> c :: r)
         )
-        [ ( 1, 0 ) ]
+        [ ( 0, 1 ) ]
         >> List.head
-        >> Maybe.map Tuple.first
+        >> Maybe.map Tuple.second
