@@ -10,8 +10,8 @@ import Tuple.Extra as Tuple
 
 solvers : List Solver
 solvers =
-    [ Solver.make 2020 8 1 (part1 25 |> partToSolver)
-    , Solver.make 2020 8 2 (part2 25 |> partToSolver)
+    [ Solver.make 2020 9 1 (part1 25 |> partToSolver)
+    , Solver.make 2020 9 2 (part2 25 |> partToSolver)
     ]
 
 
