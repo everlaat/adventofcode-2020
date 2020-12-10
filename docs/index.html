@@ -5454,6 +5454,146 @@ var $author$project$Solvers$Y2020$Day1$solvers = _List_fromArray(
 		$author$project$Solvers$Y2020$Day1$partToSolver(
 			$author$project$Solvers$Y2020$Day1$part2(2020)))
 	]);
+var $elm_community$dict_extra$Dict$Extra$frequencies = function (list) {
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (el, counter) {
+				return function (count) {
+					return A3($elm$core$Dict$insert, el, count, counter);
+				}(
+					function (count) {
+						return count + 1;
+					}(
+						A2(
+							$elm$core$Maybe$withDefault,
+							0,
+							A2($elm$core$Dict$get, el, counter))));
+			}),
+		$elm$core$Dict$empty,
+		list);
+};
+var $elm$core$Maybe$map2 = F3(
+	function (func, ma, mb) {
+		if (ma.$ === 1) {
+			return $elm$core$Maybe$Nothing;
+		} else {
+			var a = ma.a;
+			if (mb.$ === 1) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var b = mb.a;
+				return $elm$core$Maybe$Just(
+					A2(func, a, b));
+			}
+		}
+	});
+var $author$project$Solvers$Y2020$Day10$part1 = function (list) {
+	var dictFrequencies = $elm_community$dict_extra$Dict$Extra$frequencies(
+		A3(
+			$elm$core$List$map2,
+			$elm$core$Basics$sub,
+			list,
+			A2($elm$core$List$cons, 0, list)));
+	return A3(
+		$elm$core$Maybe$map2,
+		F2(
+			function (a, b) {
+				return a * (b + 1);
+			}),
+		A2($elm$core$Dict$get, 1, dictFrequencies),
+		A2($elm$core$Dict$get, 3, dictFrequencies));
+};
+var $elm$core$Tuple$second = function (_v0) {
+	var y = _v0.b;
+	return y;
+};
+var $elm$core$List$sum = function (numbers) {
+	return A3($elm$core$List$foldl, $elm$core$Basics$add, 0, numbers);
+};
+var $author$project$Solvers$Y2020$Day10$part2 = A2(
+	$elm$core$Basics$composeR,
+	A2(
+		$elm$core$List$foldl,
+		F2(
+			function (a, r) {
+				return function (c) {
+					return A2($elm$core$List$cons, c, r);
+				}(
+					A2(
+						$elm$core$Tuple$pair,
+						a,
+						$elm$core$List$sum(
+							A2(
+								$elm$core$List$map,
+								$elm$core$Tuple$second,
+								A3(
+									$elm$core$List$foldl,
+									F2(
+										function (b, r_) {
+											return ((a - b.a) <= 3) ? A2($elm$core$List$cons, b, r_) : r_;
+										}),
+									_List_Nil,
+									r)))));
+			}),
+		_List_fromArray(
+			[
+				_Utils_Tuple2(0, 1)
+			])),
+	A2(
+		$elm$core$Basics$composeR,
+		$elm$core$List$head,
+		$elm$core$Maybe$map($elm$core$Tuple$second)));
+var $elm$core$Result$fromMaybe = F2(
+	function (err, maybe) {
+		if (!maybe.$) {
+			var v = maybe.a;
+			return $elm$core$Result$Ok(v);
+		} else {
+			return $elm$core$Result$Err(err);
+		}
+	});
+var $elm$core$List$sortBy = _List_sortBy;
+var $elm$core$List$sort = function (xs) {
+	return A2($elm$core$List$sortBy, $elm$core$Basics$identity, xs);
+};
+var $author$project$Solvers$Y2020$Day10$inputToSortedListInt = A2(
+	$elm$core$Basics$composeR,
+	$elm$core$String$trim,
+	A2(
+		$elm$core$Basics$composeR,
+		$elm$core$String$lines,
+		A2(
+			$elm$core$Basics$composeR,
+			$elm$core$List$filterMap($elm$core$String$toInt),
+			$elm$core$List$sort)));
+var $author$project$Solvers$Y2020$Day10$partToSolver = function (f) {
+	return A2(
+		$elm$core$Basics$composeR,
+		$author$project$Solvers$Y2020$Day10$inputToSortedListInt,
+		A2(
+			$elm$core$Basics$composeR,
+			f,
+			A2(
+				$elm$core$Basics$composeR,
+				$elm$core$Maybe$map($elm$core$String$fromInt),
+				$elm$core$Result$fromMaybe('answer not found'))));
+};
+var $author$project$Solvers$Y2020$Day10$solvers = _List_fromArray(
+	[
+		A4(
+		$author$project$Com$Solver$make,
+		2020,
+		10,
+		1,
+		$author$project$Solvers$Y2020$Day10$partToSolver($author$project$Solvers$Y2020$Day10$part1)),
+		A4(
+		$author$project$Com$Solver$make,
+		2020,
+		10,
+		2,
+		$author$project$Solvers$Y2020$Day10$partToSolver($author$project$Solvers$Y2020$Day10$part2))
+	]);
 var $elm$core$String$cons = _String_cons;
 var $elm$core$String$fromChar = function (_char) {
 	return A2($elm$core$String$cons, _char, '');
@@ -7025,10 +7165,6 @@ var $author$project$Solvers$Y2020$Day5$foldMissing = F2(
 			}
 		}
 	});
-var $elm$core$List$sortBy = _List_sortBy;
-var $elm$core$List$sort = function (xs) {
-	return A2($elm$core$List$sortBy, $elm$core$Basics$identity, xs);
-};
 var $author$project$Solvers$Y2020$Day5$part2 = function (list) {
 	return A2(
 		$elm$core$Maybe$andThen,
@@ -7037,15 +7173,6 @@ var $author$project$Solvers$Y2020$Day5$part2 = function (list) {
 				$elm$core$List$sort(list))),
 		$author$project$Solvers$Y2020$Day5$part1(list));
 };
-var $elm$core$Result$fromMaybe = F2(
-	function (err, maybe) {
-		if (!maybe.$) {
-			var v = maybe.a;
-			return $elm$core$Result$Ok(v);
-		} else {
-			return $elm$core$Result$Err(err);
-		}
-	});
 var $icidasset$elm_binary$Binary$Bits = $elm$core$Basics$identity;
 var $icidasset$elm_binary$Binary$ifThenElse = F3(
 	function (bool, a, b) {
@@ -7373,10 +7500,6 @@ function $author$project$Solvers$Y2020$Day7$cyclic$flattenFitsBags() {
 var $author$project$Solvers$Y2020$Day7$flattenFitsBags = $author$project$Solvers$Y2020$Day7$cyclic$flattenFitsBags();
 $author$project$Solvers$Y2020$Day7$cyclic$flattenFitsBags = function () {
 	return $author$project$Solvers$Y2020$Day7$flattenFitsBags;
-};
-var $elm$core$Tuple$second = function (_v0) {
-	var y = _v0.b;
-	return y;
 };
 var $author$project$Solvers$Y2020$Day7$part1 = A2(
 	$elm$core$Basics$composeR,
@@ -8129,21 +8252,6 @@ var $author$project$Solvers$Y2020$Day9$part1 = F2(
 						preamble + 1,
 						$elm$core$Array$length(numbers)))));
 	});
-var $elm$core$Maybe$map2 = F3(
-	function (func, ma, mb) {
-		if (ma.$ === 1) {
-			return $elm$core$Maybe$Nothing;
-		} else {
-			var a = ma.a;
-			if (mb.$ === 1) {
-				return $elm$core$Maybe$Nothing;
-			} else {
-				var b = mb.a;
-				return $elm$core$Maybe$Just(
-					A2(func, a, b));
-			}
-		}
-	});
 var $elm$core$Basics$min = F2(
 	function (x, y) {
 		return (_Utils_cmp(x, y) < 0) ? x : y;
@@ -8224,14 +8332,14 @@ var $author$project$Solvers$Y2020$Day9$solvers = _List_fromArray(
 		A4(
 		$author$project$Com$Solver$make,
 		2020,
-		8,
+		9,
 		1,
 		$author$project$Solvers$Y2020$Day9$partToSolver(
 			$author$project$Solvers$Y2020$Day9$part1(25))),
 		A4(
 		$author$project$Com$Solver$make,
 		2020,
-		8,
+		9,
 		2,
 		$author$project$Solvers$Y2020$Day9$partToSolver(
 			$author$project$Solvers$Y2020$Day9$part2(25)))
@@ -8260,7 +8368,7 @@ var $author$project$Solvers$Y2020$solvers = $elm$core$Dict$fromList(
 		},
 		$elm$core$List$concat(
 			_List_fromArray(
-				[$author$project$Solvers$Y2020$Day1$solvers, $author$project$Solvers$Y2020$Day2$solvers, $author$project$Solvers$Y2020$Day3$solvers, $author$project$Solvers$Y2020$Day4$solvers, $author$project$Solvers$Y2020$Day5$solvers, $author$project$Solvers$Y2020$Day6$solvers, $author$project$Solvers$Y2020$Day7$solvers, $author$project$Solvers$Y2020$Day8$solvers, $author$project$Solvers$Y2020$Day9$solvers]))));
+				[$author$project$Solvers$Y2020$Day1$solvers, $author$project$Solvers$Y2020$Day2$solvers, $author$project$Solvers$Y2020$Day3$solvers, $author$project$Solvers$Y2020$Day4$solvers, $author$project$Solvers$Y2020$Day5$solvers, $author$project$Solvers$Y2020$Day6$solvers, $author$project$Solvers$Y2020$Day7$solvers, $author$project$Solvers$Y2020$Day8$solvers, $author$project$Solvers$Y2020$Day9$solvers, $author$project$Solvers$Y2020$Day10$solvers]))));
 var $author$project$Components$Layout$Update$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
