@@ -54,6 +54,7 @@ viewSolverOptions maybeSelectedSolver =
             Maybe.map Solver.toId maybeSelectedSolver
     in
     Dict.toList Y2020.solvers
+        |> List.sortBy (Tuple.second >> Solver.toLabel)
         |> List.map
             (\( solverId, solver ) ->
                 Html.option

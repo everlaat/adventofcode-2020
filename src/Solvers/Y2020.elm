@@ -4,6 +4,7 @@ import Com.Solver as Solver exposing (Solver)
 import Dict exposing (Dict)
 import Solvers.Y2020.Day1 as Y2020D1
 import Solvers.Y2020.Day10 as Y2020D10
+import Solvers.Y2020.Day11 as Y2020D11
 import Solvers.Y2020.Day2 as Y2020D2
 import Solvers.Y2020.Day3 as Y2020D3
 import Solvers.Y2020.Day4 as Y2020D4
@@ -26,6 +27,7 @@ solvers =
     , Y2020D8.solvers
     , Y2020D9.solvers
     , Y2020D10.solvers
+    , Y2020D11.solvers
     ]
         |> List.concat
         |> List.map (\solver -> ( Solver.toId solver, solver ))
