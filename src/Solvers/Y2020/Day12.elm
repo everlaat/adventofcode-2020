@@ -16,7 +16,6 @@ partToSolver : (Instructions -> Ship) -> (String -> Result String String)
 partToSolver f =
     inputToInstructions
         >> f
-        -- >> Debug.toString >> Ok
         >> shipToManhattenDistance
         >> String.fromInt
         >> Ok
@@ -54,10 +53,10 @@ inputToInstructions =
                                 Just <| Course West int
 
                             'L' ->
-                                Just <| Rotate CCW int
+                                Just <| Rotate -int
 
                             'R' ->
-                                Just <| Rotate CW int
+                                Just <| Rotate int
 
                             'F' ->
                                 Just <| Forward int
@@ -74,7 +73,7 @@ type alias Instructions =
 
 type Operation
     = Course CardinalDirection Distance
-    | Rotate Rotation Degrees
+    | Rotate Degrees
     | Forward Distance
 
 
@@ -84,11 +83,6 @@ type alias Degrees =
 
 type alias Distance =
     Int
-
-
-type Rotation
-    = CW
-    | CCW
 
 
 type CardinalDirection
@@ -130,11 +124,8 @@ doOperation operation ship =
         Course West distance ->
             { ship | x = ship.x - distance }
 
-        Rotate CW degrees ->
+        Rotate degrees ->
             { ship | heading = degreesToCardinalDirection (cardinalDirectionToDegrees ship.heading + degrees) }
-
-        Rotate CCW degrees ->
-            { ship | heading = degreesToCardinalDirection (cardinalDirectionToDegrees ship.heading - degrees) }
 
         Forward distance ->
             doOperation (Course ship.heading distance) ship
@@ -209,8 +200,8 @@ doOperationB operation ( ship, waypoint ) =
         Course West distance ->
             ( ship, { waypoint | x = waypoint.x - distance } )
 
-        Rotate rotation degrees ->
-            ( ship, rotateWaypoint rotation degrees waypoint )
+        Rotate degrees ->
+            ( ship, rotateWaypoint degrees waypoint )
 
         Forward distance ->
             ( { ship
@@ -221,15 +212,13 @@ doOperationB operation ( ship, waypoint ) =
             )
 
 
-rotateWaypoint : Rotation -> Degrees -> Waypoint -> Waypoint
-rotateWaypoint rotation degrees waypoint =
+rotateWaypoint : Degrees -> Waypoint -> Waypoint
+rotateWaypoint degrees waypoint =
     if degrees == 0 then
         waypoint
 
-    else
-        case rotation of
-            CW ->
-                rotateWaypoint rotation (degrees - 90) { x = waypoint.y, y = -waypoint.x }
+    else if degrees > 0 then
+        rotateWaypoint (degrees - 90) { x = waypoint.y, y = -waypoint.x }
 
-            CCW ->
-                rotateWaypoint rotation (degrees - 90) { x = -waypoint.y, y = waypoint.x }
+    else
+        rotateWaypoint (degrees + 90) { x = -waypoint.y, y = waypoint.x }
