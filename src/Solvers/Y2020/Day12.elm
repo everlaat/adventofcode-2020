@@ -113,10 +113,10 @@ doOperation : Operation -> Ship -> Ship
 doOperation operation ship =
     case operation of
         Course North distance ->
-            { ship | y = ship.y - distance }
+            { ship | y = ship.y + distance }
 
         Course South distance ->
-            { ship | y = ship.y + distance }
+            { ship | y = ship.y - distance }
 
         Course East distance ->
             { ship | x = ship.x + distance }
