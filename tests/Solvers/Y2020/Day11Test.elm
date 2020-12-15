@@ -61,7 +61,7 @@ LLL####LL#
 
 suite : Test
 suite =
-    Test.describe "AdventOfCode 2020 Day 10"
+    Test.describe "AdventOfCode 2020 Day 11"
         [ Test.test "getNeigbouringPositions 1,1" <|
             \_ ->
                 {-
