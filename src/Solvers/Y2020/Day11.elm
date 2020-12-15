@@ -1,13 +1,11 @@
-module Solvers.Y2020.Day11 exposing (Seat(..), gameOfSeats, inputToMatrix, matrixToString, part1, part2, partToSolver, solvers)
+module Solvers.Y2020.Day11 exposing (Seat(..), gameOfSeats, gameOfSeats2, getNeigbouringPositions, inputToMatrix, matrixToString, part1, part2, partToSolver, solvers)
 
-import Array
+import Array exposing (Array)
 import Com.Solver as Solver exposing (Solver)
 import List
 import List.Extra as List
-import Matrix exposing (Matrix)
 import Maybe
 import Maybe.Extra as Maybe
-import Neighbours
 
 
 solvers : List Solver
@@ -23,39 +21,34 @@ type Seat
     | NoSeat
 
 
-partToSolver : (Matrix Seat -> Maybe Int) -> (String -> Result String String)
+type alias Matrix =
+    Array (Array Seat)
+
+
+maxIterations : Int
+maxIterations =
+    9999
+
+
+partToSolver : (Matrix -> Result Int ( Int, Int )) -> (String -> Result String String)
 partToSolver f =
     inputToMatrix
         >> f
-        >> Maybe.map String.fromInt
-        >> Result.fromMaybe "answer not found"
+        >> Result.map
+            (\( a, b ) ->
+                "stabilised with `%b` occupied seats after `%a` generations"
+                    |> String.replace "%a" (String.fromInt a)
+                    |> String.replace "%b" (String.fromInt b)
+            )
+        >> Result.mapError String.fromInt
 
 
-inputToMatrix : String -> Matrix Seat
+inputToMatrix : String -> Matrix
 inputToMatrix =
     String.trim
         >> String.lines
-        >> List.map
-            (\row ->
-                let
-                    charsOnRow =
-                        String.toList row
-                            -- |> List.map charToSeat
-                            |> Array.fromList
-                in
-                Matrix.generate
-                    (Array.length charsOnRow)
-                    1
-                    (\x _ -> Array.get x charsOnRow |> Maybe.unwrap NoSeat charToSeat)
-            )
-        >> List.map Ok
-        >> List.foldl1
-            (\a b ->
-                Result.map2 Matrix.concatVertical b a
-                    |> Result.andThen identity
-            )
-        >> Maybe.withDefault (Err "list was empty")
-        >> Result.withDefault (Matrix.generate 0 0 (\_ _ -> Empty))
+        >> List.map (String.toList >> List.map charToSeat >> Array.fromList)
+        >> Array.fromList
 
 
 charToSeat : Char -> Seat
@@ -71,93 +64,143 @@ charToSeat char =
             NoSeat
 
 
-part1 : Matrix Seat -> Maybe Int
+part1 : Matrix -> Result Int ( Int, Int )
 part1 =
-    run
-        >> Matrix.toArray
-        >> Array.toList
-        >> List.filter ((==) Occupied)
-        >> List.length
-        >> Just
+    runGameOfSeatsUntilItResolves gameOfSeats
+        >> Result.map
+            (Tuple.mapSecond
+                (array2dToList
+                    >> List.filter ((==) Occupied)
+                    >> List.length
+                )
+            )
 
 
-part2 : Matrix Seat -> Maybe Int
-part2 matrix =
-    Nothing
+array2dToList : Array (Array a) -> List a
+array2dToList =
+    Array.toList
+        >> List.map Array.toList
+        >> List.concat
 
 
-run : Matrix Seat -> Matrix Seat
-run matrix =
+runGameOfSeatsUntilItResolves : (Matrix -> Matrix) -> Matrix -> Result Int ( Int, Matrix )
+runGameOfSeatsUntilItResolves f =
+    run f 0
+
+
+run : (Matrix -> Matrix) -> Int -> Matrix -> Result Int ( Int, Matrix )
+run f iteration matrix =
     let
         newMatrix =
-            gameOfSeats matrix
+            f matrix
     in
-    if matrixEquals matrix newMatrix then
-        newMatrix
+    if iteration >= maxIterations then
+        Err iteration
+
+    else if matrixEquals matrix newMatrix then
+        Ok ( iteration, newMatrix )
 
     else
-        run newMatrix
+        run f (iteration + 1) newMatrix
 
 
-gameOfSeats : Matrix Seat -> Matrix Seat
+gameOfSeats : Matrix -> Matrix
 gameOfSeats matrix =
-    let
-        width =
-            Matrix.width matrix
+    Array.indexedMap
+        (\y ->
+            Array.indexedMap
+                (\x seat ->
+                    case seat of
+                        Empty ->
+                            if amountOfOccupiedIsZero x y matrix then
+                                Occupied
 
-        height =
-            Matrix.height matrix
-    in
-    (width * height)
-        |> List.range 0
+                            else
+                                Empty
+
+                        Occupied ->
+                            if amountOfOccupiedIsFourOrMore x y matrix then
+                                Empty
+
+                            else
+                                Occupied
+
+                        NoSeat ->
+                            NoSeat
+                )
+        )
+        matrix
+
+
+amountOfOccupiedIsZero : Int -> Int -> Matrix -> Bool
+amountOfOccupiedIsZero x y matrix =
+    getNeigbouringPositions x y
         |> List.foldl
-            (\index m_ ->
-                let
-                    x =
-                        remainderBy height index
+            (\( a, b ) result ->
+                if result == False then
+                    False
 
-                    y =
-                        index // width
-
-                    occupied =
-                        Neighbours.neighbours Neighbours.Plane x y matrix
-                            -- |> Debug.log "neighbours"
-                            |> Array.toList
-                            |> List.filter ((==) Occupied)
-                            |> List.length
-                in
-                case Matrix.get x y matrix of
-                    Ok Empty ->
-                        if occupied == 0 then
-                            Matrix.set x y Occupied m_
-
-                        else
-                            m_
-
-                    Ok Occupied ->
-                        if occupied >= 4 then
-                            Matrix.set x y Empty m_
-
-                        else
-                            m_
-
-                    _ ->
-                        m_
+                else
+                    getSeatAt a b matrix /= Just Occupied
             )
-            matrix
+            True
 
 
-matrixEquals : Matrix Seat -> Matrix Seat -> Bool
+amountOfOccupiedIsFourOrMore : Int -> Int -> Matrix -> Bool
+amountOfOccupiedIsFourOrMore x y matrix =
+    getNeigbouringPositions x y
+        |> List.foldl
+            (\( a, b ) result ->
+                if result >= 4 then
+                    result
+
+                else if getSeatAt a b matrix == Just Occupied then
+                    result + 1
+
+                else
+                    result
+            )
+            0
+        |> (\a -> a >= 4)
+
+
+getNeigbouringPositions : Int -> Int -> List ( Int, Int )
+getNeigbouringPositions x y =
+    [ ( -1, -1 )
+    , ( 0, -1 )
+    , ( 1, -1 )
+    , ( -1, 0 )
+    , ( 1, 0 )
+    , ( -1, 1 )
+    , ( 1, 1 )
+    , ( 0, 1 )
+    ]
+        |> List.filterMap
+            (\( a, b ) ->
+                if a + x >= 0 && b + y >= 0 then
+                    Just ( a + x, b + y )
+
+                else
+                    Nothing
+            )
+
+
+getSeatAt : Int -> Int -> Matrix -> Maybe Seat
+getSeatAt x y matrix =
+    Array.get y matrix
+        |> Maybe.andThen (Array.get x)
+
+
+matrixEquals : Matrix -> Matrix -> Bool
 matrixEquals a b =
     a == b
 
 
-matrixToString : Matrix Seat -> String
-matrixToString matrix =
-    Matrix.toArray matrix
-        |> Array.toList
-        |> List.map seatToChar
-        |> String.fromList
+matrixToString : Matrix -> String
+matrixToString =
+    array2dToList
+        >> List.map seatToChar
+        >> String.fromList
 
 
 seatToChar : Seat -> Char
@@ -171,3 +214,101 @@ seatToChar seat =
 
         NoSeat ->
             '.'
+
+
+part2 : Matrix -> Result Int ( Int, Int )
+part2 =
+    runGameOfSeatsUntilItResolves gameOfSeats2
+        >> Result.map
+            (Tuple.mapSecond
+                (array2dToList
+                    >> List.filter ((==) Occupied)
+                    >> List.length
+                )
+            )
+
+
+gameOfSeats2 : Matrix -> Matrix
+gameOfSeats2 matrix =
+    Array.indexedMap
+        (\y ->
+            Array.indexedMap
+                (\x seat ->
+                    case seat of
+                        Empty ->
+                            if amountOfOccupiedIsZeroInLineOfSight x y matrix then
+                                Occupied
+
+                            else
+                                Empty
+
+                        Occupied ->
+                            if amountOfOccupiedIsFiveOrMoreInLineOfSight x y matrix then
+                                Empty
+
+                            else
+                                Occupied
+
+                        NoSeat ->
+                            NoSeat
+                )
+        )
+        matrix
+
+
+isOccupiedAlongLineOfSight : Int -> ( Int, Int ) -> Matrix -> ( Int, Int ) -> Bool
+isOccupiedAlongLineOfSight distance ( a, b ) matrix ( x, y ) =
+    let
+        aa =
+            (distance * a) + x
+
+        bb =
+            (distance * b) + y
+    in
+    getSeatAt aa bb matrix
+        |> Maybe.unwrap False
+            (\seat ->
+                case seat of
+                    Occupied ->
+                        True
+
+                    Empty ->
+                        False
+
+                    NoSeat ->
+                        isOccupiedAlongLineOfSight (distance + 1) ( a, b ) matrix ( x, y )
+            )
+
+
+neighbourDirections : List ( Int, Int )
+neighbourDirections =
+    [ ( -1, -1 )
+    , ( 0, -1 )
+    , ( 1, -1 )
+    , ( -1, 0 )
+    , ( 1, 0 )
+    , ( -1, 1 )
+    , ( 1, 1 )
+    , ( 0, 1 )
+    ]
+
+
+amountOfOccupiedIsZeroInLineOfSight : Int -> Int -> Matrix -> Bool
+amountOfOccupiedIsZeroInLineOfSight x y matrix =
+    List.foldl
+        (\moveset result ->
+            if result == False then
+                False
+
+            else
+                not <| isOccupiedAlongLineOfSight 1 moveset matrix ( x, y )
+        )
+        True
+        neighbourDirections
+
+
+amountOfOccupiedIsFiveOrMoreInLineOfSight : Int -> Int -> Matrix -> Bool
+amountOfOccupiedIsFiveOrMoreInLineOfSight x y matrix =
+    neighbourDirections
+        |> List.filter (\moveset -> isOccupiedAlongLineOfSight 1 moveset matrix ( x, y ))
+        |> (\a -> List.length a >= 5)
