@@ -7472,84 +7472,6 @@ var $author$project$Solvers$Y2020$Day14$solvers = _List_fromArray(
 		2,
 		$author$project$Solvers$Y2020$Day14$partToSolver($author$project$Solvers$Y2020$Day14$part2))
 	]);
-var $elm$core$Elm$JsArray$push = _JsArray_push;
-var $elm$core$Elm$JsArray$singleton = _JsArray_singleton;
-var $elm$core$Array$insertTailInTree = F4(
-	function (shift, index, tail, tree) {
-		var pos = $elm$core$Array$bitMask & (index >>> shift);
-		if (_Utils_cmp(
-			pos,
-			$elm$core$Elm$JsArray$length(tree)) > -1) {
-			if (shift === 5) {
-				return A2(
-					$elm$core$Elm$JsArray$push,
-					$elm$core$Array$Leaf(tail),
-					tree);
-			} else {
-				var newSub = $elm$core$Array$SubTree(
-					A4($elm$core$Array$insertTailInTree, shift - $elm$core$Array$shiftStep, index, tail, $elm$core$Elm$JsArray$empty));
-				return A2($elm$core$Elm$JsArray$push, newSub, tree);
-			}
-		} else {
-			var value = A2($elm$core$Elm$JsArray$unsafeGet, pos, tree);
-			if (!value.$) {
-				var subTree = value.a;
-				var newSub = $elm$core$Array$SubTree(
-					A4($elm$core$Array$insertTailInTree, shift - $elm$core$Array$shiftStep, index, tail, subTree));
-				return A3($elm$core$Elm$JsArray$unsafeSet, pos, newSub, tree);
-			} else {
-				var newSub = $elm$core$Array$SubTree(
-					A4(
-						$elm$core$Array$insertTailInTree,
-						shift - $elm$core$Array$shiftStep,
-						index,
-						tail,
-						$elm$core$Elm$JsArray$singleton(value)));
-				return A3($elm$core$Elm$JsArray$unsafeSet, pos, newSub, tree);
-			}
-		}
-	});
-var $elm$core$Array$unsafeReplaceTail = F2(
-	function (newTail, _v0) {
-		var len = _v0.a;
-		var startShift = _v0.b;
-		var tree = _v0.c;
-		var tail = _v0.d;
-		var originalTailLen = $elm$core$Elm$JsArray$length(tail);
-		var newTailLen = $elm$core$Elm$JsArray$length(newTail);
-		var newArrayLen = len + (newTailLen - originalTailLen);
-		if (_Utils_eq(newTailLen, $elm$core$Array$branchFactor)) {
-			var overflow = _Utils_cmp(newArrayLen >>> $elm$core$Array$shiftStep, 1 << startShift) > 0;
-			if (overflow) {
-				var newShift = startShift + $elm$core$Array$shiftStep;
-				var newTree = A4(
-					$elm$core$Array$insertTailInTree,
-					newShift,
-					len,
-					newTail,
-					$elm$core$Elm$JsArray$singleton(
-						$elm$core$Array$SubTree(tree)));
-				return A4($elm$core$Array$Array_elm_builtin, newArrayLen, newShift, newTree, $elm$core$Elm$JsArray$empty);
-			} else {
-				return A4(
-					$elm$core$Array$Array_elm_builtin,
-					newArrayLen,
-					startShift,
-					A4($elm$core$Array$insertTailInTree, startShift, len, newTail, tree),
-					$elm$core$Elm$JsArray$empty);
-			}
-		} else {
-			return A4($elm$core$Array$Array_elm_builtin, newArrayLen, startShift, tree, newTail);
-		}
-	});
-var $elm$core$Array$push = F2(
-	function (a, array) {
-		var tail = array.d;
-		return A2(
-			$elm$core$Array$unsafeReplaceTail,
-			A2($elm$core$Elm$JsArray$push, a, tail),
-			array);
-	});
 var $author$project$Solvers$Y2020$Day15$recite = F2(
 	function (amount, numbers) {
 		var indices = $elm$core$Dict$fromList(
@@ -7566,43 +7488,35 @@ var $author$project$Solvers$Y2020$Day15$recite = F2(
 					}),
 				_List_Nil,
 				numbers));
-		return A2(
-			$elm$core$Maybe$withDefault,
-			0,
-			$elm$core$List$head(
-				$elm$core$List$reverse(
-					$elm$core$Array$toList(
-						A3(
-							$elm$core$List$foldl,
-							F2(
-								function (index, _v0) {
-									var arr = _v0.a;
-									var ind = _v0.b;
-									var _v1 = A2($elm$core$Array$get, index - 1, arr);
-									if (_v1.$ === 1) {
-										return _Utils_Tuple2(arr, ind);
-									} else {
-										var lastNumber = _v1.a;
-										var _v2 = A2($elm$core$Dict$get, lastNumber, ind);
-										if (_v2.$ === 1) {
-											return _Utils_Tuple2(
-												A2($elm$core$Array$push, 0, arr),
-												A3($elm$core$Dict$insert, lastNumber, index - 1, ind));
-										} else {
-											var lastSeen = _v2.a;
-											return _Utils_Tuple2(
-												A2($elm$core$Array$push, (index - lastSeen) - 1, arr),
-												A3($elm$core$Dict$insert, lastNumber, index - 1, ind));
-										}
-									}
-								}),
-							_Utils_Tuple2(
-								$elm$core$Array$fromList(numbers),
-								indices),
-							A2(
-								$elm$core$List$range,
-								$elm$core$List$length(numbers),
-								amount - 1)).a))));
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (index, _v0) {
+					var head = _v0.a;
+					var ind = _v0.b;
+					return A3(
+						$elm_community$maybe_extra$Maybe$Extra$unwrap,
+						_Utils_Tuple2(
+							0,
+							A3($elm$core$Dict$insert, head, index - 1, ind)),
+						function (lastSeen) {
+							return _Utils_Tuple2(
+								(index - lastSeen) - 1,
+								A3($elm$core$Dict$insert, head, index - 1, ind));
+						},
+						A2($elm$core$Dict$get, head, ind));
+				}),
+			_Utils_Tuple2(
+				A2(
+					$elm$core$Maybe$withDefault,
+					0,
+					$elm$core$List$head(
+						$elm$core$List$reverse(numbers))),
+				indices),
+			A2(
+				$elm$core$List$range,
+				$elm$core$List$length(numbers),
+				amount - 1)).a;
 	});
 var $author$project$Solvers$Y2020$Day15$part1 = $author$project$Solvers$Y2020$Day15$recite(2020);
 var $author$project$Solvers$Y2020$Day15$part2 = $author$project$Solvers$Y2020$Day15$recite(30000000);
@@ -9191,6 +9105,84 @@ var $author$project$Solvers$Y2020$Day8$operatorFromString = function (str) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
+var $elm$core$Elm$JsArray$push = _JsArray_push;
+var $elm$core$Elm$JsArray$singleton = _JsArray_singleton;
+var $elm$core$Array$insertTailInTree = F4(
+	function (shift, index, tail, tree) {
+		var pos = $elm$core$Array$bitMask & (index >>> shift);
+		if (_Utils_cmp(
+			pos,
+			$elm$core$Elm$JsArray$length(tree)) > -1) {
+			if (shift === 5) {
+				return A2(
+					$elm$core$Elm$JsArray$push,
+					$elm$core$Array$Leaf(tail),
+					tree);
+			} else {
+				var newSub = $elm$core$Array$SubTree(
+					A4($elm$core$Array$insertTailInTree, shift - $elm$core$Array$shiftStep, index, tail, $elm$core$Elm$JsArray$empty));
+				return A2($elm$core$Elm$JsArray$push, newSub, tree);
+			}
+		} else {
+			var value = A2($elm$core$Elm$JsArray$unsafeGet, pos, tree);
+			if (!value.$) {
+				var subTree = value.a;
+				var newSub = $elm$core$Array$SubTree(
+					A4($elm$core$Array$insertTailInTree, shift - $elm$core$Array$shiftStep, index, tail, subTree));
+				return A3($elm$core$Elm$JsArray$unsafeSet, pos, newSub, tree);
+			} else {
+				var newSub = $elm$core$Array$SubTree(
+					A4(
+						$elm$core$Array$insertTailInTree,
+						shift - $elm$core$Array$shiftStep,
+						index,
+						tail,
+						$elm$core$Elm$JsArray$singleton(value)));
+				return A3($elm$core$Elm$JsArray$unsafeSet, pos, newSub, tree);
+			}
+		}
+	});
+var $elm$core$Array$unsafeReplaceTail = F2(
+	function (newTail, _v0) {
+		var len = _v0.a;
+		var startShift = _v0.b;
+		var tree = _v0.c;
+		var tail = _v0.d;
+		var originalTailLen = $elm$core$Elm$JsArray$length(tail);
+		var newTailLen = $elm$core$Elm$JsArray$length(newTail);
+		var newArrayLen = len + (newTailLen - originalTailLen);
+		if (_Utils_eq(newTailLen, $elm$core$Array$branchFactor)) {
+			var overflow = _Utils_cmp(newArrayLen >>> $elm$core$Array$shiftStep, 1 << startShift) > 0;
+			if (overflow) {
+				var newShift = startShift + $elm$core$Array$shiftStep;
+				var newTree = A4(
+					$elm$core$Array$insertTailInTree,
+					newShift,
+					len,
+					newTail,
+					$elm$core$Elm$JsArray$singleton(
+						$elm$core$Array$SubTree(tree)));
+				return A4($elm$core$Array$Array_elm_builtin, newArrayLen, newShift, newTree, $elm$core$Elm$JsArray$empty);
+			} else {
+				return A4(
+					$elm$core$Array$Array_elm_builtin,
+					newArrayLen,
+					startShift,
+					A4($elm$core$Array$insertTailInTree, startShift, len, newTail, tree),
+					$elm$core$Elm$JsArray$empty);
+			}
+		} else {
+			return A4($elm$core$Array$Array_elm_builtin, newArrayLen, startShift, tree, newTail);
+		}
+	});
+var $elm$core$Array$push = F2(
+	function (a, array) {
+		var tail = array.d;
+		return A2(
+			$elm$core$Array$unsafeReplaceTail,
+			A2($elm$core$Elm$JsArray$push, a, tail),
+			array);
+	});
 var $author$project$Solvers$Y2020$Day8$inputToInstructions = A2(
 	$elm$core$Basics$composeR,
 	$elm$core$String$trim,

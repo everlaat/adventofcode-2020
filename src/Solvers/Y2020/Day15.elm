@@ -1,8 +1,7 @@
 module Solvers.Y2020.Day15 exposing (part1, part2, partToSolver, solvers)
 
-import Array
 import Com.Solver as Solver exposing (Solver)
-import Dict exposing (Dict)
+import Dict
 import List
 import List.Extra as List
 import Maybe.Extra as Maybe
@@ -60,26 +59,21 @@ recite amount numbers =
     in
     List.range (List.length numbers) (amount - 1)
         |> List.foldl
-            (\index ( arr, ind ) ->
-                case Array.get (index - 1) arr of
-                    Nothing ->
-                        ( arr, ind )
-
-                    Just lastNumber ->
-                        case Dict.get lastNumber ind of
-                            Nothing ->
-                                ( Array.push 0 arr
-                                , Dict.insert lastNumber (index - 1) ind
-                                )
-
-                            Just lastSeen ->
-                                ( Array.push (index - lastSeen - 1) arr
-                                , Dict.insert lastNumber (index - 1) ind
-                                )
+            (\index ( head, ind ) ->
+                Dict.get head ind
+                    |> Maybe.unwrap
+                        ( 0
+                        , Dict.insert head (index - 1) ind
+                        )
+                        (\lastSeen ->
+                            ( index - lastSeen - 1
+                            , Dict.insert head (index - 1) ind
+                            )
+                        )
             )
-            ( Array.fromList numbers, indices )
+            ( List.reverse numbers
+                |> List.head
+                |> Maybe.withDefault 0
+            , indices
+            )
         |> Tuple.first
-        |> Array.toList
-        |> List.reverse
-        |> List.head
-        |> Maybe.withDefault 0
